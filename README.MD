@@ -36,13 +36,14 @@ Changed stuff to match the original switch menus :
 - button selection "block"
 - "left" menu list background
 
-Not working :
+To do :
 - button selection color is not correct, nor is the effect speed
-- would like to resize icons to match switch "all software" size
+~~- would like to resize icons to match switch "all software" size~~
 - adapt missing stuff for dark them
 - left menu list / buttons should split to 2 lines when too large
 - left menu list / buttons separator should be customizable
 - forgot to adapt hidden buttons overlay at bottom
+- some untouched menus
 
 Stuff I'd like to add
 - would like some scrolling effect and a scollbar when list is more than 1 screen in height
