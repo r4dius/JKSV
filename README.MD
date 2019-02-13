@@ -38,7 +38,7 @@ Changed stuff to match the original switch menus :
 
 To do :
 - button selection color is not correct, nor is the effect speed
-~~- would like to resize icons to match switch "all software" size~~
+- ~~would like to resize icons to match switch "all software" size~~
 - adapt missing stuff for dark them
 - left menu list / buttons should split to 2 lines when too large
 - left menu list / buttons separator should be customizable
