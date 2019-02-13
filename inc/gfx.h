@@ -124,6 +124,7 @@ void texDrawNoAlphaResize(const tex *t, tex *target, int x, int y);
 
 //Draws skipping every other pixel + row
 void texDrawSkip(const tex *t, tex *target, int x, int y);
+void texDrawResize(const tex *t, tex *target, int x, int y, int w, int h);
 
 //Same as above, no alpha
 void texDrawSkipNoAlpha(const tex *t, tex *target, int x, int y);
