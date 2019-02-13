@@ -602,48 +602,50 @@ void texDrawResize (const tex *source, tex *target, int x, int y, int destWidth,
 
          for (j = 0; j < destWidth; j++)
 		 {
-             uint32_t offset = (i + y) * target->width + (j + x);
+			 if ((i + y) > 88 && (i + y) < 647) {
+				 uint32_t offset = (i + y) * target->width + (j + x);
 
-             sourceX = j * xScale;
+				 sourceX = j * xScale;
 
-             pos = (((int)sourceY + 0) * source->width + (int)sourceX + 0);
+				 pos = (((int)sourceY + 0) * source->width + (int)sourceX + 0);
 
-             r1 = srcPtr[pos][0];
-             g1 = srcPtr[pos][1];
-             b1 = srcPtr[pos][2];
+				 r1 = srcPtr[pos][0];
+				 g1 = srcPtr[pos][1];
+				 b1 = srcPtr[pos][2];
 
-             pos = (((int)sourceY + 0) * source->width + (int)sourceX + 1);
+				 pos = (((int)sourceY + 0) * source->width + (int)sourceX + 1);
 
-             r2 = srcPtr[pos][0];
-             g2 = srcPtr[pos][1];
-             b2 = srcPtr[pos][2];
+				 r2 = srcPtr[pos][0];
+				 g2 = srcPtr[pos][1];
+				 b2 = srcPtr[pos][2];
 
-             pos = (((int)sourceY + 1) * source->width + (int)sourceX + 0);
+				 pos = (((int)sourceY + 1) * source->width + (int)sourceX + 0);
 
-             r3 = srcPtr[pos][0];
-             g3 = srcPtr[pos][1];
-             b3 = srcPtr[pos][2];
+				 r3 = srcPtr[pos][0];
+				 g3 = srcPtr[pos][1];
+				 b3 = srcPtr[pos][2];
 
-             pos = (((int)sourceY + 1) * source->width + (int)sourceX + 1);
+				 pos = (((int)sourceY + 1) * source->width + (int)sourceX + 1);
 
-             r4 = srcPtr[pos][0];
-             g4 = srcPtr[pos][1];
-             b4 = srcPtr[pos][2];
+				 r4 = srcPtr[pos][0];
+				 g4 = srcPtr[pos][1];
+				 b4 = srcPtr[pos][2];
 
-             // determine weights
-             fx = sourceX - (int)sourceX;
-             fy = sourceY - (int)sourceY;
-             fx1 = 1.0f - fx;
-             fy1 = 1.0f - fy;
+				 // determine weights
+				 fx = sourceX - (int)sourceX;
+				 fy = sourceY - (int)sourceY;
+				 fx1 = 1.0f - fx;
+				 fy1 = 1.0f - fy;
 
-             w1 = (fx1*fy1);
-             w2 = (fx*fy1);
-             w3 = (fx1*fy);
-             w4 = (fx*fy);
+				 w1 = (fx1*fy1);
+				 w2 = (fx*fy1);
+				 w3 = (fx1*fy);
+				 w4 = (fx*fy);
 
-             tgtPtr[offset][0] = (r1 * w1 + r2 * w2 + r3 * w3 + r4 * w4);
-             tgtPtr[offset][1] = (g1 * w1 + g2 * w2 + g3 * w3 + g4 * w4);
-             tgtPtr[offset][2] = (b1 * w1 + b2 * w2 + b3 * w3 + b4 * w4);
+				 tgtPtr[offset][0] = (r1 * w1 + r2 * w2 + r3 * w3 + r4 * w4);
+				 tgtPtr[offset][1] = (g1 * w1 + g2 * w2 + g3 * w3 + g4 * w4);
+				 tgtPtr[offset][2] = (b1 * w1 + b2 * w2 + b3 * w3 + b4 * w4);
+			 }
          }
      }
 }

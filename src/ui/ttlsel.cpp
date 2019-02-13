@@ -49,7 +49,7 @@ namespace ui
 
         texSwapColors(ui::selBox, clrPrev, clrUpdt);
 
-        unsigned x = 93, y = 98;
+        unsigned x = 93, y = 187;
         unsigned endTitle = start + 18;
         if(start + 18 > (int)data::curUser.titles.size())
             endTitle = data::curUser.titles.size();
@@ -139,7 +139,7 @@ namespace ui
             if(selected < (int)data::curUser.titles.size() - 1)
                 selected++;
 
-            if(selected >= (int)start + 18)
+            if(selected >= (int)start + 12)
                 start += 6;
         }
         else if(down & KEY_LEFT)
@@ -165,7 +165,7 @@ namespace ui
             if(selected > (int)data::curUser.titles.size() - 1)
                 selected = data::curUser.titles.size() - 1;
 
-            if(selected - start >= 18)
+            if(selected - start >= 12)
                 start += 6;
         }
         else if(down & KEY_A || ttlNav[0].getEvent() == BUTTON_RELEASED)

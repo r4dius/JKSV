@@ -181,7 +181,7 @@ namespace ui
 
     void setupSelButtons()
     {
-        int x = 93, y = 98;
+        int x = 93, y = 187;
         for(int i = 0; i < 18; y += 184)
         {
             int endRow = i + 8;
