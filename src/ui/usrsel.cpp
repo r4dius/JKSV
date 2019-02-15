@@ -19,7 +19,7 @@ namespace ui
         static uint8_t clrShft = 0;
         static bool clrAdd = true;
 
-        static unsigned selRectX = 86, selRectY = 91;
+        static unsigned selRectX = 86, selRectY = 180;
 
         static ui::touchTrack track;
 
@@ -146,7 +146,7 @@ namespace ui
             //Reset this
             start = 0;
             selected = 0;
-            selRectX = 86, selRectY = 91;
+            selRectX = 86, selRectY = 180;
             mstate = TTL_SEL;
         }
         else if(down & KEY_Y || usrNav[1].getEvent() == BUTTON_RELEASED)

@@ -20,7 +20,7 @@ namespace ui
     {
         userMenu.reset();
 
-        userMenu.setParams(42, 98, 424);
+        userMenu.setParams(42, 187, 424);
 
         for(unsigned i = 0; i < data::users.size(); i++)
             userMenu.addOpt(data::users[i].getUsername());
@@ -29,7 +29,7 @@ namespace ui
     void clsTitlePrep(data::user& u)
     {
         titleMenu.reset();
-        titleMenu.setParams(42, 98, 424);
+        titleMenu.setParams(42, 187, 424);
 
         for(unsigned i = 0; i < u.titles.size(); i++)
             titleMenu.addOpt(u.titles[i].getTitle());

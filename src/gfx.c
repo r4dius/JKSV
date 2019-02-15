@@ -513,14 +513,17 @@ void texDraw(const tex *t, tex *target, int x, int y)
         uint32_t *dataPtr = &t->data[0];
         for(int tY = y; tY < y + t->height; tY++)
         {
-            uint32_t *rowPtr = &target->data[tY * target->width + x];
-            for(int tX = x; tX < x + t->width; tX++, rowPtr++)
-            {
-                clr dataClr = clrCreateU32(*dataPtr++);
-                clr fbClr   = clrCreateU32(*rowPtr);
+			uint32_t *rowPtr = &target->data[tY * target->width + x];
+			for(int tX = x; tX < x + t->width; tX++, rowPtr++)
+			{
+				if(x >= 0 && y >= 0 && x <= 1280 && y <= 720)
+				{
+					clr dataClr = clrCreateU32(*dataPtr++);
+					clr fbClr   = clrCreateU32(*rowPtr);
 
-                *rowPtr = blend(dataClr, fbClr);
-            }
+					*rowPtr = blend(dataClr, fbClr);
+				}
+			}
         }
     }
 }
@@ -534,7 +537,12 @@ void texDrawNoAlpha(const tex *t, tex *target, int x, int y)
         {
             uint32_t *rowPtr = &target->data[tY * target->width + x];
             for(int tX = x; tX < x + t->width; tX++)
-                *rowPtr++ = *dataPtr++;
+			{
+				if(x >= 0 && y >= 0 && x <= 1280 && y <= 720)
+				{
+					*rowPtr++ = *dataPtr++;
+				}
+			}
         }
     }
 }
@@ -549,12 +557,15 @@ void texDrawSkip(const tex *t, tex *target, int x, int y)
             uint32_t *rowPtr = &target->data[tY * target->width + x];
             for(int tX = x; tX < x + (t->width / 2); tX++, rowPtr++)
             {
-                clr px1 = clrCreateU32(*dataPtr++);
-                clr px2 = clrCreateU32(*dataPtr++);
-                clr fbPx = clrCreateU32(*rowPtr);
+				if(x >= 0 && y >= 0 && x <= 1280 && y <= 720)
+				{
+					clr px1 = clrCreateU32(*dataPtr++);
+					clr px2 = clrCreateU32(*dataPtr++);
+					clr fbPx = clrCreateU32(*rowPtr);
 
-                *rowPtr = blend(clrCreateU32(smooth(px1, px2)), fbPx);
-            }
+					*rowPtr = blend(clrCreateU32(smooth(px1, px2)), fbPx);
+				}
+			}
         }
     }
 }
@@ -569,10 +580,13 @@ void texDrawSkipNoAlpha(const tex *t, tex *target, int x, int y)
             uint32_t *rowPtr = &target->data[tY * target->width + x];
             for(int tX = x; tX < x + (t->width / 2); tX++, rowPtr++)
             {
-                clr px1 = clrCreateU32(*dataPtr++);
-                clr px2 = clrCreateU32(*dataPtr++);
+				if(x >= 0 && y >= 0 && x <= 1280 && y <= 720)
+				{
+					clr px1 = clrCreateU32(*dataPtr++);
+					clr px2 = clrCreateU32(*dataPtr++);
 
-                *rowPtr = smooth(px1, px2);
+					*rowPtr = smooth(px1, px2);
+				}
             }
         }
     }
@@ -589,23 +603,23 @@ void texDrawResize (const tex *source, tex *target, int x, int y, int destWidth,
      float fx, fy, fx1, fy1;
      float w1, w2, w3, w4;
      float sourceX, sourceY;
-     int i, j;
+     int tY, tX;
 
      #define BPP 4
 
      uint8_t (*srcPtr)[BPP] = (uint8_t (*)[4])source->data;
      uint8_t (*tgtPtr)[BPP] = (uint8_t (*)[4])target->data;
 
-     for (i = 0; i < destHeight; i++)
+     for (tY = 0; tY < destHeight; tY++)
 	 {
-         sourceY = i * yScale;
+         sourceY = tY * yScale;
 
-         for (j = 0; j < destWidth; j++)
+         for (tX = 0; tX < destWidth; tX++)
 		 {
-			 if ((i + y) > 88 && (i + y) < 647) {
-				 uint32_t offset = (i + y) * target->width + (j + x);
+			 if ((tY + y) > 88 && (tY + y) < 647) {
+				 uint32_t offset = (tY + y) * target->width + (tX + x);
 
-				 sourceX = j * xScale;
+				 sourceX = tX * xScale;
 
 				 pos = (((int)sourceY + 0) * source->width + (int)sourceX + 0);
 
@@ -660,11 +674,14 @@ void texDrawInvert(const tex *t, tex *target, int x, int y)
             uint32_t *rowPtr = &target->data[tY * target->width + x];
             for(int tX = x; tX < x + t->width; tX++, rowPtr++)
             {
-                clr dataClr = clrCreateU32(*dataPtr++);
-                clrInvert(&dataClr);
-                clr fbClr = clrCreateU32(*rowPtr);
+				if(x >= 0 && y >= 0 && x <= 1280 && y <= 720)
+				{
+					clr dataClr = clrCreateU32(*dataPtr++);
+					clrInvert(&dataClr);
+					clr fbClr = clrCreateU32(*rowPtr);
 
-                *rowPtr = blend(dataClr, fbClr);
+					*rowPtr = blend(dataClr, fbClr);
+				}
             }
         }
     }

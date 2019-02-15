@@ -24,7 +24,7 @@ namespace ui
         static bool clrAdd = true;
 
         //Selected rectangle X and Y.
-        static unsigned selRectX = 86, selRectY = 91;
+        static unsigned selRectX = 86, selRectY = 180;
 
         static ui::touchTrack track;
 
@@ -49,9 +49,16 @@ namespace ui
 
         texSwapColors(ui::selBox, clrPrev, clrUpdt);
 
+		int maxTitles = 18;
         unsigned x = 93, y = 187;
-        unsigned endTitle = start + 18;
-        if(start + 18 > (int)data::curUser.titles.size())
+
+		if((int)data::curUser.titles.size() > 12 && selected > 11) {
+			maxTitles = 24;
+			y = 3;
+		}
+		
+        unsigned endTitle = start + maxTitles;
+        if(start + maxTitles > (int)data::curUser.titles.size())
             endTitle = data::curUser.titles.size();
 
         //draw Rect so it's always behind icons
@@ -80,7 +87,7 @@ namespace ui
         }
 
         //Buttons
-        for(int i = 0; i < 18; i++)
+        for(int i = 0; i < maxTitles; i++)
         {
             selButtons[i].update(p);
             if(i == selected - start && selButtons[i].getEvent() == BUTTON_RELEASED)
@@ -113,7 +120,7 @@ namespace ui
         {
             case TRACK_SWIPE_UP:
                 {
-                    if(start + 18 < (int)data::curUser.titles.size())
+                    if(start + maxTitles < (int)data::curUser.titles.size())
                     {
                         start += 6;
                         selected += 6;
@@ -196,7 +203,7 @@ namespace ui
             start = 0;
             selected = 0;
             selRectX = 86;
-            selRectY = 91;
+            selRectY = 180;
             mstate = USR_SEL;
             return;
         }
