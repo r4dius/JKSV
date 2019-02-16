@@ -305,7 +305,8 @@ void drawRect(tex *target, int x, int y, int w,  int h, const clr c)
     {
         uint32_t *rowPtr = &target->data[tY * target->width + x];
         for(int tX = x; tX < x + w; tX++, rowPtr++)
-            *rowPtr = clr;
+			if(x >= 0 && y >= 0 && x <= 1280 && y <= 720)
+                *rowPtr = clr;
     }
 }
 
@@ -315,7 +316,8 @@ void drawRectAlpha(tex *target, int x, int y, int w, int h, const clr c)
     {
         uint32_t *rowPtr = &target->data[tY * target->width + x];
         for(int tX = x; tX < x + w; tX++, rowPtr++)
-            *rowPtr = blend(c, clrCreateU32(*rowPtr));
+			if(x >= 0 && y >= 0 && x <= 1280 && y <= 720)
+                *rowPtr = blend(c, clrCreateU32(*rowPtr));
     }
 }
 
@@ -616,7 +618,7 @@ void texDrawResize (const tex *source, tex *target, int x, int y, int destWidth,
 
          for (tX = 0; tX < destWidth; tX++)
 		 {
-			 if ((tY + y) > 88 && (tY + y) < 647) {
+			 if ((tY + y) > 87 && (tY + y) < 647) {
 				 uint32_t offset = (tY + y) * target->width + (tX + x);
 
 				 sourceX = tX * xScale;

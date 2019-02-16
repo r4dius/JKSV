@@ -25,6 +25,7 @@ namespace ui
 
         //Selected rectangle X and Y.
         static unsigned selRectX = 86, selRectY = 180;
+		static bool up;
 
         static ui::touchTrack track;
 
@@ -52,7 +53,7 @@ namespace ui
 		int maxTitles = 18;
         unsigned x = 93, y = 187;
 
-		if((int)data::curUser.titles.size() > 12 && selected > 11) {
+		if(up || ((int)data::curUser.titles.size() > 12 && selected > 11)) {
 			maxTitles = 24;
 			y = 3;
 		}
@@ -85,6 +86,7 @@ namespace ui
                 data::curUser.titles[i].icon.drawHalf(tX, y);
             }
         }
+		// drawText(title.c_str(), frameBuffer, ui::shared, 500, 10, fontSize, txtClr);
 
         //Buttons
         for(int i = 0; i < maxTitles; i++)
@@ -143,36 +145,48 @@ namespace ui
 
         if(down & KEY_RIGHT)
         {
+			up = false;
             if(selected < (int)data::curUser.titles.size() - 1)
                 selected++;
 
-            if(selected >= (int)start + 12)
+            if(selected >= (int)start + 18)
                 start += 6;
         }
         else if(down & KEY_LEFT)
         {
+			up = false;
             if(selected > 0)
                 selected--;
 
-            if(selected < (int)start)
+            if(selected - 6 < (int)start)
                 start -= 6;
+
+			if(start < 0) start = 0;
+
+			if(selected > 5 && selected < 12) up = true;
         }
         else if(down & KEY_UP)
         {
+			up = false;
             selected -= 6;
             if(selected < 0)
                 selected = 0;
 
-            if(selected < start)
+            if(selected - 6 < start)
                 start -= 6;
+
+			if(start < 0) start = 0;
+			
+			if(selected > 5 && selected < 12) up = true;
         }
         else if(down & KEY_DOWN)
         {
+			up = false;
             selected += 6;
             if(selected > (int)data::curUser.titles.size() - 1)
                 selected = data::curUser.titles.size() - 1;
 
-            if(selected - start >= 12)
+            if(selected - start >= 18)
                 start += 6;
         }
         else if(down & KEY_A || ttlNav[0].getEvent() == BUTTON_RELEASED)
@@ -207,5 +221,17 @@ namespace ui
             mstate = USR_SEL;
             return;
         }
+		
+		/*
+		char char_arr[200];
+		sprintf(char_arr, "selected %d", selected);
+		drawText(char_arr, frameBuffer, ui::shared, 500, 10, 14, txtClr);
+		sprintf(char_arr, "endTitle %d", endTitle);
+		drawText(char_arr, frameBuffer, ui::shared, 500, 25, 14, txtClr);
+		sprintf(char_arr, "start %d", start);
+		drawText(char_arr, frameBuffer, ui::shared, 500, 40, 14, txtClr);
+		sprintf(char_arr, "up %d", up);
+		drawText(char_arr, frameBuffer, ui::shared, 500, 55, 14, txtClr);
+		*/
     }
 }
