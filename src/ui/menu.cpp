@@ -58,12 +58,13 @@ namespace ui
         texDestroy(mnuBotRight);
     }
 
-    void menu::setParams(const unsigned& _x, const unsigned& _y, const unsigned& _rW)
+    void menu::setParams(const unsigned& _x, const unsigned& _y, const unsigned& _rW, const int& _fontSize)
     {
         x = _x;
         y = _y;
         rW = _rW;
         rY = _y;
+		fontSize = _fontSize;
 
         optButtons.clear();
 
@@ -77,7 +78,7 @@ namespace ui
 
     void menu::addOpt(const std::string& add)
     {
-        if(textGetWidth(add.c_str(), ui::shared, 19) < rW - 32 || rW == 0)
+        if(textGetWidth(add.c_str(), ui::shared, fontSize) < rW - 32 || rW == 0)
             opt.push_back(add);
         else
         {
@@ -89,7 +90,7 @@ namespace ui
 
                 tmp += add.substr(i, untCnt);
                 i += untCnt;
-                if(textGetWidth(tmp.c_str(), ui::shared, 19) >= rW - 32)
+                if(textGetWidth(tmp.c_str(), ui::shared, fontSize) >= rW - 32)
                 {
                     opt.push_back(tmp);
                     break;
@@ -222,7 +223,7 @@ namespace ui
             if(i == selected)
                 drawBoundBox(x, y + ((i - start) * 71), rW, 71, clrSh);
 
-            drawText(opt[i].c_str(), frameBuffer, shared, x + 16, (y + 26) + ((i - start) * 71), 19, textClr);
+            drawText(opt[i].c_str(), frameBuffer, shared, x + 20, (y + 26) + ((i - start) * 71), fontSize, textClr);
 
 			if(i != selected && separate)
 			    drawRect(frameBuffer, x, y - 1 + ((i - start +1) * 71), rW - 10, 1, ui::sepClr);
@@ -232,7 +233,7 @@ namespace ui
     void menu::reset()
     {
         opt.clear();
-
+		selected = 0;
         fc = 0;
     }
 

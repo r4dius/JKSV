@@ -67,16 +67,7 @@ namespace ui
                     }
 
                     std::string username = data::users[selected].getUsername();
-                    unsigned userWidth = textGetWidth(username.c_str(), ui::shared, 16);
-                    int userRectWidth = userWidth + 32, userRectX = (tX + 64) - (userRectWidth  / 2);
-                    if(userRectX < 16)
-                        userRectX = 16;
-
-                    if(userRectX + userRectWidth > 1264)
-                        userRectX = 1264 - userRectWidth;
-
-                    drawTextbox(userRectX, y - 50, userRectWidth, 38);
-                    drawText(username.c_str(), frameBuffer, ui::shared, userRectX + 16, y - 38, 16, txtClr);
+					drawTitlebox(username, tX, y - 63, 48);
                 }
                 data::users[i].drawIconHalf(tX, y);
             }

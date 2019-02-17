@@ -21,7 +21,7 @@ namespace ui
     class menu
     {
         public:
-            void setParams(const unsigned& _x, const unsigned& _y, const unsigned& _rW);
+            void setParams(const unsigned& _x, const unsigned& _y, const unsigned& _rW, const int& fontSize);
             //Adds option
             void addOpt(const std::string& add);
             //Changes opt text
@@ -56,11 +56,12 @@ namespace ui
             //Options vector
             std::vector<std::string> opt;
             //Selected + frame counting for auto-scroll
-            int selected = 0, fc = 0, start = 0, retEvent = MENU_NOTHING;
+            int selected = 0, fc = 0, start = 0, retEvent = MENU_NOTHING, fontSize = 19;
             //How much we shift the color of the rectangle
             uint8_t clrSh = 0;
             bool clrAdd = true;
             bool separate = true;
+			bool leftmenu = false;
 
             ui::touchTrack track;
             std::vector<ui::button> optButtons;

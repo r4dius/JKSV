@@ -117,6 +117,8 @@ void texClearColor(tex *in, const clr c);
 
 //Draws t at x, y
 void texDraw(const tex *t, tex *target, int x, int y);
+void texDrawH(const tex *t, tex *target, int x, int y, int w);
+void texDrawV(const tex *t, tex *target, int x, int y, int h);
 
 //Draws without alpha blending, faster
 void texDrawNoAlpha(const tex *t, tex *target, int x, int y);

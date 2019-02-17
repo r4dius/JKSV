@@ -85,7 +85,7 @@ namespace ui
     bool confirmTransfer(const std::string& f, const std::string& t);
     bool confirmDelete(const std::string& p);
     void drawTextbox(int x, int y, int w, int h);
-    void drawTitlebox(int selected, int x, int y, int h);
+    void drawTitlebox(std::string& title, int x, int y, int h);
     void drawTextboxInvert(int x, int y, int w, int h);
 }
 

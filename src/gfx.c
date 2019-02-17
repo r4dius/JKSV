@@ -167,7 +167,7 @@ void drawText(const char *str, tex *target, const font *f, int x, int y, int sz,
         {
             case '\n':
                 tmpX = x;
-                y += sz + 8;
+                y += sz + 11;
                 continue;
                 break;
 
@@ -527,6 +527,56 @@ void texDraw(const tex *t, tex *target, int x, int y)
 				}
 			}
         }
+    }
+}
+
+void texDrawH(const tex *t, tex *target, int x, int y, int w)
+{
+    if(t != NULL)
+    {
+		for(int width = 0; width < w; width++) {
+			int nX = x + width;
+			uint32_t *dataPtr = &t->data[0];
+			for(int tY = y; tY < y + t->height; tY++)
+			{	
+				uint32_t *rowPtr = &target->data[tY * target->width + nX];
+				for(int tX = nX; tX < nX + t->width; tX++, rowPtr++)
+				{
+					if(nX >= 0 && y >= 0 && nX <= 1280 && y <= 720)
+					{
+						clr dataClr = clrCreateU32(*dataPtr++);
+						clr fbClr   = clrCreateU32(*rowPtr);
+
+						*rowPtr = blend(dataClr, fbClr);
+					}
+				}
+			}
+		}
+    }
+}
+
+void texDrawV(const tex *t, tex *target, int x, int y, int h)
+{
+    if(t != NULL)
+    {
+		for(int height = 0; height < h; height++) {
+			int nY = y + height;
+			uint32_t *dataPtr = &t->data[0];
+			for(int tY = nY; tY < nY + t->height; tY++)
+			{
+				uint32_t *rowPtr = &target->data[tY * target->width + x];
+				for(int tX = x; tX < x + t->width; tX++, rowPtr++)
+				{
+					if(x >= 0 && nY >= 0 && x <= 1280 && nY <= 720)
+					{
+						clr dataClr = clrCreateU32(*dataPtr++);
+						clr fbClr   = clrCreateU32(*rowPtr);
+
+						*rowPtr = blend(dataClr, fbClr);
+					}
+				}
+			}
+		}
     }
 }
 

@@ -39,7 +39,7 @@ namespace ui
 
     //textbox pieces
     //I was going to flip them when I draw them, but then laziness kicked in.
-    tex *cornerTopLeft, *cornerTopRight, *cornerBottomLeft, *cornerBottomRight, *tip;
+    tex *cornerTopHor, *cornerBottomHor, *cornerLeftVer, *cornerRightVer, *cornerTopLeft, *cornerTopRight, *cornerBottomLeft, *cornerBottomRight, *tip, *temp;
 
     tex *buttonA, *buttonB, *buttonX, *buttonY, *buttonMin;
 
@@ -52,15 +52,22 @@ namespace ui
         ColorSetId gthm;
         setsysGetColorSetId(&gthm);
 
+
         switch(gthm)
         {
             case ColorSetId_Light:
-                //Dark corners
-                cornerTopLeft = texLoadPNGFile("romfs:/img/tboxLght/tboxCornerTopLeft.png");
-                cornerTopRight = texLoadPNGFile("romfs:/img/tboxLght/tboxCornerTopRight.png");
-                cornerBottomLeft = texLoadPNGFile("romfs:/img/tboxLght/tboxCornerBotLeft.png");
-                cornerBottomRight = texLoadPNGFile("romfs:/img/tboxLght/tboxCornerBotRight.png");
-                tip = texLoadPNGFile("romfs:/img/tboxLght/tboxTip.png");
+                //Light corners
+		        temp = texLoadPNGFile("romfs:/img/mnu/tboxLght.png");
+				cornerTopHor = texCreateFromPart(temp, 12, 0, 1, 12);
+				cornerBottomHor = texCreateFromPart(temp, 12, 52, 1, 12);
+				cornerLeftVer = texCreateFromPart(temp, 0, 12, 12, 1);
+				cornerRightVer = texCreateFromPart(temp, 52, 12, 12, 1);
+				cornerTopLeft = texCreateFromPart(temp, 0, 0, 12, 12);
+				cornerTopRight = texCreateFromPart(temp, 52, 0, 12, 12);
+				cornerBottomLeft = texCreateFromPart(temp, 0, 52, 12, 12);
+				cornerBottomRight = texCreateFromPart(temp, 52, 52, 12, 12);
+
+                tip = texLoadPNGFile("romfs:/img/mnu/tboxTipLght.png");
 
                 //Dark buttons
                 buttonA = texLoadPNGFile("romfs:/img/button/buttonA_drk.png");
@@ -86,12 +93,18 @@ namespace ui
 
             default:
             case ColorSetId_Dark:
-                //Light corners
-                cornerTopLeft = texLoadPNGFile("romfs:/img/tboxDrk/tboxCornerTopLeft.png");
-                cornerTopRight = texLoadPNGFile("romfs:/img/tboxDrk/tboxCornerTopRight.png");
-                cornerBottomLeft = texLoadPNGFile("romfs:/img/tboxDrk/tboxCornerBotLeft.png");
-                cornerBottomRight = texLoadPNGFile("romfs:/img/tboxDrk/tboxCornerBotRight.png");
-                tip = texLoadPNGFile("romfs:/img/tboxDrk/tboxTip.png");
+                //Dark corners
+		        temp = texLoadPNGFile("romfs:/img/mnu/tboxDrk.png");
+				cornerTopHor = texCreateFromPart(temp, 12, 0, 1, 12);
+				cornerBottomHor = texCreateFromPart(temp, 12, 52, 1, 12);
+				cornerLeftVer = texCreateFromPart(temp, 0, 12, 12, 1);
+				cornerRightVer = texCreateFromPart(temp, 52, 12, 12, 1);
+				cornerTopLeft = texCreateFromPart(temp, 0, 0, 12, 12);
+				cornerTopRight = texCreateFromPart(temp, 52, 0, 12, 12);
+				cornerBottomLeft = texCreateFromPart(temp, 0, 52, 12, 12);
+				cornerBottomRight = texCreateFromPart(temp, 52, 52, 12, 12);
+
+                tip = texLoadPNGFile("romfs:/img/mnu/tboxTipDrk.png");
 
                 //Light buttons
                 buttonA = texLoadPNGFile("romfs:/img/button/buttonA_lght.png");
@@ -152,11 +165,16 @@ namespace ui
 
     void exit()
     {
+        texDestroy(cornerTopHor);
+        texDestroy(cornerBottomHor);
+        texDestroy(cornerLeftVer);
+        texDestroy(cornerRightVer);
         texDestroy(cornerTopLeft);
         texDestroy(cornerTopRight);
         texDestroy(cornerBottomLeft);
         texDestroy(cornerBottomRight);
         texDestroy(tip);
+        texDestroy(temp);
 
         texDestroy(buttonA);
         texDestroy(buttonB);
@@ -280,19 +298,20 @@ namespace ui
                         startX = 581;
 					else 
                         startX = 574;
-                    texDraw(buttonA, frameBuffer, startX, 672);
-                    drawText("Select", frameBuffer, shared, startX += 38, 675, 18, mnuTxt);
-                    texDraw(buttonY, frameBuffer, startX += 110, 672);
+					
+                    texDraw(buttonMin, frameBuffer, startX, 672);
+                    drawText("Extras", frameBuffer, shared, startX += 38, 675, 18, mnuTxt);
+					texDraw(buttonY, frameBuffer, startX += 110, 672);
                     drawText("Dump All", frameBuffer, shared, startX += 38, 675, 18, mnuTxt);
                     texDraw(buttonX, frameBuffer, startX += 148, 672);
                     if(ui::clsMode) {
                         drawText("GUI Mode", frameBuffer, shared, startX += 38, 675, 18, mnuTxt);
-                        texDraw(buttonMin, frameBuffer, startX += 158, 672);
+                        texDraw(buttonA, frameBuffer, startX += 158, 672);
                     } else {
                         drawText("Text Mode", frameBuffer, shared, startX += 38, 675, 18, mnuTxt);
-                        texDraw(buttonMin, frameBuffer, startX += 165, 672);
+                        texDraw(buttonA, frameBuffer, startX += 165, 672);
 					}
-                    drawText("Extras", frameBuffer, shared, startX += 38, 675, 18, mnuTxt);
+                    drawText("Select", frameBuffer, shared, startX += 38, 675, 18, mnuTxt);
                 }
                 break;
 
@@ -300,14 +319,14 @@ namespace ui
             case CLS_TTL:
                 {
                     unsigned startX = 619;
-                    texDraw(buttonA, frameBuffer, startX, 672);
-                    drawText("Select", frameBuffer, shared, startX += 38, 675, 18, mnuTxt);
-                    texDraw(buttonY, frameBuffer, startX += 110, 672);
+                    texDraw(buttonY, frameBuffer, startX, 672);
                     drawText("Dump All", frameBuffer, shared, startX += 38, 675, 18, mnuTxt);
                     texDraw(buttonX, frameBuffer, startX += 148, 672);
                     drawText("Blacklist", frameBuffer, shared, startX += 38, 675, 18, mnuTxt);
                     texDraw(buttonB, frameBuffer, startX += 134, 672);
                     drawText("Back", frameBuffer, shared, startX += 38, 675, 18, mnuTxt);
+                    texDraw(buttonA, frameBuffer, startX += 96, 672);
+                    drawText("Select", frameBuffer, shared, startX += 38, 675, 18, mnuTxt);
                 }
                 break;
 
@@ -318,14 +337,14 @@ namespace ui
                     unsigned startX = 440;
                     texDraw(buttonMin, frameBuffer, startX, 672);
                     drawText("Adv. Mode", frameBuffer, shared, startX += 38, 675, 18, mnuTxt);
-                    texDraw(buttonA, frameBuffer, startX += 165, 672);
-                    drawText("Backup", frameBuffer, shared, startX += 38, 675, 18, mnuTxt);
-                    texDraw(buttonY, frameBuffer, startX += 125, 672);
+                    texDraw(buttonY, frameBuffer, startX += 165, 672);
                     drawText("Restore", frameBuffer, shared, startX += 38, 675, 18, mnuTxt);
                     texDraw(buttonX, frameBuffer, startX += 126, 672);
                     drawText("Delete", frameBuffer, shared, startX += 38, 675, 18, mnuTxt);
                     texDraw(buttonB, frameBuffer, startX += 117, 672);
                     drawText("Back", frameBuffer, shared, startX += 38, 675, 18, mnuTxt);
+                    texDraw(buttonA, frameBuffer, startX += 96, 672);
+                    drawText("Backup", frameBuffer, shared, startX += 38, 675, 18, mnuTxt);
                 }
                 break;
         }

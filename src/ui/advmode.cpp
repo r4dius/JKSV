@@ -350,9 +350,9 @@ namespace ui
     void advModePrep(const std::string& svDev, bool commitOnWrite)
     {
         commit = commitOnWrite;
-        saveMenu.setParams(30, 98, 602);
-        sdMenu.setParams(648, 98, 602);
-        copyMenu.setParams(472, 278, 304);
+        saveMenu.setParams(30, 98, 602, 19);
+        sdMenu.setParams(648, 98, 602, 19);
+        copyMenu.setParams(472, 278, 304, 19);
 
         savePath = svDev, dev = svDev;
         sdPath   = "sdmc:/";
@@ -502,17 +502,17 @@ namespace ui
             switch(advPrev)
             {
                 case 0:
-                    copyMenu.setParams(176, 278, 304);
+                    copyMenu.setParams(176, 278, 304, 19);
                     copyMenu.editOpt(0, "Copy to SD");
                     ui::drawTextbox(168, 236, 320, 268);
-                    drawText("SAVE", frameBuffer, ui::shared, 176, 250, 18,txtClr);
+                    drawText("SAVE", frameBuffer, ui::shared, 176, 250, 20,txtClr);
                     break;
 
                 case 1:
-                    copyMenu.setParams(816, 278, 304);
+                    copyMenu.setParams(816, 278, 304, 19);
                     copyMenu.editOpt(0, "Copy to Save");
                     ui::drawTextbox(808, 236, 320, 268);
-                    drawText("SDMC", frameBuffer, ui::shared, 816, 250, 18, txtClr);
+                    drawText("SDMC", frameBuffer, ui::shared, 816, 250, 20, txtClr);
                     break;
             }
             copyMenu.draw(txtClr);

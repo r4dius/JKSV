@@ -16,7 +16,7 @@ namespace ui
     {
         //Static vars so they don't change on every loop
         //Where to start in titles, selected title
-        static int start = 0, selected = 0;
+        static int start = 0, selected = 0, maxTitles = 18;
 
         //Color shift for rect
         static uint8_t clrShft = 0;
@@ -25,7 +25,6 @@ namespace ui
 
         //Selected rectangle X and Y.
         static unsigned selRectX = 86, selRectY = 180;
-		static bool up;
 
         static ui::touchTrack track;
 
@@ -50,13 +49,9 @@ namespace ui
 
         texSwapColors(ui::selBox, clrPrev, clrUpdt);
 
-		int maxTitles = 18;
         unsigned x = 93, y = 187;
-
-		if(up || ((int)data::curUser.titles.size() > 12 && selected > 11)) {
-			maxTitles = 24;
-			y = 3;
-		}
+		
+		if(maxTitles == 24) y = 3;
 		
         unsigned endTitle = start + maxTitles;
         if(start + maxTitles > (int)data::curUser.titles.size())
@@ -81,12 +76,12 @@ namespace ui
                         selRectY = y - 7;
                     }
 
-                    drawTitlebox(selected, tX, y - 63, 48);
+					std::string title = data::curUser.titles[selected].getTitle();
+                    drawTitlebox(title, tX, y - 63, 48);
                 }
                 data::curUser.titles[i].icon.drawHalf(tX, y);
             }
         }
-		// drawText(title.c_str(), frameBuffer, ui::shared, 500, 10, fontSize, txtClr);
 
         //Buttons
         for(int i = 0; i < maxTitles; i++)
@@ -128,6 +123,7 @@ namespace ui
                         selected += 6;
                         if(selected > (int)data::curUser.titles.size() - 1)
                             selected = data::curUser.titles.size() - 1;
+						maxTitles = 24;
                     }
                 }
                 break;
@@ -138,36 +134,37 @@ namespace ui
                     {
                         start -= 6;
                         selected -= 6;
-                    }
+                    } else maxTitles = 18;
                 }
                 break;
         }
 
         if(down & KEY_RIGHT)
         {
-			up = false;
             if(selected < (int)data::curUser.titles.size() - 1)
                 selected++;
 
-            if(selected >= (int)start + 18)
-                start += 6;
-        }
-        else if(down & KEY_LEFT)
-        {
-			up = false;
-            if(selected > 0)
-                selected--;
-
-            if(selected - 6 < (int)start)
-                start -= 6;
+			if(selected >= (int)start + 18)
+				start += 6;
 
 			if(start < 0) start = 0;
 
-			if(selected > 5 && selected < 12) up = true;
+			if(selected == 12) maxTitles = 24;
+        }
+        else if(down & KEY_LEFT)
+        {
+            if(selected > 0)
+                selected--;
+
+			if(selected - 6 < (int)start)
+				start -= 6;
+
+			if(start < 0) start = 0;
+
+			if(selected == 5) maxTitles = 18;
         }
         else if(down & KEY_UP)
         {
-			up = false;
             selected -= 6;
             if(selected < 0)
                 selected = 0;
@@ -176,18 +173,19 @@ namespace ui
                 start -= 6;
 
 			if(start < 0) start = 0;
-			
-			if(selected > 5 && selected < 12) up = true;
+
+			if(selected >= 0 && selected < 6) maxTitles = 18;
         }
         else if(down & KEY_DOWN)
         {
-			up = false;
             selected += 6;
             if(selected > (int)data::curUser.titles.size() - 1)
                 selected = data::curUser.titles.size() - 1;
 
             if(selected - start >= 18)
                 start += 6;
+
+			if(selected > 11 && selected < 18) maxTitles = 24;
         }
         else if(down & KEY_A || ttlNav[0].getEvent() == BUTTON_RELEASED)
         {
@@ -216,13 +214,13 @@ namespace ui
         {
             start = 0;
             selected = 0;
+            maxTitles = 18;
             selRectX = 86;
             selRectY = 180;
             mstate = USR_SEL;
             return;
         }
-		
-		/*
+/*
 		char char_arr[200];
 		sprintf(char_arr, "selected %d", selected);
 		drawText(char_arr, frameBuffer, ui::shared, 500, 10, 14, txtClr);
@@ -230,8 +228,6 @@ namespace ui
 		drawText(char_arr, frameBuffer, ui::shared, 500, 25, 14, txtClr);
 		sprintf(char_arr, "start %d", start);
 		drawText(char_arr, frameBuffer, ui::shared, 500, 40, 14, txtClr);
-		sprintf(char_arr, "up %d", up);
-		drawText(char_arr, frameBuffer, ui::shared, 500, 55, 14, txtClr);
-		*/
+*/
     }
 }

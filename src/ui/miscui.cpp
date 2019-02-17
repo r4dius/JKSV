@@ -123,13 +123,13 @@ namespace ui
                 avX /= 5;
                 avY /= 5;
 
-                if(avY <= -8)
+                if(avY <= -6)
                     retTrack = TRACK_SWIPE_UP;
-                else if(avY >= 8)
+                else if(avY >= 6)
                     retTrack = TRACK_SWIPE_DOWN;
-                else if(retTrack <= -8)
+                else if(retTrack <= -6)
                     retTrack = TRACK_SWIPE_LEFT;
-                else if(retTrack >= 8)
+                else if(retTrack >= 6)
                     retTrack = TRACK_SWIPE_RIGHT;
                 else
                     retTrack = TRACK_NOTHING;
@@ -240,10 +240,10 @@ namespace ui
         return confirm(confMess);
     }
 
-    void drawTitlebox(int selected, int x, int y, int h)
+    void drawTitlebox(std::string& title, int x, int y, int h)
     {
 		int fontSize = 19;
-		std::string title = data::curUser.titles[selected].getTitle();
+		//std::string title = data::curUser.titles[selected].getTitle();
 		unsigned titleWidth = textGetWidth(title.c_str(), ui::shared, fontSize);
 		int w = titleWidth + 56, rectX = (x + 87) - (w / 2);
 
@@ -263,16 +263,20 @@ namespace ui
 
         //Top
         texDraw(ui::cornerTopLeft, frameBuffer, rectX - 5, y - 5);
-        drawRectAlpha(frameBuffer, rectX + 32 - 5, y, w - 64 + 10, 32, ui::tboxClr);
-        texDraw(ui::cornerTopRight, frameBuffer, (rectX + w) - 32 + 5, y - 5);
+		texDrawH(ui::cornerTopHor, frameBuffer, rectX - 5 + 12, y - 5, w - 24 + 10);
+        texDraw(ui::cornerTopRight, frameBuffer, rectX + w - 12 + 5, y - 5);
 
         //middle
-        drawRectAlpha(frameBuffer, rectX, y + 32 - 5,  w, h - 64 + 10, tboxClr);
+		texDrawV(ui::cornerLeftVer, frameBuffer, rectX - 5, y - 5 + 12, h - 24 + 10);
+        drawRectAlpha(frameBuffer, rectX - 5 + 12, y - 5 + 12,  w - 24 + 10, h - 24 + 10, tboxClr);
+		texDrawV(ui::cornerRightVer, frameBuffer, rectX + w - 12 + 5, y - 5 + 12, h - 24 + 10);
 
         //bottom
-        texDraw(ui::cornerBottomLeft, frameBuffer, rectX - 5, (y + h) - 32 + 5);
-        drawRectAlpha(frameBuffer, rectX + 32 - 5, (y + h) - 32, w - 64 + 10, 32, tboxClr);
-        texDraw(ui::cornerBottomRight, frameBuffer, (rectX + w) - 32 + 5, (y + h) - 32 + 5);
+        texDraw(ui::cornerBottomLeft, frameBuffer, rectX - 5, y + h - 12 + 5);		
+		texDrawH(ui::cornerBottomHor, frameBuffer, rectX - 5 + 12, y + h - 12 + 5, w - 24 + 10);
+        texDraw(ui::cornerBottomRight, frameBuffer, rectX + w - 12 + 5, y + h - 12 + 5);
+		
+		//tip
         texDraw(ui::tip, frameBuffer, x + 87 - 11, y + h);
 		
 		drawText(title.c_str(), frameBuffer, ui::shared, textX + 28, y + 15, fontSize, txtClr);
@@ -282,18 +286,18 @@ namespace ui
     {
         //Top
         texDraw(ui::cornerTopLeft, frameBuffer, x - 5, y - 5);
-        drawRect(frameBuffer, x + 32 - 5, y, w - 64 + 10, 32, ui::tboxClr);
-        texDraw(ui::cornerTopRight, frameBuffer, (x + w) - 32 + 5, y - 5);
+		texDrawH(ui::cornerTopHor, frameBuffer, x - 5 + 12, y - 5, w - 24 + 10);
+        texDraw(ui::cornerTopRight, frameBuffer, x + w - 12 + 5, y - 5);
 
         //middle
-        drawRect(frameBuffer, x, y + 32 - 5,  w, h - 64 + 10, tboxClr);
+		texDrawV(ui::cornerLeftVer, frameBuffer, x - 5, y - 5 + 12, h - 24 + 10);
+        drawRectAlpha(frameBuffer, x - 5 + 12, y - 5 + 12,  w - 24 + 10, h - 24 + 10, tboxClr);
+		texDrawV(ui::cornerRightVer, frameBuffer, x + w - 12 + 5, y - 5 + 12, h - 24 + 10);
 
         //bottom
-        texDraw(ui::cornerBottomLeft, frameBuffer, x - 5, (y + h) - 32 + 5);
-        drawRect(frameBuffer, x + 32 - 5, (y + h) - 32, w - 64 + 10, 32, tboxClr);
-        texDraw(ui::cornerBottomRight, frameBuffer, (x + w) - 32 + 5, (y + h) - 32 + 5);
-        texDraw(ui::tip, frameBuffer, x + (w / 2) - 11 + 5, y + h);
-
+        texDraw(ui::cornerBottomLeft, frameBuffer, x - 5, y + h - 12 + 5);		
+		texDrawH(ui::cornerBottomHor, frameBuffer, x - 5 + 12, y + h - 12 + 5, w - 24 + 10);
+        texDraw(ui::cornerBottomRight, frameBuffer, x + w - 12 + 5, y + h - 12 + 5);
     }
 
     void drawTextboxInvert(int x, int y, int w, int h)
