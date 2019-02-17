@@ -234,6 +234,7 @@ namespace ui
     {
         opt.clear();
 		selected = 0;
+		start = 0;
         fc = 0;
     }
 
