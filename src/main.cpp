@@ -69,7 +69,7 @@ int main(int argc, const char *argv[])
                 data::loadDataInfo();
 
                 //Kick back to user
-                ui::mstate = ui::clsMode ? CLS_USR : USR_SEL;
+                ui::mstate = USR_SEL;
             }
         }
         else if(down & KEY_PLUS)

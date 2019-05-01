@@ -22,9 +22,6 @@ std::vector<ui::button> usrNav, ttlNav, fldNav;
 
 namespace ui
 {
-    //Classic mode
-    bool clsMode = false;
-
     //Current menu state
     int mstate = USR_SEL, prevState = USR_SEL;
 
@@ -134,13 +131,6 @@ namespace ui
         else
             shared = fontLoadSharedFonts();
 
-        if(fs::fileExists(fs::getWorkDir() + "cls.txt"))
-        {
-            clsUserPrep();
-            clsMode = true;
-            mstate = CLS_USR;
-        }
-
         setupSelButtons();
         setupNavButtons();
 
@@ -159,8 +149,6 @@ namespace ui
             drawRectAlpha(txtSide, 0, 0, 448, 559, tempRect);
         }
         menuPrepGfx();
-
-        advCopyMenuPrep();
     }
 
     void exit()
@@ -257,7 +245,7 @@ namespace ui
 
         texDraw(icn, frameBuffer, 66, 27);
         drawText("JKSV", frameBuffer, shared, 130, 38, 24, mnuTxt);
-        drawText(VER_STRING, frameBuffer, shared, 8, 702, 12, mnuTxt);
+        //drawText(VER_STRING, frameBuffer, shared, 8, 702, 12, mnuTxt);
         drawRect(frameBuffer, 30, 87, 1220, 1, divClr);
         drawRect(frameBuffer, 30, 647, 1220, 1, divClr);
 
@@ -270,53 +258,24 @@ namespace ui
                 else
                     texDraw(fldSide, frameBuffer, 30, 88);
                 break;
-
-            case ADV_MDE:
-                drawRect(frameBuffer, 640, 87, 1, 561, divClr);
-                break;
-
-            case CLS_TTL:
-            case CLS_USR:
-            case CLS_FLD:
-            case EX_MNU:
-                if(txtSide == NULL)
-                    //drawRect(frameBuffer, 30, 88, 448, 559, sideRect);
-                    texDraw(mnuGrad, frameBuffer, 0, 88);
-                else
-                    texDraw(txtSide, frameBuffer, 30, 88);
-                break;
         }
 
         switch(mstate)
         {
             case USR_SEL:
-            case CLS_USR:
                 {
                     //Input guide
                     unsigned startX = 0;
-					if(ui::clsMode)
-                        startX = 581;
-					else 
-                        startX = 574;
+                    startX = 925;
 					
-                    texDraw(buttonMin, frameBuffer, startX, 672);
-                    drawText("Extras", frameBuffer, shared, startX += 38, 675, 18, mnuTxt);
-					texDraw(buttonY, frameBuffer, startX += 110, 672);
+                    texDraw(buttonY, frameBuffer, startX, 672);
                     drawText("Dump All", frameBuffer, shared, startX += 38, 675, 18, mnuTxt);
-                    texDraw(buttonX, frameBuffer, startX += 148, 672);
-                    if(ui::clsMode) {
-                        drawText("GUI Mode", frameBuffer, shared, startX += 38, 675, 18, mnuTxt);
-                        texDraw(buttonA, frameBuffer, startX += 158, 672);
-                    } else {
-                        drawText("Text Mode", frameBuffer, shared, startX += 38, 675, 18, mnuTxt);
-                        texDraw(buttonA, frameBuffer, startX += 165, 672);
-					}
+                    texDraw(buttonA, frameBuffer, startX += 148, 672);
                     drawText("Select", frameBuffer, shared, startX += 38, 675, 18, mnuTxt);
                 }
                 break;
 
             case TTL_SEL:
-            case CLS_TTL:
                 {
                     unsigned startX = 619;
                     texDraw(buttonY, frameBuffer, startX, 672);
@@ -331,13 +290,9 @@ namespace ui
                 break;
 
             case FLD_SEL:
-            case CLS_FLD:
-                {
-                    //Input guide
-                    unsigned startX = 440;
-                    texDraw(buttonMin, frameBuffer, startX, 672);
-                    drawText("Adv. Mode", frameBuffer, shared, startX += 38, 675, 18, mnuTxt);
-                    texDraw(buttonY, frameBuffer, startX += 165, 672);
+				{
+					unsigned startX = 643;
+                    texDraw(buttonY, frameBuffer, startX, 672);
                     drawText("Restore", frameBuffer, shared, startX += 38, 675, 18, mnuTxt);
                     texDraw(buttonX, frameBuffer, startX += 126, 672);
                     drawText("Delete", frameBuffer, shared, startX += 38, 675, 18, mnuTxt);
@@ -367,26 +322,6 @@ namespace ui
 
             case FLD_SEL:
                 updateFolderMenu(down, held, p);
-                break;
-
-            case ADV_MDE:
-                updateAdvMode(down, held, p);
-                break;
-
-            case CLS_USR:
-                classicUserMenuUpdate(down, held, p);
-                break;
-
-            case CLS_TTL:
-                classicTitleMenuUpdate(down, held, p);
-                break;
-
-            case CLS_FLD:
-                classicFolderMenuUpdate(down, held, p);
-                break;
-
-            case EX_MNU:
-                updateExMenu(down, held, p);
                 break;
         }
     }

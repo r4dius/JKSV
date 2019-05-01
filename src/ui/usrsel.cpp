@@ -145,20 +145,5 @@ namespace ui
             for(unsigned i = 0; i < data::users.size(); i++)
                 fs::dumpAllUserSaves(data::users[i]);
         }
-        else if(down & KEY_X || usrNav[2].getEvent() == BUTTON_RELEASED)
-        {
-            //Just create file so user doesn't have to constantly enable
-            std::fstream cls(fs::getWorkDir() + "cls.txt", std::ios::out);
-            cls.close();
-            clsUserPrep();
-            mstate = CLS_USR;
-            clsMode = true;
-        }
-        else if(down & KEY_MINUS || usrNav[3].getEvent() == BUTTON_RELEASED)
-        {
-            fsdevUnmountDevice("sv");
-            ui::exMenuPrep();
-            ui::mstate = EX_MNU;
-        }
     }
 }
