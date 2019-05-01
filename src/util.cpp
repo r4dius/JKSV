@@ -77,15 +77,15 @@ namespace util
         switch(fmt)
         {
             case DATE_FMT_YMD:
-                sprintf(ret, "%04d.%02d.%02d @ %02d.%02d.%02d", Time->tm_year + 1900, Time->tm_mon + 1, Time->tm_mday, Time->tm_hour, Time->tm_min, Time->tm_sec);
+                sprintf(ret, "%04d%02d%02d-%02d%02d%02d", Time->tm_year + 1900, Time->tm_mon + 1, Time->tm_mday, Time->tm_hour, Time->tm_min, Time->tm_sec);
                 break;
 
             case DATE_FMT_YDM:
-                sprintf(ret, "%04d.%02d.%02d @ %02d.%02d.%02d", Time->tm_year + 1900, Time->tm_mday, Time->tm_mon + 1, Time->tm_hour, Time->tm_min, Time->tm_sec);
+                sprintf(ret, "%04d%02d%02d-%02d%02d%02d", Time->tm_year + 1900, Time->tm_mday, Time->tm_mon + 1, Time->tm_hour, Time->tm_min, Time->tm_sec);
                 break;
 
             case DATE_FMT_HOYSTE:
-                sprintf(ret, "%02d.%02d.%04d", Time->tm_mday, Time->tm_mon + 1, Time->tm_year + 1900);
+                sprintf(ret, "%02d%02d%04d", Time->tm_mday, Time->tm_mon + 1, Time->tm_year + 1900);
                 break;
         }
 

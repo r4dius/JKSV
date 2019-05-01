@@ -80,6 +80,38 @@ namespace ui
         }
     }
 
+	void drawBoundBox(int x, int y, int w, int h, int clrSh)
+	{
+		clr rectClr = clrCreateRGBA(0x59 - clrSh, 0xFD - clrSh, 0xDB - clrSh, 0xFF);
+
+		texSwapColors(ui::mnuTopLeft, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF), rectClr);
+		texSwapColors(ui::mnuTopRight, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF), rectClr);
+		texSwapColors(ui::mnuBotLeft, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF), rectClr);
+		texSwapColors(ui::mnuBotRight, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF), rectClr);
+		texSwapColors(ui::mnuBotShadow, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF), rectClr);
+
+		//top
+		texDraw(ui::mnuTopLeft, frameBuffer, x - 5, y - 5);
+		drawRect(frameBuffer, x + 3, y - 5, w - 16, 5, rectClr);
+		texDraw(ui::mnuTopRight, frameBuffer, (x + w) - 13, y - 5);
+
+		//mid
+		drawRect(frameBuffer, x - 5, y + 3, 5, h - 7, rectClr);
+		drawRect(frameBuffer, x, y, w - 10, h, ui::boundClr);
+		drawRect(frameBuffer, (x + w) - 10, y + 3, 5, h - 7, rectClr);
+
+		//bottom
+		texDraw(ui::mnuBotLeft, frameBuffer, x - 5, (y + h) - 4);
+		texDrawH(ui::mnuBotShadow, frameBuffer, x + 3, (y + h) - 1, w - 16);
+		texDraw(ui::mnuBotRight, frameBuffer, (x + w) - 13, (y + h) - 4);
+
+		texSwapColors(ui::mnuTopLeft, rectClr, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF));
+		texSwapColors(ui::mnuTopRight, rectClr, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF));
+		texSwapColors(ui::mnuBotLeft, rectClr, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF));
+		texSwapColors(ui::mnuBotRight, rectClr, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF));
+		texSwapColors(ui::mnuBotShadow, rectClr, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF));
+	}
+
     bool button::isOver()
     {
         return (cur.px > x && cur.px < x + w && cur.py > y && cur.py < y + h);
@@ -272,7 +304,7 @@ namespace ui
 		texDrawV(ui::cornerRightVer, frameBuffer, rectX + w - 12 + 5, y - 5 + 12, h - 24 + 10);
 
         //bottom
-        texDraw(ui::cornerBottomLeft, frameBuffer, rectX - 5, y + h - 12 + 5);		
+        texDraw(ui::cornerBottomLeft, frameBuffer, rectX - 5, y + h - 12 + 5);
 		texDrawH(ui::cornerBottomHor, frameBuffer, rectX - 5 + 12, y + h - 12 + 5, w - 24 + 10);
         texDraw(ui::cornerBottomRight, frameBuffer, rectX + w - 12 + 5, y + h - 12 + 5);
 		

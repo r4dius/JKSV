@@ -14,41 +14,38 @@ namespace ui
     void updateUserMenu(const uint64_t& down, const uint64_t& held, const touchPosition& p)
     {
         //Static so they don't get reset every loop
+        //Where to start in titles, selected user
         static int start = 0, selected = 0;
 
-        static uint8_t clrShft = 0;
+        //Color shift for rect
+        static uint8_t clrSh = 0;
+        //Whether or not we're adding or subtracting from clrShft
         static bool clrAdd = true;
 
+        //Selected rectangle X and Y.
         static unsigned selRectX = 86, selRectY = 180;
 
         static ui::touchTrack track;
-
-        //Color swapping selBox
-        clr clrPrev = clrCreateRGBA(0x00, 0x60 + clrShft, 0xBB + clrShft, 0xFF);
-
-        if(clrAdd)
-        {
-            clrShft += 6;
-            if(clrShft > 63)
-                clrAdd = false;
-        }
-        else
-        {
-            clrShft--;
-            if(clrShft == 0)
-                clrAdd = true;
-        }
-
-        //Update selBox color
-        clr clrUpdt = clrCreateRGBA(0x00, 0x60 + clrShft, 0xBB + clrShft, 0xFF);
 
         unsigned x = 93, y = 187;
         unsigned endUser = start + 18;
         if(start + 18 > (int)data::users.size())
             endUser = data::users.size();
 
-        texSwapColors(ui::selBox, clrPrev, clrUpdt);
-        texDraw(ui::selBox, frameBuffer, selRectX, selRectY);
+		if(clrAdd)
+        {
+            clrSh += 4;
+            if(clrSh > 63)
+                clrAdd = false;
+        }
+        else
+        {
+            clrSh--;
+            if(clrSh == 0)
+                clrAdd = true;
+        }
+
+		drawBoundBox(selRectX + 5, selRectY + 5, 188, 179, clrSh);
 
         for(unsigned i = start; i < endUser; y += 184)
         {
@@ -136,7 +133,7 @@ namespace ui
             data::curUser = data::users[selected];
             //Reset this
             start = 0;
-            selected = 0;
+            //selected = 0;
             selRectX = 86, selRectY = 180;
             mstate = TTL_SEL;
         }

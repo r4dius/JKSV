@@ -87,6 +87,7 @@ namespace ui
     void drawTextbox(int x, int y, int w, int h);
     void drawTitlebox(std::string& title, int x, int y, int h);
     void drawTextboxInvert(int x, int y, int w, int h);
+    void drawBoundBox(int x, int y, int w, int h, int clrSh);
 }
 
 #endif // MISCUI_H

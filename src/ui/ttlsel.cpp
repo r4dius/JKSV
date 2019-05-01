@@ -14,12 +14,12 @@ namespace ui
 {
     void updateTitleMenu(const uint64_t& down, const uint64_t& held, const touchPosition& p)
     {
-        //Static vars so they don't change on every loop
+        //Static so they don't get reset every loop
         //Where to start in titles, selected title
         static int start = 0, selected = 0, maxTitles = 18;
 
         //Color shift for rect
-        static uint8_t clrShft = 0;
+        static uint8_t clrSh = 0;
         //Whether or not we're adding or subtracting from clrShft
         static bool clrAdd = true;
 
@@ -28,37 +28,26 @@ namespace ui
 
         static ui::touchTrack track;
 
-        //Color swapping
-        clr clrPrev = clrCreateRGBA(0x00, 0x60 + clrShft, 0xBB + clrShft, 0xFF);
-
-        if(clrAdd)
-        {
-            clrShft += 6;
-            if(clrShft > 63)
-                clrAdd = false;
-        }
-        else
-        {
-            clrShft--;
-            if(clrShft == 0)
-                clrAdd = true;
-        }
-
-        //Updated sel
-        clr clrUpdt = clrCreateRGBA(0x00, 0x60 + clrShft, 0xBB + clrShft, 0xFF);
-
-        texSwapColors(ui::selBox, clrPrev, clrUpdt);
-
         unsigned x = 93, y = 187;
-		
 		if(maxTitles == 24) y = 3;
-		
         unsigned endTitle = start + maxTitles;
         if(start + maxTitles > (int)data::curUser.titles.size())
             endTitle = data::curUser.titles.size();
 
-        //draw Rect so it's always behind icons
-        texDraw(ui::selBox, frameBuffer, selRectX, selRectY);
+		if(clrAdd)
+        {
+            clrSh += 4;
+            if(clrSh > 63)
+                clrAdd = false;
+        }
+        else
+        {
+            clrSh--;
+            if(clrSh == 0)
+                clrAdd = true;
+        }
+
+		drawBoundBox(selRectX + 5, selRectY + 5, 188, 179, clrSh);
 
         for(unsigned i = start; i < endTitle; y += 184)
         {
@@ -213,13 +202,14 @@ namespace ui
         else if(down & KEY_B || ttlNav[3].getEvent() == BUTTON_RELEASED)
         {
             start = 0;
-            selected = 0;
+            //selected = 0;
             maxTitles = 18;
             selRectX = 86;
             selRectY = 180;
             mstate = USR_SEL;
             return;
         }
+
 /*
 		char char_arr[200];
 		sprintf(char_arr, "selected %d", selected);

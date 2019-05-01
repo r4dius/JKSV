@@ -38,9 +38,11 @@ namespace ui
     //I was going to flip them when I draw them, but then laziness kicked in.
     tex *cornerTopHor, *cornerBottomHor, *cornerLeftVer, *cornerRightVer, *cornerTopLeft, *cornerTopRight, *cornerBottomLeft, *cornerBottomRight, *tip, *temp;
 
+    tex *mnuTopLeft, *mnuTopRight, *mnuBotLeft, *mnuBotRight, *mnuBotShadow;
+	
     tex *buttonA, *buttonB, *buttonX, *buttonY, *buttonMin;
 
-    tex *selBox, *icn, *mnuGrad;
+    tex *icn, *mnuGrad;
 
     font *shared;
 
@@ -75,6 +77,13 @@ namespace ui
 
                 icn = texLoadPNGFile("romfs:/img/icn/icnDrk.png");
                 mnuGrad = texLoadPNGFile("romfs:/img/mnu/gradLght.png");
+
+				temp = texLoadPNGFile("romfs:/img/mnu/msel.png");
+				mnuTopLeft = texCreateFromPart(temp, 0, 0, 8, 8);
+				mnuTopRight = texCreateFromPart(temp, 8, 0, 8, 8);
+				mnuBotLeft = texCreateFromPart(temp, 0, 8, 8, 12);
+				mnuBotRight = texCreateFromPart(temp, 8, 8, 8, 12);
+				mnuBotShadow = texCreateFromPart(temp, 8, 11, 1, 11);
 
                 clearClr = clrCreateU32(0xFFEBEBEB);
                 mnuTxt = clrCreateU32(0xFF282828);
@@ -113,6 +122,13 @@ namespace ui
                 icn = texLoadPNGFile("romfs:/img/icn/icnLght.png");
                 mnuGrad = texLoadPNGFile("romfs:/img/mnu/gradDrk.png");
 
+				temp = texLoadPNGFile("romfs:/img/mnu/msel.png");
+				mnuTopLeft = texCreateFromPart(temp, 0, 0, 8, 8);
+				mnuTopRight = texCreateFromPart(temp, 8, 0, 8, 8);
+				mnuBotLeft = texCreateFromPart(temp, 0, 8, 8, 12);
+				mnuBotRight = texCreateFromPart(temp, 8, 8, 8, 12);
+				mnuBotShadow = texCreateFromPart(temp, 8, 11, 1, 11);
+
                 clearClr = clrCreateU32(0xFF2D2D2D);
                 mnuTxt = clrCreateU32(0xFFFFFFFF);
                 txtClr = clrCreateU32(0xFFFDBD1B);
@@ -134,8 +150,6 @@ namespace ui
         setupSelButtons();
         setupNavButtons();
 
-        selBox = texLoadPNGFile("romfs:/img/icn/icnSelBox.png");
-
         if(fs::fileExists(fs::getWorkDir() + "back.jpg"))
         {
             background = texLoadJPEGFile(std::string(fs::getWorkDir() + "back.jpg").c_str());
@@ -148,7 +162,6 @@ namespace ui
             txtSide = texCreateFromPart(background, 0, 88, 448, 559);
             drawRectAlpha(txtSide, 0, 0, 448, 559, tempRect);
         }
-        menuPrepGfx();
     }
 
     void exit()
@@ -162,7 +175,12 @@ namespace ui
         texDestroy(cornerBottomLeft);
         texDestroy(cornerBottomRight);
         texDestroy(tip);
-        texDestroy(temp);
+
+        texDestroy(mnuTopLeft);
+        texDestroy(mnuTopRight);
+        texDestroy(mnuBotLeft);
+        texDestroy(mnuBotRight);
+        texDestroy(mnuBotShadow);
 
         texDestroy(buttonA);
         texDestroy(buttonB);
@@ -170,10 +188,8 @@ namespace ui
         texDestroy(buttonY);
         texDestroy(buttonMin);
 
-        texDestroy(selBox);
         texDestroy(mnuGrad);
-
-        menuDestGfx();
+        texDestroy(temp);
 
         if(background != NULL)
             texDestroy(background);
@@ -253,7 +269,6 @@ namespace ui
         {
             case FLD_SEL:
                 if(fldSide == NULL)
-                    //drawRect(frameBuffer, 0, 88, 410, 559, sideRect);
                     texDraw(mnuGrad, frameBuffer, 0, 88);
                 else
                     texDraw(fldSide, frameBuffer, 30, 88);

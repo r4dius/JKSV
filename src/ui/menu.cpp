@@ -6,58 +6,8 @@
 #include "ui.h"
 #include "miscui.h"
 
-static tex *mnuTopLeft, *mnuTopRight, *mnuBotLeft, *mnuBotRight;
-
-static void drawBoundBox(int x, int y, int w, int h, int clrSh)
-{
-    clr rectClr = clrCreateRGBA(0x59 - clrSh, 0xFD - clrSh, 0xDB - clrSh, 0xFF);
-
-    texSwapColors(mnuTopLeft, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF), rectClr);
-    texSwapColors(mnuTopRight, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF), rectClr);
-    texSwapColors(mnuBotLeft, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF), rectClr);
-    texSwapColors(mnuBotRight, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF), rectClr);
-
-    //top
-    texDraw(mnuTopLeft, frameBuffer, x - 5, y - 5);
-    drawRect(frameBuffer, x + 3, y - 5, w - 16, 5, rectClr);
-    texDraw(mnuTopRight, frameBuffer, (x + w) - 13, y - 5);
-
-    //mid
-    drawRect(frameBuffer, x - 5, y + 3, 5, h - 7, rectClr);
-    drawRect(frameBuffer, x, y, w - 10, 70, ui::boundClr);
-    drawRect(frameBuffer, (x + w) - 10, y + 3, 5, h - 7, rectClr);
-
-    //bottom
-    texDraw(mnuBotLeft, frameBuffer, x - 5, (y + h) - 4);
-    drawRect(frameBuffer, x + 3, (y + h) - 1, w - 16, 5, rectClr);
-    texDraw(mnuBotRight, frameBuffer, (x + w) - 13, (y + h) - 4);
-
-    texSwapColors(mnuTopLeft, rectClr, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF));
-    texSwapColors(mnuTopRight, rectClr, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF));
-    texSwapColors(mnuBotLeft, rectClr, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF));
-    texSwapColors(mnuBotRight, rectClr, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF));
-}
-
 namespace ui
 {
-    void menuPrepGfx()
-    {
-        tex *temp = texLoadPNGFile("romfs:/img/mnu/msel.png");
-        mnuTopLeft = texCreateFromPart(temp, 0, 0, 8, 8);
-        mnuTopRight = texCreateFromPart(temp, 8, 0, 8, 8);
-        mnuBotLeft = texCreateFromPart(temp, 0, 8, 8, 8);
-        mnuBotRight = texCreateFromPart(temp, 8, 8, 8, 8);
-        texDestroy(temp);
-    }
-
-    void menuDestGfx()
-    {
-        texDestroy(mnuTopLeft);
-        texDestroy(mnuTopRight);
-        texDestroy(mnuBotLeft);
-        texDestroy(mnuBotRight);
-    }
-
     void menu::setParams(const unsigned& _x, const unsigned& _y, const unsigned& _rW, const int& _fontSize)
     {
         x = _x;
@@ -78,7 +28,7 @@ namespace ui
 
     void menu::addOpt(const std::string& add)
     {
-        if(textGetWidth(add.c_str(), ui::shared, fontSize) < rW - 32 || rW == 0)
+        if(textGetWidth(add.c_str(), ui::shared, fontSize) < rW - 60 || rW == 0)
             opt.push_back(add);
         else
         {
@@ -90,9 +40,9 @@ namespace ui
 
                 tmp += add.substr(i, untCnt);
                 i += untCnt;
-                if(textGetWidth(tmp.c_str(), ui::shared, fontSize) >= rW - 32)
+                if(textGetWidth(tmp.c_str(), ui::shared, fontSize) >= rW - 80)
                 {
-                    opt.push_back(tmp);
+                    opt.push_back(tmp + "...");
                     break;
                 }
             }
