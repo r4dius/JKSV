@@ -47,7 +47,7 @@ namespace ui
                 clrAdd = true;
         }
 
-		drawBoundBox(selRectX + 5, selRectY + 5, 188, 179, clrSh);
+		drawBoundBox(selRectX + 5, selRectY + 5, 178, 178, clrSh);
 
         for(unsigned i = start; i < endTitle; y += 184)
         {

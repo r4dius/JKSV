@@ -14,7 +14,7 @@ namespace ui
 {
     void folderMenuPrepare(data::user& usr, data::titledata& dat)
     {
-        folderMenu.setParams(470, 130, 730, 19);
+        folderMenu.setParams(470, 130, 720, 19);
         folderMenu.reset();
 
         util::makeTitleDir(usr, dat);

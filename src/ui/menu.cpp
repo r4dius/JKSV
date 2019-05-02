@@ -169,14 +169,14 @@ namespace ui
         {
 			//Don't draw separator on top and bottom of selected item
 			if(i - 1 != selected && i != selected && separate)
-			    drawRect(frameBuffer, x, y - 1 + ((i - start) * 71), rW - 10, 1, ui::sepClr);
+			    drawRect(frameBuffer, x, y - 1 + ((i - start) * 71), rW, 1, ui::sepClr);
             if(i == selected)
-                drawBoundBox(x, y + ((i - start) * 71), rW, 71, clrSh);
+                drawBoundBox(x, y + ((i - start) * 71), rW, 70, clrSh);
 
             drawText(opt[i].c_str(), frameBuffer, shared, x + 20, (y + 26) + ((i - start) * 71), fontSize, textClr);
 
 			if(i != selected && separate)
-			    drawRect(frameBuffer, x, y - 1 + ((i - start +1) * 71), rW - 10, 1, ui::sepClr);
+			    drawRect(frameBuffer, x, y - 1 + ((i - start +1) * 71), rW, 1, ui::sepClr);
         }
     }
 

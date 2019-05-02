@@ -92,18 +92,18 @@ namespace ui
 
 		//top
 		texDraw(ui::mnuTopLeft, frameBuffer, x - 5, y - 5);
-		drawRect(frameBuffer, x + 3, y - 5, w - 16, 5, rectClr);
-		texDraw(ui::mnuTopRight, frameBuffer, (x + w) - 13, y - 5);
+		drawRect(frameBuffer, x + 3, y - 5, w - 6, 5, rectClr);
+		texDraw(ui::mnuTopRight, frameBuffer, x + w - 3, y - 5);
 
 		//mid
-		drawRect(frameBuffer, x - 5, y + 3, 5, h - 7, rectClr);
-		drawRect(frameBuffer, x, y, w - 10, h, ui::boundClr);
-		drawRect(frameBuffer, (x + w) - 10, y + 3, 5, h - 7, rectClr);
+		drawRect(frameBuffer, x - 5, y + 3, 5, h - 6, rectClr);
+		drawRect(frameBuffer, x, y, w, h, ui::boundClr);
+		drawRect(frameBuffer, x + w, y + 3, 5, h - 6, rectClr);
 
 		//bottom
-		texDraw(ui::mnuBotLeft, frameBuffer, x - 5, (y + h) - 4);
-		texDrawH(ui::mnuBotShadow, frameBuffer, x + 3, (y + h) - 1, w - 16);
-		texDraw(ui::mnuBotRight, frameBuffer, (x + w) - 13, (y + h) - 4);
+		texDraw(ui::mnuBotLeft, frameBuffer, x - 5, y + h - 3);
+		texDrawH(ui::mnuBotShadow, frameBuffer, x + 3, y + h, w - 6);
+		texDraw(ui::mnuBotRight, frameBuffer, x + w - 3, y + h - 3);
 
 		texSwapColors(ui::mnuTopLeft, rectClr, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF));
 		texSwapColors(ui::mnuTopRight, rectClr, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF));
