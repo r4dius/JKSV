@@ -26,12 +26,6 @@ namespace util
     //Just returns string with '\n' inserted.
     std::string getWrappedString(const std::string& s, const unsigned& sz, const unsigned& maxWidth);
 
-    //Copys dir list to a menu with 'D: ' + 'F: '
-    void copyDirListToMenu(fs::dirList& d, ui::menu& m);
-
-    //Removes last folder from '_path'
-    void removeLastFolderFromString(std::string& _path);
-
     std::string safeString(const std::string& s);
 
     std::string getInfoString(data::user& u, data::titledata& d);

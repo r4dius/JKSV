@@ -103,28 +103,6 @@ namespace util
         return std::string(fs::getWorkDir() + t.getTitleSafe() + "/");
     }
 
-    void copyDirListToMenu(fs::dirList& d, ui::menu& m)
-    {
-        m.reset();
-        m.addOpt(".");
-        m.addOpt("..");
-        for(unsigned i = 0; i < d.getCount(); i++)
-        {
-            if(d.isDir(i))
-                m.addOpt("D " + d.getItem(i));
-            else
-                m.addOpt("F " + d.getItem(i));
-        }
-
-        m.adjust();
-    }
-
-    void removeLastFolderFromString(std::string& _path)
-    {
-        unsigned last = _path.find_last_of('/', _path.length() - 2);
-        _path.erase(last + 1, _path.length());
-    }
-
     bool isVerboten(uint32_t t)
     {
         for(unsigned i = 0; i < 10; i++)

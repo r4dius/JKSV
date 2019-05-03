@@ -40,7 +40,7 @@ namespace ui
 
                 tmp += add.substr(i, untCnt);
                 i += untCnt;
-                if(textGetWidth(tmp.c_str(), ui::shared, fontSize) >= rW - 80)
+                if(textGetWidth(tmp.c_str(), ui::shared, fontSize) >= rW - 60)
                 {
                     opt.push_back(tmp + "...");
                     break;
@@ -173,7 +173,7 @@ namespace ui
             if(i == selected)
                 drawBoundBox(x, y + ((i - start) * 71), rW, 70, clrSh);
 
-            drawText(opt[i].c_str(), frameBuffer, shared, x + 20, (y + 26) + ((i - start) * 71), fontSize, textClr);
+            drawText(opt[i].c_str(), frameBuffer, shared, x + 15, (y + 26) + ((i - start) * 71), fontSize, textClr);
 
 			if(i != selected && separate)
 			    drawRect(frameBuffer, x, y - 1 + ((i - start +1) * 71), rW, 1, ui::sepClr);
