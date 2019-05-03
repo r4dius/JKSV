@@ -4,6 +4,7 @@
 #include "gfx.h"
 #include "menu.h"
 #include "ui.h"
+#include "util.h"
 #include "miscui.h"
 
 namespace ui
@@ -32,20 +33,7 @@ namespace ui
             opt.push_back(add);
         else
         {
-            std::string tmp;
-            for(unsigned i = 0; i < add.length(); )
-            {
-                uint32_t tmpChr = 0;
-                ssize_t untCnt = decode_utf8(&tmpChr, (uint8_t *)&add.c_str()[i]);
-
-                tmp += add.substr(i, untCnt);
-                i += untCnt;
-                if(textGetWidth(tmp.c_str(), ui::shared, fontSize) >= rW - 60)
-                {
-                    opt.push_back(tmp + "...");
-                    break;
-                }
-            }
+			opt.push_back(util::cutStr(add, rW - 60, fontSize));
         }
     }
 

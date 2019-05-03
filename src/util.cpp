@@ -229,5 +229,24 @@ namespace util
 
         return ret;
     }
+	
+	std::string cutStr(const std::string& str, const unsigned& w, const int& fontSize)
+	{
+		std::string tmp;
+		for(unsigned i = 0; i < str.length(); )
+		{
+			uint32_t tmpChr = 0;
+			ssize_t untCnt = decode_utf8(&tmpChr, (uint8_t *)&str.c_str()[i]);
+
+			tmp += str.substr(i, untCnt);
+			i += untCnt;
+			if(textGetWidth(tmp.c_str(), ui::shared, fontSize) >= w)
+			{
+				return tmp + "...";
+			}
+		}
+
+		return tmp;
+	}
 }
 
