@@ -24,6 +24,7 @@ namespace ui
 {
     //Current menu state
     int mstate = USR_SEL, prevState = USR_SEL;
+	bool finish = false;
 
     //Info printed on folder menu
     std::string folderMenuInfo;
@@ -32,18 +33,17 @@ namespace ui
     std::vector<ui::button> selButtons;
 
     //UI colors
-    clr clearClr, mnuTxt, txtClr, rectLt, rectSh, tboxClr, sideRect, divClr, sepClr, boundClr;
+    clr clearClr, mnuTxt, txtClr, tboxClr, sideRect, divClr, sepClr, boundClr, popupClr, popupbgClr, blurClr;
 
     //textbox pieces
     //I was going to flip them when I draw them, but then laziness kicked in.
+	tex *screen;
     tex *cornerTopHor, *cornerBottomHor, *cornerLeftVer, *cornerRightVer, *cornerTopLeft, *cornerTopRight, *cornerBottomLeft, *cornerBottomRight, *tip, *temp;
-
     tex *mnuTopLeft, *mnuTopRight, *mnuBotLeft, *mnuBotRight, *mnuBotShadow;
-	
+    tex *popupTopLeft, *popupTopRight, *popupBotLeft, *popupBotRight, *popupBotShadow;
+    tex *popupButTopLeft, *popupButTopRight, *popupButBotLeft, *popupButBotRight;
     tex *buttonA, *buttonB, *buttonX, *buttonY, *buttonMin;
-
-    tex *icn, *mnuGrad;
-
+    tex *icn, *mnuGrad, *iconSel, *menuSel, *buttonSel;
     font *shared;
 
     void init()
@@ -51,6 +51,26 @@ namespace ui
         ColorSetId gthm;
         setsysGetColorSetId(&gthm);
 
+		popupClr = clrCreateU32(0xFFF0F0F0);
+		popupbgClr = clrCreateU32(0xB2160F05);
+		blurClr = clrCreateU32(0xFFF15230);
+
+		temp = texLoadPNGFile("romfs:/img/mnu/popup.png");
+		popupTopLeft = texCreateFromPart(temp, 0, 0, 15, 15);
+		popupTopRight = texCreateFromPart(temp, 15, 0, 15, 15);
+		popupBotLeft = texCreateFromPart(temp, 0, 15, 15, 15);
+		popupBotRight = texCreateFromPart(temp, 15, 15, 15, 15);
+		popupBotShadow = texCreateFromPart(temp, 15, 15, 1, 15);
+
+		temp = texLoadPNGFile("romfs:/img/mnu/popupsel.png");
+		popupButTopLeft = texCreateFromPart(temp, 0, 0, 15, 15);
+		popupButTopRight = texCreateFromPart(temp, 15, 0, 15, 15);
+		popupButBotLeft = texCreateFromPart(temp, 0, 15, 15, 15);
+		popupButBotRight = texCreateFromPart(temp, 15, 15, 15, 15);
+
+        iconSel = texLoadPNGFile("romfs:/img/mnu/iconSel.png");
+        menuSel = texLoadPNGFile("romfs:/img/mnu/menuSel.png");
+        buttonSel = texLoadPNGFile("romfs:/img/mnu/buttonSel.png");
 
         switch(gthm)
         {
@@ -79,17 +99,16 @@ namespace ui
                 mnuGrad = texLoadPNGFile("romfs:/img/mnu/gradLght.png");
 
 				temp = texLoadPNGFile("romfs:/img/mnu/msel.png");
-				mnuTopLeft = texCreateFromPart(temp, 0, 0, 8, 8);
-				mnuTopRight = texCreateFromPart(temp, 8, 0, 8, 8);
-				mnuBotLeft = texCreateFromPart(temp, 0, 8, 8, 12);
-				mnuBotRight = texCreateFromPart(temp, 8, 8, 8, 12);
-				mnuBotShadow = texCreateFromPart(temp, 8, 11, 1, 11);
+				mnuTopLeft = texCreateFromPart(temp, 0, 0, 15, 15);
+				mnuTopRight = texCreateFromPart(temp, 15, 0, 15, 15);
+				mnuBotLeft = texCreateFromPart(temp, 0, 15, 15, 15);
+				mnuBotRight = texCreateFromPart(temp, 15, 15, 15, 15);
+				mnuBotShadow = texCreateFromPart(temp, 15, 15, 1, 15);
 
-                clearClr = clrCreateU32(0xFFEBEBEB);
+                //clearClr = clrCreateU32(0xFFEBEBEB);
+                clearClr = clrCreateU32(0xFF505050);
                 mnuTxt = clrCreateU32(0xFF282828);
                 txtClr = clrCreateU32(0xFFCBC000);
-                rectLt = clrCreateU32(0xFFDFDFDF);
-                rectSh = clrCreateU32(0xFFCACACA);
                 tboxClr = clrCreateU32(0xF0FFFFFF);
                 sideRect = clrCreateU32(0xFFDCDCDC);
                 divClr = clrCreateU32(0xFF2D2D2D);
@@ -132,8 +151,6 @@ namespace ui
                 clearClr = clrCreateU32(0xFF2D2D2D);
                 mnuTxt = clrCreateU32(0xFFFFFFFF);
                 txtClr = clrCreateU32(0xFFFDBD1B);
-                rectLt = clrCreateU32(0xFF505050);
-                rectSh = clrCreateU32(0xFF202020);
                 tboxClr = clrCreateU32(0xF04F4F4F);
                 sideRect = clrCreateU32(0xFF373737);
                 divClr = clrCreateU32(0xFFFFFFFF);
@@ -166,6 +183,7 @@ namespace ui
 
     void exit()
     {
+        texDestroy(screen);
         texDestroy(cornerTopHor);
         texDestroy(cornerBottomHor);
         texDestroy(cornerLeftVer);
@@ -175,6 +193,20 @@ namespace ui
         texDestroy(cornerBottomLeft);
         texDestroy(cornerBottomRight);
         texDestroy(tip);
+        texDestroy(iconSel);
+        texDestroy(menuSel);
+        texDestroy(buttonSel);
+
+        texDestroy(popupTopLeft);
+        texDestroy(popupTopRight);
+        texDestroy(popupBotLeft);
+        texDestroy(popupBotRight);
+        texDestroy(popupBotShadow);
+
+        texDestroy(popupButTopLeft);
+        texDestroy(popupButTopRight);
+        texDestroy(popupButBotLeft);
+        texDestroy(popupButBotRight);
 
         texDestroy(mnuTopLeft);
         texDestroy(mnuTopRight);

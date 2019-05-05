@@ -218,7 +218,7 @@ void drawTextWrap(const char *str, tex *target, const font *f, int x, int y, int
         if(tmpX + width >= x + maxWidth)
         {
             tmpX = x;
-            y += sz + 8;
+            y += sz + 17;
         }
 
         size_t wLength = strlen(wordBuf);
@@ -237,7 +237,7 @@ void drawTextWrap(const char *str, tex *target, const font *f, int x, int y, int
                     y += sz + 8;
                     continue;
                     break;
-
+				/*
                 case '"':
                 case '#':
                     if(clrGetColor(textClr) == 0xFFEE9900)
@@ -254,7 +254,9 @@ void drawTextWrap(const char *str, tex *target, const font *f, int x, int y, int
                         textClr = clrCreateU32(0xFF0000FF);
                     continue;
                     break;
+				*/
             }
+			textClr = c;
 
             FT_GlyphSlot slot = loadGlyph(tmpChr, f, FT_LOAD_RENDER);
             if(slot != NULL)
@@ -644,7 +646,7 @@ void texDrawSkipNoAlpha(const tex *t, tex *target, int x, int y)
     }
 }
 
-void texDrawResize (const tex *source, tex *target, int x, int y, int destWidth, int destHeight)
+void texDrawResize(const tex *source, tex *target, int x, int y, int destWidth, int destHeight)
 {
      int pos;
      float xScale = (float)source->width / (float)destWidth;

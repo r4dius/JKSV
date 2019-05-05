@@ -23,31 +23,18 @@ namespace ui
         //Whether or not we're adding or subtracting from clrShft
         static bool clrAdd = true;
 
-        //Selected rectangle X and Y.
-        static unsigned selRectX = 86, selRectY = 180;
-
         static ui::touchTrack track;
-
         unsigned x = 93, y = 187;
+		static unsigned tiX = 0, tiY = 0;
+
+        //Selected rectangle X and Y.
+        static unsigned selRectX = x, selRectY = y;
+		static std::string title = "";
+
 		if(maxTitles == 24) y = 3;
         unsigned endTitle = start + maxTitles;
         if(start + maxTitles > (int)data::curUser.titles.size())
             endTitle = data::curUser.titles.size();
-
-		if(clrAdd)
-        {
-            clrSh += 4;
-            if(clrSh > 63)
-                clrAdd = false;
-        }
-        else
-        {
-            clrSh--;
-            if(clrSh == 0)
-                clrAdd = true;
-        }
-
-		drawBoundBox(selRectX + 5, selRectY + 5, 178, 178, clrSh);
 
         for(unsigned i = start; i < endTitle; y += 184)
         {
@@ -59,14 +46,15 @@ namespace ui
 
                 if((int)i == selected)
                 {
-                    if(selRectX != tX - 7 || selRectY != y - 7)
+                    if(selRectX != tX || selRectY != y)
                     {
-                        selRectX = tX - 7;
-                        selRectY = y - 7;
+                        selRectX = tX;
+                        selRectY = y;
                     }
 
-					std::string title = data::curUser.titles[selected].getTitle();
-                    drawTitlebox(title, tX, y - 63, 48);
+					title = data::curUser.titles[selected].getTitle();
+                    //drawTitlebox(title, tX, y - 63, 48);
+					tiX = tX, tiY = y;
                 }
                 data::curUser.titles[i].icon.drawHalf(tX, y);
             }
@@ -99,117 +87,157 @@ namespace ui
         for(unsigned i = 0; i < ttlNav.size(); i++)
             ttlNav[i].update(p);
 
-        //Update touchtracking
-        track.update(p);
+		ui::screen = texCreate(1280, 720);
+		memcpy(screen->data, frameBuffer->data, frameBuffer->size * 4);
 
-        switch(track.getEvent())
+		while(true)
         {
-            case TRACK_SWIPE_UP:
-                {
-                    if(start + maxTitles < (int)data::curUser.titles.size())
-                    {
-                        start += 6;
-                        selected += 6;
-                        if(selected > (int)data::curUser.titles.size() - 1)
-                            selected = data::curUser.titles.size() - 1;
-						maxTitles = 24;
-                    }
-                }
-                break;
+            hidScanInput();
+            uint64_t down = hidKeysDown(CONTROLLER_P1_AUTO);
+            touchPosition p;
+            hidTouchRead(&p, 0);
+			//Update touchtracking
+			track.update(p); 
 
-            case TRACK_SWIPE_DOWN:
-                {
-                    if(start - 6 >= 0)
-                    {
-                        start -= 6;
-                        selected -= 6;
-                    } else maxTitles = 18;
-                }
-                break;
-        }
+			if(clrAdd)
+			{
+				clrSh += 10;
+				if(clrSh > 60)
+					clrAdd = false;
+			}
+			else
+			{
+				clrSh -= 10;
+				if(clrSh == 0)
+					clrAdd = true;
+			}
 
-        if(down & KEY_RIGHT)
-        {
-            if(selected < (int)data::curUser.titles.size() - 1)
-                selected++;
+			switch(track.getEvent())
+			{
+				case TRACK_SWIPE_UP:
+					{
+						if(start + maxTitles < (int)data::curUser.titles.size())
+						{
+							start += 6;
+							selected += 6;
+							if(selected > (int)data::curUser.titles.size() - 1)
+								selected = data::curUser.titles.size() - 1;
+							maxTitles = 24;
+						}
+					}
+					break;
 
-			if(selected >= (int)start + 18)
-				start += 6;
+				case TRACK_SWIPE_DOWN:
+					{
+						if(start - 6 >= 0)
+						{
+							start -= 6;
+							selected -= 6;
+						} else maxTitles = 18;
+					}
+					break;
 
-			if(start < 0) start = 0;
+				break;
+			}
 
-			if(selected == 12) maxTitles = 24;
-        }
-        else if(down & KEY_LEFT)
-        {
-            if(selected > 0)
-                selected--;
+			if(down & KEY_RIGHT)
+			{
+				if(selected < (int)data::curUser.titles.size() - 1)
+					selected++;
 
-			if(selected - 6 < (int)start)
-				start -= 6;
+				if(selected >= (int)start + 18)
+					start += 6;
 
-			if(start < 0) start = 0;
+				if(start < 0) start = 0;
 
-			if(selected == 5) maxTitles = 18;
-        }
-        else if(down & KEY_UP)
-        {
-            selected -= 6;
-            if(selected < 0)
-                selected = 0;
+				if(selected == 12) maxTitles = 24;
+				break;
+			}
+			else if(down & KEY_LEFT)
+			{
+				if(selected > 0)
+					selected--;
 
-            if(selected - 6 < start)
-                start -= 6;
+				if(selected - 6 < (int)start)
+					start -= 6;
 
-			if(start < 0) start = 0;
+				if(start < 0) start = 0;
 
-			if(selected >= 0 && selected < 6) maxTitles = 18;
-        }
-        else if(down & KEY_DOWN)
-        {
-            selected += 6;
-            if(selected > (int)data::curUser.titles.size() - 1)
-                selected = data::curUser.titles.size() - 1;
+				if(selected == 5) maxTitles = 18;
+				break;
+			}
+			else if(down & KEY_UP)
+			{
+				selected -= 6;
+				if(selected < 0)
+					selected = 0;
 
-            if(selected - start >= 18)
-                start += 6;
+				if(selected - 6 < start)
+					start -= 6;
 
-			if(selected > 11 && selected < 18) maxTitles = 24;
-        }
-        else if(down & KEY_A || ttlNav[0].getEvent() == BUTTON_RELEASED)
-        {
-            data::curData = data::curUser.titles[selected];
-            if(fs::mountSave(data::curUser, data::curData))
-            {
-                util::makeTitleDir(data::curUser, data::curData);
-                folderMenuPrepare(data::curUser, data::curData);
-                folderMenuInfo = util::getInfoString(data::curUser, data::curData);
+				if(start < 0) start = 0;
 
-                mstate = FLD_SEL;
-            }
-        }
-        else if(down & KEY_Y || ttlNav[1].getEvent() == BUTTON_RELEASED)
-        {
-            fs::dumpAllUserSaves(data::curUser);
-        }
-        else if(down & KEY_X || ttlNav[2].getEvent() == BUTTON_RELEASED)
-        {
-            std::string confStr = "Are you 100% sure you want to add \"" + data::curUser.titles[selected].getTitle() + \
-                                  "\" to your blacklist?";
-            if(ui::confirm(confStr))
-                data::blacklistAdd(data::curUser, data::curUser.titles[selected]);
-        }
-        else if(down & KEY_B || ttlNav[3].getEvent() == BUTTON_RELEASED)
-        {
-            start = 0;
-            //selected = 0;
-            maxTitles = 18;
-            selRectX = 86;
-            selRectY = 180;
-            mstate = USR_SEL;
-            return;
-        }
+				if(selected >= 0 && selected < 6) maxTitles = 18;
+				break;
+			}
+			else if(down & KEY_DOWN)
+			{
+				selected += 6;
+				if(selected > (int)data::curUser.titles.size() - 1)
+					selected = data::curUser.titles.size() - 1;
 
+				if(selected - start >= 18)
+					start += 6;
+
+				if(selected > 11 && selected < 18) maxTitles = 24;
+				break;
+			}
+			else if(down & KEY_A || ttlNav[0].getEvent() == BUTTON_RELEASED)
+			{
+				data::curData = data::curUser.titles[selected];
+				if(fs::mountSave(data::curUser, data::curData))
+				{
+					util::makeTitleDir(data::curUser, data::curData);
+					folderMenuPrepare(data::curUser, data::curData);
+					folderMenuInfo = util::getInfoString(data::curUser, data::curData);
+
+					mstate = FLD_SEL;
+				}
+				break;
+			}
+			else if(down & KEY_Y || ttlNav[1].getEvent() == BUTTON_RELEASED)
+			{
+				fs::dumpAllUserSaves(data::curUser);
+			}
+			else if(down & KEY_X || ttlNav[2].getEvent() == BUTTON_RELEASED)
+			{
+				std::string confStr = "Are you 100% sure you want to add \"" + data::curUser.titles[selected].getTitle() + \
+									  "\" to your blacklist?";
+				if(ui::confirm(confStr, "Blacklist"))
+					data::blacklistAdd(data::curUser, data::curUser.titles[selected]);
+				break;
+			}
+			else if(down & KEY_B || ttlNav[3].getEvent() == BUTTON_RELEASED)
+			{
+				start = 0;
+				//selected = 0;
+				maxTitles = 18;
+				selRectX = 93, selRectY = 187;
+				mstate = USR_SEL;
+				return;
+			}
+			else if(down & KEY_PLUS)
+			{
+				ui::finish = true;
+				break;
+			}
+
+			gfxBeginFrame();
+			texDraw(screen, frameBuffer, 0, 0);
+			drawGlowElem(selRectX, selRectY, 178, 178, clrSh, ui::iconSel, 2);
+			drawTitlebox(title, tiX, tiY - 63, 48);
+			gfxEndFrame();
+		}
 /*
 		char char_arr[200];
 		sprintf(char_arr, "selected %d", selected);

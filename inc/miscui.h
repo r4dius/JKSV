@@ -57,7 +57,7 @@ namespace ui
         protected:
             bool pressed = false, first = false;
             int retEvent = BUTTON_NOTHING;
-            unsigned x, y, w, h;
+            unsigned x, y, w, h, fontsize;
             unsigned tx, ty;
             std::string text;
             touchPosition prev, cur;
@@ -81,10 +81,13 @@ namespace ui
 
     //General use
     void showMessage(const std::string& mess, const std::string& head);
-    bool confirm(const std::string& q);
+    bool confirm(const std::string& q, const std::string& t);
     bool confirmTransfer(const std::string& f, const std::string& t);
     bool confirmDelete(const std::string& p);
-    void drawTextbox(int x, int y, int w, int h);
+    void drawTextPopup(int x, int y, int w, int h);
+    void drawTextPopupBg(int x, int y, int w, int h);
+    void drawPopupButton(int x, int y, int w, int h, int clrSh);
+    void drawGlowElem(int x, int y, int w, int h, int clrSh, tex *elem, int offset);
     void drawTitlebox(std::string& title, int x, int y, int h);
     void drawTextboxInvert(int x, int y, int w, int h);
     void drawBoundBox(int x, int y, int w, int h, int clrSh);

@@ -58,13 +58,13 @@ int main(int argc, const char *argv[])
 
         if((held & KEY_L) && (held & KEY_R) && (held & KEY_ZL) && (held & KEY_ZR))
         {
-            if(ui::confirm("You are about to enable system save dumping and remove checks. Are you sure you want to continue?"))
+            if(ui::confirm("You are about to enable system save dumping and remove checks. Are you sure you want to continue?", "Enable"))
             {
                 //Just to be sure
                 fsdevUnmountDevice("sv");
 
                 data::sysSave = true;
-                if(ui::confirm("Do you want to disable isMountable Checks?"))
+                if(ui::confirm("Do you want to disable isMountable Checks?", "Disable"))
                     data::forceMount = false;
                 data::loadDataInfo();
 
@@ -72,7 +72,7 @@ int main(int argc, const char *argv[])
                 ui::mstate = USR_SEL;
             }
         }
-        else if(down & KEY_PLUS)
+        else if(ui::finish || down & KEY_PLUS)
             break;
         gfxBeginFrame();
 

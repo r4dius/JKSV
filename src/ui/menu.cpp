@@ -136,13 +136,13 @@ namespace ui
     {
         if(clrAdd)
         {
-            clrSh += 4;
-            if(clrSh > 63)
+            clrSh += 10;
+            if(clrSh > 60)
                 clrAdd = false;
         }
         else
         {
-            clrSh--;
+            clrSh -= 10;
             if(clrSh == 0)
                 clrAdd = true;
         }
@@ -156,15 +156,15 @@ namespace ui
         for(int i = start; i < length; i++)
         {
 			//Don't draw separator on top and bottom of selected item
-			if(i - 1 != selected && i != selected && separate)
-			    drawRect(frameBuffer, x, y - 1 + ((i - start) * 71), rW, 1, ui::sepClr);
+			// if(i - 1 != selected && i != selected && separate)
+			    // drawRect(frameBuffer, x, y - 1 + ((i - start) * 71), rW, 1, ui::sepClr);
             if(i == selected)
-                drawBoundBox(x, y + ((i - start) * 71), rW, 70, clrSh);
+                drawGlowElem(x, y + ((i - start) * 71), rW, 70, clrSh, ui::menuSel, 0);
 
             drawText(opt[i].c_str(), frameBuffer, shared, x + 15, (y + 26) + ((i - start) * 71), fontSize, textClr);
 
-			if(i != selected && separate)
-			    drawRect(frameBuffer, x, y - 1 + ((i - start +1) * 71), rW, 1, ui::sepClr);
+			// if(i != selected && separate)
+			    // drawRect(frameBuffer, x, y - 1 + ((i - start +1) * 71), rW, 1, ui::sepClr);
         }
     }
 

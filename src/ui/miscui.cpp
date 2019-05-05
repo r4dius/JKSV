@@ -25,7 +25,7 @@ namespace ui
         size_t headWidth = textGetWidth(head.c_str(), ui::shared, 24);
         unsigned headX = (1280 / 2) - (headWidth / 2);
 
-        ui::drawTextbox(64, 240, 1152, 240);
+        ui::drawTextPopup(64, 240, 1152, 240);
         drawRect(frameBuffer, 64, 296, 1152, 2, clrCreateU32(0xFF6D6D6D));
         drawRect(frameBuffer, 96, 400, 1088, 64, clrCreateU32(0xFF000000));
         drawRect(frameBuffer, 96, 400, (unsigned)width, 64, clrCreateU32(0xFF00CC00));
@@ -46,8 +46,9 @@ namespace ui
         w = _w;
         h = _h;
         text = _txt;
+		fontsize = 21;
 
-        unsigned tw = textGetWidth(text.c_str(), ui::shared, 24);
+        unsigned tw = textGetWidth(text.c_str(), ui::shared, fontsize);
         unsigned th = 24;
 
         tx = x + (w / 2) - (tw / 2);
@@ -83,7 +84,7 @@ namespace ui
 	void drawBoundBox(int x, int y, int w, int h, int clrSh)
 	{
 		clr rectClr = clrCreateRGBA(0x59 - clrSh, 0xFD - clrSh, 0xDB - clrSh, 0xFF);
-
+		/*
 		texSwapColors(ui::mnuTopLeft, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF), rectClr);
 		texSwapColors(ui::mnuTopRight, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF), rectClr);
 		texSwapColors(ui::mnuBotLeft, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF), rectClr);
@@ -91,25 +92,30 @@ namespace ui
 		texSwapColors(ui::mnuBotShadow, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF), rectClr);
 
 		//top
-		texDraw(ui::mnuTopLeft, frameBuffer, x - 5, y - 5);
-		drawRect(frameBuffer, x + 3, y - 5, w - 6, 5, rectClr);
-		texDraw(ui::mnuTopRight, frameBuffer, x + w - 3, y - 5);
+		texDraw(ui::mnuTopLeft, frameBuffer, x - 10, y - 10);
+		drawRect(frameBuffer, x + 5, y - 5, w - 10, 5, rectClr);
+		texDraw(ui::mnuTopRight, frameBuffer, x + w - 5, y - 10);
 
 		//mid
-		drawRect(frameBuffer, x - 5, y + 3, 5, h - 6, rectClr);
+		drawRect(frameBuffer, x - 5, y + 5, 5, h - 10, rectClr);
 		drawRect(frameBuffer, x, y, w, h, ui::boundClr);
-		drawRect(frameBuffer, x + w, y + 3, 5, h - 6, rectClr);
+		drawRect(frameBuffer, x + w, y + 5, 5, h - 10, rectClr);
 
 		//bottom
-		texDraw(ui::mnuBotLeft, frameBuffer, x - 5, y + h - 3);
-		texDrawH(ui::mnuBotShadow, frameBuffer, x + 3, y + h, w - 6);
-		texDraw(ui::mnuBotRight, frameBuffer, x + w - 3, y + h - 3);
+		texDraw(ui::mnuBotLeft, frameBuffer, x - 10, y + h - 5);
+		texDrawH(ui::mnuBotShadow, frameBuffer, x + 5, y + h - 5, w - 10);
+		texDraw(ui::mnuBotRight, frameBuffer, x + w - 5, y + h - 5);
 
 		texSwapColors(ui::mnuTopLeft, rectClr, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF));
 		texSwapColors(ui::mnuTopRight, rectClr, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF));
 		texSwapColors(ui::mnuBotLeft, rectClr, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF));
 		texSwapColors(ui::mnuBotRight, rectClr, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF));
 		texSwapColors(ui::mnuBotShadow, rectClr, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF));
+		*/
+
+		texSwapColors(ui::iconSel, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF), rectClr);
+		texDraw(ui::iconSel, frameBuffer, x - 7, y - 7);
+		texSwapColors(ui::iconSel, rectClr, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF));
 	}
 
     bool button::isOver()
@@ -127,12 +133,11 @@ namespace ui
         if(pressed)
         {
             ui::drawTextboxInvert(x, y, w, h);
-            drawText(text.c_str(), frameBuffer, ui::shared, tx, ty, 24, mnuTxt);
+            drawText(text.c_str(), frameBuffer, ui::shared, tx, ty, fontsize, blurClr);
         }
         else
         {
-            ui::drawTextbox(x, y, w, h);
-            drawText(text.c_str(), frameBuffer, ui::shared, tx, ty, 24, txtClr);
+            drawText(text.c_str(), frameBuffer, ui::shared, tx, ty, fontsize, blurClr);
         }
     }
 
@@ -181,7 +186,7 @@ namespace ui
 
     void showMessage(const std::string& mess, const std::string& head)
     {
-        button ok("OK", 256, 496, 768, 96);
+        button ok("OK", 255, 461, 768, 70);
 
         //center head text width
         size_t headWidth = textGetWidth(head.c_str(), ui::shared, 24);
@@ -201,9 +206,11 @@ namespace ui
                 break;
 
             gfxBeginFrame();
-            ui::drawTextbox(256, 128, 768, 464);
+            ui::drawTextPopup(255, 189, 770, 342);
             drawText(head.c_str(), frameBuffer, ui::shared, headX, 144, 24, txtClr);
-            drawRect(frameBuffer, 256, 184, 768, 2, clrCreateU32(0xFF6D6D6D));
+            drawRect(frameBuffer, 255, 184, 768, 2, clrCreateU32(0xFFD1D1D1));
+            drawRect(frameBuffer, 255, 459, 770, 2, clrCreateU32(0xFFD1D1D1));
+            drawRect(frameBuffer, 639, 461, 2, 70, clrCreateU32(0xFFD1D1D1));
             drawTextWrap(mess.c_str(), frameBuffer, ui::shared, 272, 200, 24, txtClr, 752);
             ok.draw();
             texDrawInvert(ui::buttonA, frameBuffer, ok.getTx() + 56, ok.getTy() - 4);
@@ -211,20 +218,24 @@ namespace ui
         }
     }
 
-    bool confirm(const std::string& mess)
+    bool confirm(const std::string& mess, const std::string& buttontext)
     {
+		ui::screen = texCreate(1280, 720);
+		memcpy(screen->data, frameBuffer->data, frameBuffer->size * 4);
+
         bool ret = false;
+	
+        button no("Cancel", 255, 461, 384, 70);
+        button yes(buttontext, 641, 461, 384, 70);
 
-        button yes("Yes   ", 256, 496, 384, 96);
-        button no("No   ", 640, 496, 384, 96);
-
-        size_t headWidth = textGetWidth("Confirm", ui::shared, 24);
-        unsigned headX = (1280 / 2) - (headWidth / 2);
-
+		//Color shift for rect
+		static uint8_t clrSh = 0;
+		//Whether or not we're adding or subtracting from clrShft
+		static bool clrAdd = true;
+			
         while(true)
         {
             hidScanInput();
-
             uint64_t down = hidKeysDown(CONTROLLER_P1_AUTO);
             touchPosition p;
             hidTouchRead(&p, 0);
@@ -243,16 +254,29 @@ namespace ui
                 break;
             }
 
-            gfxBeginFrame();
-            ui::drawTextbox(256, 128, 768, 464);
-            drawText("Confirm", frameBuffer, ui::shared, headX, 144, 24, txtClr);
-            drawRect(frameBuffer, 256, 184, 768, 2, clrCreateU32(0xFF6D6D6D));
-            drawTextWrap(mess.c_str(), frameBuffer, ui::shared, 272, 200, 24, txtClr, 752);
-            yes.draw();
-            texDrawInvert(ui::buttonA, frameBuffer, yes.getTx() + 64, yes.getTy() - 4);
-            no.draw();
-            texDrawInvert(ui::buttonB, frameBuffer, no.getTx() + 56, no.getTy() - 4);
-            gfxEndFrame();
+			if(clrAdd)
+			{
+				clrSh += 10;
+				if(clrSh > 60)
+					clrAdd = false;
+			}
+			else
+			{
+				clrSh -= 10;
+				if(clrSh == 0)
+					clrAdd = true;
+			}
+
+			gfxBeginFrame();
+			texDraw(screen, frameBuffer, 0, 0);
+			ui::drawTextPopupBg(255, 189, 770, 342);
+			drawTextWrap(mess.c_str(), frameBuffer, ui::shared, 325, 250, 19, mnuTxt, 630);
+			drawRect(frameBuffer, 255, 459, 770, 2, clrCreateU32(0xFFD1D1D1));
+			drawRect(frameBuffer, 639, 461, 2, 70, clrCreateU32(0xFFD1D1D1));
+			drawGlowElem(641, 461, 384, 70, clrSh, ui::buttonSel, 0);
+			no.draw();
+			yes.draw();
+			gfxEndFrame();
         }
 
         return ret;
@@ -262,14 +286,14 @@ namespace ui
     {
         std::string confMess = "Are you sure you want to copy #" + f + "# to #" + t +"#?";
 
-        return confirm(confMess);
+        return confirm(confMess, "Copy");
     }
 
     bool confirmDelete(const std::string& p)
     {
         std::string confMess = "Are you 100% sure you want to delete #" + p + "#? *This is permanent*!";
 
-        return confirm(confMess);
+        return confirm(confMess, "Delete");
     }
 
     void drawTitlebox(std::string& title, int x, int y, int h)
@@ -314,23 +338,74 @@ namespace ui
 		drawText(title.c_str(), frameBuffer, ui::shared, textX + 28, y + 15, fontSize, txtClr);
     }
 
-    void drawTextbox(int x, int y, int w, int h)
+    void drawTextPopup(int x, int y, int w, int h)
     {
         //Top
-        texDraw(ui::cornerTopLeft, frameBuffer, x - 5, y - 5);
-		texDrawH(ui::cornerTopHor, frameBuffer, x - 5 + 12, y - 5, w - 24 + 10);
-        texDraw(ui::cornerTopRight, frameBuffer, x + w - 12 + 5, y - 5);
+        texDraw(ui::popupTopLeft, frameBuffer, x - 5, y - 5);
+		drawRect(frameBuffer, x + 10, y, w - 20, 10, popupClr);
+        texDraw(ui::popupTopRight, frameBuffer, x + w - 10, y - 5);
 
         //middle
-		texDrawV(ui::cornerLeftVer, frameBuffer, x - 5, y - 5 + 12, h - 24 + 10);
-        drawRectAlpha(frameBuffer, x - 5 + 12, y - 5 + 12,  w - 24 + 10, h - 24 + 10, tboxClr);
-		texDrawV(ui::cornerRightVer, frameBuffer, x + w - 12 + 5, y - 5 + 12, h - 24 + 10);
+		drawRect(frameBuffer, x, y + 10, w, h - 20, popupClr);
 
         //bottom
-        texDraw(ui::cornerBottomLeft, frameBuffer, x - 5, y + h - 12 + 5);		
-		texDrawH(ui::cornerBottomHor, frameBuffer, x - 5 + 12, y + h - 12 + 5, w - 24 + 10);
-        texDraw(ui::cornerBottomRight, frameBuffer, x + w - 12 + 5, y + h - 12 + 5);
+        texDraw(ui::popupBotLeft, frameBuffer, x - 5, y + h - 10);
+		texDrawH(ui::popupBotShadow, frameBuffer, x + 10, y + h - 10, w - 20);
+        texDraw(ui::popupBotRight, frameBuffer, x + w - 10, y + h - 10);
     }
+
+    void drawTextPopupBg(int x, int y, int w, int h)
+    {
+		drawRectAlpha(frameBuffer, 0, 0, 1280, 720, popupbgClr);
+		drawTextPopup(x, y, w, h);
+    }
+	
+    void drawPopupButton(int x, int y, int w, int h, int clrSh)
+    {
+		clr rectClr = clrCreateRGBA(0x59 - clrSh, 0xFD - clrSh, 0xDB - clrSh, 0xFF);
+
+		/*
+		texSwapColors(ui::popupButTopLeft, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF), rectClr);
+		texSwapColors(ui::popupButTopRight, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF), rectClr);
+		texSwapColors(ui::popupButBotLeft, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF), rectClr);
+		texSwapColors(ui::popupButBotRight, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF), rectClr);
+
+		//Center
+		drawRect(frameBuffer, x, y, w, h, boundClr);
+        //Top
+        texDraw(ui::popupButTopLeft, frameBuffer, x - 10, y - 10);
+		drawRect(frameBuffer, x + 5, y - 5, w - 10, 5, rectClr);
+        texDraw(ui::popupButTopRight, frameBuffer, x + w - 5, y - 10);
+
+        //middle
+		drawRect(frameBuffer, x - 5, y + 5, 5, h - 10, rectClr);
+		drawRect(frameBuffer, x + w, y + 5, 5, h - 10, rectClr);
+
+        //bottom
+        texDraw(ui::popupButBotLeft, frameBuffer, x - 10, y + h - 5);
+		drawRect(frameBuffer, x + 5, y + h, w - 10, 5, rectClr);
+        texDraw(ui::popupButBotRight, frameBuffer, x + w - 5, y + h - 5);
+
+		texSwapColors(ui::popupButTopLeft, rectClr, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF));
+		texSwapColors(ui::popupButTopRight, rectClr, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF));
+		texSwapColors(ui::popupButBotLeft, rectClr, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF));
+		texSwapColors(ui::popupButBotRight, rectClr, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF));
+		*/
+
+		drawRect(frameBuffer, x, y, w, h, boundClr);
+		texSwapColors(ui::buttonSel, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF), rectClr);
+		texDraw(ui::buttonSel, frameBuffer, x - 5, y - 5);
+		texSwapColors(ui::buttonSel, rectClr, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF));
+    }
+	
+	void drawGlowElem(int x, int y, int w, int h, int clrSh, tex *elem, int offset)
+	{
+		clr rectClr = clrCreateRGBA(0x59 - clrSh, 0xFD - clrSh, 0xDB - clrSh, 0xFF);
+		//drawRect(frameBuffer, x - offset, y - offset, w + offset * 2, h + offset * 2, boundClr);
+		texSwapColors(elem, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF), rectClr);
+		texDraw(elem, frameBuffer, x - 5 - offset, y - 5 - offset);
+		texSwapColors(elem, rectClr, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF));
+	}
 
     void drawTextboxInvert(int x, int y, int w, int h)
     {

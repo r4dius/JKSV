@@ -84,7 +84,7 @@ namespace ui
                 fs::dirList list(scanPath);
 
                 std::string folderName = list.getItem(folderMenu.getSelected() - 1);
-                if(confirm("Are you sure you want to overwrite \"" + util::cutStr(folderName, 690, 24) + "\"?"))
+                if(confirm("Are you sure you want to overwrite \"" + util::cutStr(folderName, 690, 24) + "\"?", "Overwrite"))
                 {
                     std::string toPath = util::getTitleDir(data::curUser, data::curData) + folderName + "/";
                     //Delete and recreate
@@ -105,7 +105,7 @@ namespace ui
                 fs::dirList list(scanPath);
 
                 std::string folderName = list.getItem(folderMenu.getSelected() - 1);
-                if(confirm("Are you sure you want to restore \"" + util::cutStr(folderName, 690, 24) + "\"?"))
+                if(confirm("Are you sure you want to restore \"" + util::cutStr(folderName, 690, 24) + "\"?", "Restore"))
                 {
                     std::string fromPath = util::getTitleDir(data::curUser, data::curData) + folderName + "/";
                     std::string root = "sv:/";
@@ -127,13 +127,13 @@ namespace ui
                 fs::dirList list(scanPath);
 
                 std::string folderName = list.getItem(folderMenu.getSelected() - 1);
-                if(confirm("Are you sure you want to delete \"" + util::cutStr(folderName, 690, 24) + "\"?"))
+                if(confirm("Are you sure you want to delete \"" + util::cutStr(folderName, 690, 24) + "\"?", "Delete"))
                 {
                     std::string delPath = scanPath + folderName + "/";
                     fs::delDir(delPath);
-                }
 
-                folderMenuPrepare(data::curUser, data::curData);
+					folderMenuPrepare(data::curUser, data::curData);
+                }
             }
         }
         else if(down & KEY_B || fldNav[3].getEvent() == BUTTON_RELEASED)
