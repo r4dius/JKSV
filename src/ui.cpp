@@ -37,7 +37,6 @@ namespace ui
 
     //textbox pieces
     //I was going to flip them when I draw them, but then laziness kicked in.
-	tex *screen;
     tex *cornerTopHor, *cornerBottomHor, *cornerLeftVer, *cornerRightVer, *cornerTopLeft, *cornerTopRight, *cornerBottomLeft, *cornerBottomRight, *tip, *temp;
     tex *mnuTopLeft, *mnuTopRight, *mnuBotLeft, *mnuBotRight, *mnuBotShadow;
     tex *popupTopLeft, *popupTopRight, *popupBotLeft, *popupBotRight, *popupBotShadow;
@@ -45,6 +44,8 @@ namespace ui
     tex *buttonA, *buttonB, *buttonX, *buttonY, *buttonMin;
     tex *icn, *mnuGrad, *iconSel, *menuSel, *buttonSel;
     font *shared;
+	
+	tex	*screen = texCreate(1280, 720);
 
     void init()
     {
@@ -105,8 +106,8 @@ namespace ui
 				mnuBotRight = texCreateFromPart(temp, 15, 15, 15, 15);
 				mnuBotShadow = texCreateFromPart(temp, 15, 15, 1, 15);
 
-                //clearClr = clrCreateU32(0xFFEBEBEB);
-                clearClr = clrCreateU32(0xFF505050);
+                clearClr = clrCreateU32(0xFFEBEBEB);
+                // clearClr = clrCreateU32(0xFF505050);
                 mnuTxt = clrCreateU32(0xFF282828);
                 txtClr = clrCreateU32(0xFFCBC000);
                 tboxClr = clrCreateU32(0xF0FFFFFF);
@@ -312,22 +313,20 @@ namespace ui
             case USR_SEL:
                 {
                     //Input guide
-                    unsigned startX = 0;
-                    startX = 925;
-					
+                    unsigned startX = 910;					
                     texDraw(buttonY, frameBuffer, startX, 672);
-                    drawText("Dump All", frameBuffer, shared, startX += 38, 675, 18, mnuTxt);
-                    texDraw(buttonA, frameBuffer, startX += 148, 672);
+                    drawText("Backup All", frameBuffer, shared, startX += 38, 675, 18, mnuTxt);
+                    texDraw(buttonA, frameBuffer, startX += 163, 672);
                     drawText("Select", frameBuffer, shared, startX += 38, 675, 18, mnuTxt);
                 }
                 break;
 
             case TTL_SEL:
                 {
-                    unsigned startX = 619;
+                    unsigned startX = 604;
                     texDraw(buttonY, frameBuffer, startX, 672);
-                    drawText("Dump All", frameBuffer, shared, startX += 38, 675, 18, mnuTxt);
-                    texDraw(buttonX, frameBuffer, startX += 148, 672);
+                    drawText("Backup All", frameBuffer, shared, startX += 38, 675, 18, mnuTxt);
+                    texDraw(buttonX, frameBuffer, startX += 163, 672);
                     drawText("Blacklist", frameBuffer, shared, startX += 38, 675, 18, mnuTxt);
                     texDraw(buttonB, frameBuffer, startX += 134, 672);
                     drawText("Back", frameBuffer, shared, startX += 38, 675, 18, mnuTxt);

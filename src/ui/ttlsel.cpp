@@ -1,7 +1,6 @@
 #include <string>
-#include <vector>
-
 #include <fstream>
+#include <vector>
 
 #include "ui.h"
 #include "uiupdate.h"
@@ -16,10 +15,11 @@ namespace ui
     {
         //Static so they don't get reset every loop
         //Where to start in titles, selected title
-        static int start = 0, selected = 0, maxTitles = 18;
+        static int start = 0, selected = 0, maxTitles = 18, movespeed = 0;
+		static bool move = false;
 
         //Color shift for rect
-        static uint8_t clrSh = 0;
+        static int clrSh = 0;
         //Whether or not we're adding or subtracting from clrShft
         static bool clrAdd = true;
 
@@ -53,14 +53,14 @@ namespace ui
                     }
 
 					title = data::curUser.titles[selected].getTitle();
-                    //drawTitlebox(title, tX, y - 63, 48);
+                    // drawTitlebox(title, tX, y - 63, 48);
 					tiX = tX, tiY = y;
                 }
                 data::curUser.titles[i].icon.drawHalf(tX, y);
             }
         }
 
-        //Buttons
+		//Update invisible buttons
         for(int i = 0; i < maxTitles; i++)
         {
             selButtons[i].update(p);
@@ -83,64 +83,50 @@ namespace ui
             }
         }
 
-        //Nav
-        for(unsigned i = 0; i < ttlNav.size(); i++)
-            ttlNav[i].update(p);
+		//Update nav
+		for(unsigned i = 0; i < ttlNav.size(); i++)
+			ttlNav[i].update(p);
 
-		ui::screen = texCreate(1280, 720);
 		memcpy(screen->data, frameBuffer->data, frameBuffer->size * 4);
 
 		while(true)
         {
             hidScanInput();
             uint64_t down = hidKeysDown(CONTROLLER_P1_AUTO);
+			uint64_t held = hidKeysHeld(CONTROLLER_P1_AUTO);
             touchPosition p;
             hidTouchRead(&p, 0);
-			//Update touchtracking
-			track.update(p); 
+
+			if((held & KEY_RIGHT) || (held & KEY_LEFT) || (held & KEY_UP) || (held & KEY_DOWN))
+				movespeed++;
+			else {
+				movespeed = 0;
+				move = false;
+			}
+
+			if(movespeed >= 15) {
+				move = true;
+				movespeed = 12;
+			} else move = false;
 
 			if(clrAdd)
 			{
-				clrSh += 10;
-				if(clrSh > 60)
+				clrSh += 5;
+				if(clrSh > 100) {
+					if(clrSh > 254) clrSh = 254;
 					clrAdd = false;
+				}
 			}
 			else
 			{
 				clrSh -= 10;
-				if(clrSh == 0)
+				if(clrSh <= 0) {
+					if(clrSh < 0) clrSh = 0;
 					clrAdd = true;
+				}
 			}
 
-			switch(track.getEvent())
-			{
-				case TRACK_SWIPE_UP:
-					{
-						if(start + maxTitles < (int)data::curUser.titles.size())
-						{
-							start += 6;
-							selected += 6;
-							if(selected > (int)data::curUser.titles.size() - 1)
-								selected = data::curUser.titles.size() - 1;
-							maxTitles = 24;
-						}
-					}
-					break;
-
-				case TRACK_SWIPE_DOWN:
-					{
-						if(start - 6 >= 0)
-						{
-							start -= 6;
-							selected -= 6;
-						} else maxTitles = 18;
-					}
-					break;
-
-				break;
-			}
-
-			if(down & KEY_RIGHT)
+			if(down & KEY_RIGHT || ((held & KEY_RIGHT) && move))
 			{
 				if(selected < (int)data::curUser.titles.size() - 1)
 					selected++;
@@ -149,11 +135,10 @@ namespace ui
 					start += 6;
 
 				if(start < 0) start = 0;
-
 				if(selected == 12) maxTitles = 24;
 				break;
 			}
-			else if(down & KEY_LEFT)
+			else if(down & KEY_LEFT || ((held & KEY_LEFT) && move))
 			{
 				if(selected > 0)
 					selected--;
@@ -162,11 +147,10 @@ namespace ui
 					start -= 6;
 
 				if(start < 0) start = 0;
-
 				if(selected == 5) maxTitles = 18;
 				break;
 			}
-			else if(down & KEY_UP)
+			else if(down & KEY_UP || ((held & KEY_UP) && move))
 			{
 				selected -= 6;
 				if(selected < 0)
@@ -176,11 +160,10 @@ namespace ui
 					start -= 6;
 
 				if(start < 0) start = 0;
-
 				if(selected >= 0 && selected < 6) maxTitles = 18;
 				break;
 			}
-			else if(down & KEY_DOWN)
+			else if(down & KEY_DOWN || ((held & KEY_DOWN) && move))
 			{
 				selected += 6;
 				if(selected > (int)data::curUser.titles.size() - 1)
@@ -207,7 +190,11 @@ namespace ui
 			}
 			else if(down & KEY_Y || ttlNav[1].getEvent() == BUTTON_RELEASED)
 			{
-				fs::dumpAllUserSaves(data::curUser);
+				if(confirm("Are you sure you want to backup all saves?", "Backup"))
+                {
+					fs::dumpAllUserSaves(data::curUser);
+					break;
+				}
 			}
 			else if(down & KEY_X || ttlNav[2].getEvent() == BUTTON_RELEASED)
 			{
@@ -220,7 +207,7 @@ namespace ui
 			else if(down & KEY_B || ttlNav[3].getEvent() == BUTTON_RELEASED)
 			{
 				start = 0;
-				//selected = 0;
+				selected = 0;
 				maxTitles = 18;
 				selRectX = 93, selRectY = 187;
 				mstate = USR_SEL;
@@ -230,6 +217,34 @@ namespace ui
 			{
 				ui::finish = true;
 				break;
+			}
+
+			//Update touchtracking
+			track.update(p); 
+			switch(track.getEvent())
+			{
+				case TRACK_SWIPE_UP:
+					{
+						if(start + maxTitles < (int)data::curUser.titles.size())
+						{
+							start += 6;
+							selected += 6;
+							if(selected > (int)data::curUser.titles.size() - 1)
+								selected = data::curUser.titles.size() - 1;
+							maxTitles = 24;
+						}
+					}
+					break;
+
+				case TRACK_SWIPE_DOWN:
+					{
+						if(start - 6 >= 0)
+						{
+							start -= 6;
+							selected -= 6;
+						} else maxTitles = 18;
+					}
+					break;
 			}
 
 			gfxBeginFrame();

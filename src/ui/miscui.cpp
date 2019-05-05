@@ -220,8 +220,7 @@ namespace ui
 
     bool confirm(const std::string& mess, const std::string& buttontext)
     {
-		ui::screen = texCreate(1280, 720);
-		memcpy(screen->data, frameBuffer->data, frameBuffer->size * 4);
+		memcpy(ui::screen->data, frameBuffer->data, frameBuffer->size * 4);
 
         bool ret = false;
 	
@@ -229,7 +228,7 @@ namespace ui
         button yes(buttontext, 641, 461, 384, 70);
 
 		//Color shift for rect
-		static uint8_t clrSh = 0;
+		static int clrSh = 0;
 		//Whether or not we're adding or subtracting from clrShft
 		static bool clrAdd = true;
 			
@@ -256,15 +255,19 @@ namespace ui
 
 			if(clrAdd)
 			{
-				clrSh += 10;
-				if(clrSh > 60)
+				clrSh += 5;
+				if(clrSh > 100) {
+					if(clrSh > 254) clrSh = 254;
 					clrAdd = false;
+				}
 			}
 			else
 			{
 				clrSh -= 10;
-				if(clrSh == 0)
+				if(clrSh <= 0) {
+					if(clrSh < 0) clrSh = 0;
 					clrAdd = true;
+				}
 			}
 
 			gfxBeginFrame();
@@ -400,7 +403,11 @@ namespace ui
 	
 	void drawGlowElem(int x, int y, int w, int h, int clrSh, tex *elem, int offset)
 	{
-		clr rectClr = clrCreateRGBA(0x59 - clrSh, 0xFD - clrSh, 0xDB - clrSh, 0xFF);
+		int R = 89 - clrSh; if(R < 0) R = 0; if(R > 254) R = 254;
+		int G = 253 - clrSh; if(G < 0) G = 0; if(G > 254) G = 254;
+		int B = 219 - clrSh / 2; if(B < 0) B = 0; if(B > 254) B = 254;
+
+		clr rectClr = clrCreateRGBA(R, G, B, 0xFF);
 		//drawRect(frameBuffer, x - offset, y - offset, w + offset * 2, h + offset * 2, boundClr);
 		texSwapColors(elem, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF), rectClr);
 		texDraw(elem, frameBuffer, x - 5 - offset, y - 5 - offset);

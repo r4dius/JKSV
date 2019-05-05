@@ -748,8 +748,8 @@ void texSwapColors(tex *t, const clr old, const clr newColor)
     uint32_t *dataPtr = &t->data[0];
     for(unsigned i = 0; i < t->size; i++, dataPtr++)
     {
-        if(*dataPtr == oldClr)
-            *dataPtr = newClr;
+        if((*dataPtr & 0x00FFFFFF) == (oldClr & 0x00FFFFFF))
+            *dataPtr = ( newClr & 0x00FFFFFF ) | ( *dataPtr & 0xFF000000 );
     }
 
 }

@@ -134,18 +134,22 @@ namespace ui
 
     void menu::draw(const clr& textClr)
     {
-        if(clrAdd)
-        {
-            clrSh += 10;
-            if(clrSh > 60)
-                clrAdd = false;
-        }
-        else
-        {
-            clrSh -= 10;
-            if(clrSh == 0)
-                clrAdd = true;
-        }
+		if(clrAdd)
+		{
+			clrSh += 5;
+			if(clrSh > 100) {
+				if(clrSh > 254) clrSh = 254;
+				clrAdd = false;
+			}
+		}
+		else
+		{
+			clrSh -= 10;
+			if(clrSh <= 0) {
+				if(clrSh < 0) clrSh = 0;
+				clrAdd = true;
+			}
+		}
 
         int length = 0;
         if((opt.size() - 1) < 7)

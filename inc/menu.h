@@ -55,7 +55,7 @@ namespace ui
             //Selected + frame counting for auto-scroll
             int selected = 0, fc = 0, start = 0, retEvent = MENU_NOTHING, fontSize = 19;
             //How much we shift the color of the rectangle
-            uint8_t clrSh = 0;
+            int clrSh = 0;
             bool clrAdd = true;
             bool separate = true;
 			bool leftmenu = false;

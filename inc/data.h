@@ -91,7 +91,7 @@ namespace data
             std::vector<titledata> titles;
 
             void drawIcon(int x, int y){ texDrawNoAlpha(userIcon, frameBuffer, x, y); }
-            void drawIconHalf(int x, int y){ texDrawResize(userIcon, frameBuffer, x, y, 174, 174); }
+            void drawHalf(unsigned x, unsigned y) { texDrawResize(userIcon, frameBuffer, x, y, 174, 174); }
             void delIcon(){ texDestroy(userIcon); }
 
         private:
