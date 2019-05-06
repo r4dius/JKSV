@@ -273,7 +273,9 @@ namespace ui
 			gfxBeginFrame();
 			texDraw(screen, frameBuffer, 0, 0);
 			ui::drawTextPopupBg(255, 189, 770, 342);
-			drawTextWrap(mess.c_str(), frameBuffer, ui::shared, 325, 250, 19, mnuTxt, 630);
+			
+			int top = 191 + 266 / 2 - textGetHeight(mess.c_str(), ui::shared, 19, 630) / 2;
+			drawTextWrap(mess.c_str(), frameBuffer, ui::shared, 325, top, 19, mnuTxt, 630);
 			drawRect(frameBuffer, 255, 459, 770, 2, clrCreateU32(0xFFD1D1D1));
 			drawRect(frameBuffer, 639, 461, 2, 70, clrCreateU32(0xFFD1D1D1));
 			drawGlowElem(641, 461, 384, 70, clrSh, ui::buttonSel, 0);

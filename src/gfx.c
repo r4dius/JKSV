@@ -299,6 +299,58 @@ size_t textGetWidth(const char *str, const font *f, int sz)
     return width;
 }
 
+size_t textGetHeight(const char *str, const font *f, int sz, int maxWidth)
+{
+    char wordBuf[128];
+    size_t nextbreak = 0;
+    size_t strLength = strlen(str);
+    int tmpX = 0, height = sz;
+    for(unsigned i = 0; i < strLength; )
+    {
+        nextbreak = strcspn(&str[i], " /");
+
+        memset(wordBuf, 0, 128);
+        memcpy(wordBuf, &str[i], nextbreak + 1);
+
+        size_t width = textGetWidth(wordBuf, f, sz);
+
+        if(tmpX + width >= 0 + maxWidth)
+        {
+            tmpX = 0;
+            height += sz + 17;
+        }
+
+        size_t wLength = strlen(wordBuf);
+        uint32_t tmpChr = 0;
+        for(unsigned j = 0; j < wLength; )
+        {
+            ssize_t unitCnt = decode_utf8(&tmpChr, (const uint8_t *)&wordBuf[j]);
+            if(unitCnt <= 0)
+                break;
+
+            j += unitCnt;
+            switch(tmpChr)
+            {
+                case '\n':
+                    tmpX = 0;
+                    height += sz + 8;
+                    continue;
+                    break;
+            }
+
+            FT_GlyphSlot slot = loadGlyph(tmpChr, f, FT_LOAD_RENDER);
+            if(slot != NULL)
+            {
+                tmpX += slot->advance.x >> 6;
+            }
+        }
+
+        i += strlen(wordBuf);
+    }
+
+    return height;
+}
+
 void drawRect(tex *target, int x, int y, int w,  int h, const clr c)
 {
     uint32_t clr = clrGetColor(c);

@@ -87,6 +87,7 @@ void drawTextWrap(const char *str, tex *target, const font *f, int x, int y, int
 
 //Returns text width
 size_t textGetWidth(const char *str, const font *f, int sz);
+size_t textGetHeight(const char *str, const font *f, int sz, int maxWidth);
 
 //Draws rectangle at x, y with w, h
 void drawRect(tex *target, int x, int y, int w, int h, const clr c);
