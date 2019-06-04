@@ -23,6 +23,7 @@ namespace ui
         //Whether or not we're adding or subtracting from clrShft
         static bool clrAdd = true;
 
+		std::vector<ui::button> selButtons;
         static ui::touchTrack track;
 		unsigned x = 93, y = 187;
 		static unsigned tiX = 0, tiY = 0;
@@ -30,6 +31,9 @@ namespace ui
 		//Selected rectangle X and Y.
 		static unsigned selRectX = x, selRectY = y;
 		static std::string title = "";
+		static int retEvent = MENU_NOTHING;
+
+		bool updatemenu = false;
 
 		if(maxTitles == 24) y = 3;
 		unsigned endUser = start + maxTitles;
@@ -53,55 +57,23 @@ namespace ui
 					}
 
 					title = data::users[selected].getUsername();
-					// drawTitlebox(username, tX, y - 63, 48);
 					tiX = tX, tiY = y;
 				}
-				data::users[i].drawHalf(tX, y);
+				data::users[i].drawResize(tX, y, 174, 174);
+				ui::button newSelButton("", tX, y, 174, 174);
+                selButtons.push_back(newSelButton);
 			}
 		}
-
-		//Update invisible buttons
-		for(int i = 0; i < maxTitles; i++)
-		{
-            selButtons[i].update(p);
-            if(i == selected - start && selButtons[i].getEvent() == BUTTON_RELEASED)
-            {
-				data::curUser = data::users[selected];
-
-				mstate = TTL_SEL;
-			}
-			else if(selButtons[i].getEvent() == BUTTON_RELEASED)
-			{
-				if(start + i < (int)data::users.size())
-					selected = start + i;
-			}
-		}
-
-		//Update nav
-		for(unsigned i = 0; i < usrNav.size(); i++)
-			usrNav[i].update(p);
 
 		memcpy(screen->data, frameBuffer->data, frameBuffer->size * 4);
 			
 		while(true)
         {
-            hidScanInput();
-            uint64_t down = hidKeysDown(CONTROLLER_P1_AUTO);
+			hidScanInput();
+			uint64_t down = hidKeysDown(CONTROLLER_P1_AUTO);
 			uint64_t held = hidKeysHeld(CONTROLLER_P1_AUTO);
-            touchPosition p;
-            hidTouchRead(&p, 0);
-
-			if((held & KEY_RIGHT) || (held & KEY_LEFT) || (held & KEY_UP) || (held & KEY_DOWN))
-				movespeed++;
-			else {
-				movespeed = 0;
-				move = false;
-			}
-
-			if(movespeed >= 15) {
-				move = true;
-				movespeed = 12;
-			} else move = false;
+			touchPosition p;
+			hidTouchRead(&p, 0);
 
 			if(clrAdd)
 			{
@@ -119,6 +91,52 @@ namespace ui
 					clrAdd = true;
 				}
 			}
+
+			if((held & KEY_RIGHT) || (held & KEY_LEFT) || (held & KEY_UP) || (held & KEY_DOWN))
+				movespeed++;
+			else {
+				movespeed = 0;
+				move = false;
+			}
+
+			if(movespeed >= 20) {
+				move = true;
+				movespeed = 18;
+			} else move = false;
+
+			//Update nav
+			for(unsigned i = 0; i < usrNav.size(); i++)
+				usrNav[i].update(p);
+
+			//Update invisible buttons
+			for(int i = 0; (unsigned)i < endUser - start; i++)
+			{
+				selButtons[i].update(p);
+				if(i == selected - start && selButtons[i].getEvent() == BUTTON_RELEASED)
+				{
+					data::curUser = data::users[selected];
+
+					retEvent = MENU_DOUBLE_REL;
+					break;
+				}
+				else if(selButtons[i].getEvent() == BUTTON_RELEASED && i + start < (int)data::users.size())
+				{
+					selected = i + start;
+
+					retEvent = MENU_NOTHING;
+					updatemenu = true;
+				} else {
+					retEvent = MENU_NOTHING;
+				}
+			}
+
+			gfxBeginFrame();
+			texDraw(screen, frameBuffer, 0, 0);
+			drawGlowElem(selRectX, selRectY, 178, 178, clrSh, ui::iconSel, 2);
+			drawTitlebox(title, tiX, tiY - 63, 48);
+			gfxEndFrame();
+
+			if(updatemenu == true) break;
 
 			if(down & KEY_RIGHT || ((held & KEY_RIGHT) && move))
 			{
@@ -169,7 +187,7 @@ namespace ui
 				if(selected > 11 && selected < 18) maxTitles = 24;
 				break;
 			}
-			else if(down & KEY_A || usrNav[0].getEvent() == BUTTON_RELEASED)
+			else if(down & KEY_A || usrNav[0].getEvent() == BUTTON_RELEASED || retEvent == MENU_DOUBLE_REL)
 			{
 				data::curUser = data::users[selected];
 				//Reset this
@@ -193,12 +211,6 @@ namespace ui
 				ui::finish = true;
 				break;
 			}
-
-			gfxBeginFrame();
-			texDraw(screen, frameBuffer, 0, 0);
-			drawGlowElem(selRectX, selRectY, 178, 178, clrSh, ui::iconSel, 2);
-			drawTitlebox(title, tiX, tiY - 63, 48);
-			gfxEndFrame();
 		}
     }
 }

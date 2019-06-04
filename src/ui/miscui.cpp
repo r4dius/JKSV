@@ -84,34 +84,6 @@ namespace ui
 	void drawBoundBox(int x, int y, int w, int h, int clrSh)
 	{
 		clr rectClr = clrCreateRGBA(0x59 - clrSh, 0xFD - clrSh, 0xDB - clrSh, 0xFF);
-		/*
-		texSwapColors(ui::mnuTopLeft, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF), rectClr);
-		texSwapColors(ui::mnuTopRight, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF), rectClr);
-		texSwapColors(ui::mnuBotLeft, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF), rectClr);
-		texSwapColors(ui::mnuBotRight, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF), rectClr);
-		texSwapColors(ui::mnuBotShadow, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF), rectClr);
-
-		//top
-		texDraw(ui::mnuTopLeft, frameBuffer, x - 10, y - 10);
-		drawRect(frameBuffer, x + 5, y - 5, w - 10, 5, rectClr);
-		texDraw(ui::mnuTopRight, frameBuffer, x + w - 5, y - 10);
-
-		//mid
-		drawRect(frameBuffer, x - 5, y + 5, 5, h - 10, rectClr);
-		drawRect(frameBuffer, x, y, w, h, ui::boundClr);
-		drawRect(frameBuffer, x + w, y + 5, 5, h - 10, rectClr);
-
-		//bottom
-		texDraw(ui::mnuBotLeft, frameBuffer, x - 10, y + h - 5);
-		texDrawH(ui::mnuBotShadow, frameBuffer, x + 5, y + h - 5, w - 10);
-		texDraw(ui::mnuBotRight, frameBuffer, x + w - 5, y + h - 5);
-
-		texSwapColors(ui::mnuTopLeft, rectClr, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF));
-		texSwapColors(ui::mnuTopRight, rectClr, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF));
-		texSwapColors(ui::mnuBotLeft, rectClr, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF));
-		texSwapColors(ui::mnuBotRight, rectClr, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF));
-		texSwapColors(ui::mnuBotShadow, rectClr, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF));
-		*/
 
 		texSwapColors(ui::iconSel, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF), rectClr);
 		texDraw(ui::iconSel, frameBuffer, x - 7, y - 7);
@@ -369,34 +341,6 @@ namespace ui
     {
 		clr rectClr = clrCreateRGBA(0x59 - clrSh, 0xFD - clrSh, 0xDB - clrSh, 0xFF);
 
-		/*
-		texSwapColors(ui::popupButTopLeft, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF), rectClr);
-		texSwapColors(ui::popupButTopRight, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF), rectClr);
-		texSwapColors(ui::popupButBotLeft, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF), rectClr);
-		texSwapColors(ui::popupButBotRight, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF), rectClr);
-
-		//Center
-		drawRect(frameBuffer, x, y, w, h, boundClr);
-        //Top
-        texDraw(ui::popupButTopLeft, frameBuffer, x - 10, y - 10);
-		drawRect(frameBuffer, x + 5, y - 5, w - 10, 5, rectClr);
-        texDraw(ui::popupButTopRight, frameBuffer, x + w - 5, y - 10);
-
-        //middle
-		drawRect(frameBuffer, x - 5, y + 5, 5, h - 10, rectClr);
-		drawRect(frameBuffer, x + w, y + 5, 5, h - 10, rectClr);
-
-        //bottom
-        texDraw(ui::popupButBotLeft, frameBuffer, x - 10, y + h - 5);
-		drawRect(frameBuffer, x + 5, y + h, w - 10, 5, rectClr);
-        texDraw(ui::popupButBotRight, frameBuffer, x + w - 5, y + h - 5);
-
-		texSwapColors(ui::popupButTopLeft, rectClr, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF));
-		texSwapColors(ui::popupButTopRight, rectClr, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF));
-		texSwapColors(ui::popupButBotLeft, rectClr, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF));
-		texSwapColors(ui::popupButBotRight, rectClr, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF));
-		*/
-
 		drawRect(frameBuffer, x, y, w, h, boundClr);
 		texSwapColors(ui::buttonSel, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF), rectClr);
 		texDraw(ui::buttonSel, frameBuffer, x - 5, y - 5);
@@ -410,7 +354,7 @@ namespace ui
 		int B = 219 - clrSh / 2; if(B < 0) B = 0; if(B > 254) B = 254;
 
 		clr rectClr = clrCreateRGBA(R, G, B, 0xFF);
-		//drawRect(frameBuffer, x - offset, y - offset, w + offset * 2, h + offset * 2, boundClr);
+
 		texSwapColors(elem, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF), rectClr);
 		texDraw(elem, frameBuffer, x - 5 - offset, y - 5 - offset);
 		texSwapColors(elem, rectClr, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF));

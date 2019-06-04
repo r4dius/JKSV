@@ -23,6 +23,7 @@ namespace ui
         //Whether or not we're adding or subtracting from clrShft
         static bool clrAdd = true;
 
+		std::vector<ui::button> selButtons;
         static ui::touchTrack track;
         unsigned x = 93, y = 187;
 		static unsigned tiX = 0, tiY = 0;
@@ -30,6 +31,10 @@ namespace ui
         //Selected rectangle X and Y.
         static unsigned selRectX = x, selRectY = y;
 		static std::string title = "";
+		static int retEvent = MENU_NOTHING;
+
+		bool updatemenu = false;
+		static bool swiping = false;
 
 		if(maxTitles == 24) y = 3;
         unsigned endTitle = start + maxTitles;
@@ -56,36 +61,11 @@ namespace ui
                     // drawTitlebox(title, tX, y - 63, 48);
 					tiX = tX, tiY = y;
                 }
-                data::curUser.titles[i].icon.drawHalf(tX, y);
+                data::curUser.titles[i].icon.drawResize(tX, y, 174, 174);
+				ui::button newSelButton("", tX, y, 174, 174);
+                selButtons.push_back(newSelButton);
             }
         }
-
-		//Update invisible buttons
-        for(int i = 0; i < maxTitles; i++)
-        {
-            selButtons[i].update(p);
-            if(i == selected - start && selButtons[i].getEvent() == BUTTON_RELEASED)
-            {
-                data::curData = data::curUser.titles[selected];
-                if(fs::mountSave(data::curUser, data::curData))
-                {
-                    util::makeTitleDir(data::curUser, data::curData);
-                    folderMenuPrepare(data::curUser, data::curData);
-                    folderMenuInfo = util::getInfoString(data::curUser, data::curData);
-
-                    mstate = FLD_SEL;
-                }
-            }
-            else if(selButtons[i].getEvent() == BUTTON_RELEASED)
-            {
-                if(start + i < (int)data::curUser.titles.size())
-                    selected = start + i;
-            }
-        }
-
-		//Update nav
-		for(unsigned i = 0; i < ttlNav.size(); i++)
-			ttlNav[i].update(p);
 
 		memcpy(screen->data, frameBuffer->data, frameBuffer->size * 4);
 
@@ -96,18 +76,6 @@ namespace ui
 			uint64_t held = hidKeysHeld(CONTROLLER_P1_AUTO);
             touchPosition p;
             hidTouchRead(&p, 0);
-
-			if((held & KEY_RIGHT) || (held & KEY_LEFT) || (held & KEY_UP) || (held & KEY_DOWN))
-				movespeed++;
-			else {
-				movespeed = 0;
-				move = false;
-			}
-
-			if(movespeed >= 15) {
-				move = true;
-				movespeed = 12;
-			} else move = false;
 
 			if(clrAdd)
 			{
@@ -125,6 +93,127 @@ namespace ui
 					clrAdd = true;
 				}
 			}
+
+			if((held & KEY_RIGHT) || (held & KEY_LEFT) || (held & KEY_UP) || (held & KEY_DOWN))
+				movespeed++;
+			else {
+				movespeed = 0;
+				move = false;
+			}
+
+			if(movespeed >= 20) {
+				move = true;
+				movespeed = 18;
+			} else move = false;
+
+			//Update touchtracking
+			track.update(p); 
+			switch(track.getEvent())
+			{
+				case TRACK_SWIPE_UP:
+					swiping = true;
+					if(start + 18 < (int)data::curUser.titles.size()) {
+						selected += 6;
+						if(selected > (int)data::curUser.titles.size() - 1)
+							selected = data::curUser.titles.size() - 1;
+
+						//if(selected - start >= 18)
+						if(maxTitles == 24) start += 6;
+
+
+						if((int)data::curUser.titles.size() > 12) maxTitles = 24;
+						updatemenu = true;
+						return;
+					}
+					break;
+
+				case TRACK_SWIPE_DOWN:
+					swiping = true;
+					if(maxTitles != 18) {
+						selected -= 6;
+						if(selected < 0)
+							selected = 0;
+						start -= 6;
+						if(start < 0) {
+							start = 0;
+							maxTitles = 18;
+						}
+
+						updatemenu = true;
+						return;
+					}
+					break;
+				default :
+					if(swiping && hidTouchCount() <= 0) swiping = false;
+					break;
+			}
+			
+			if(!swiping) {
+				//Update nav
+				for(unsigned i = 0; i < ttlNav.size(); i++)
+					ttlNav[i].update(p);
+
+				//Update invisible buttons
+				for(int i = 0; (unsigned)i < endTitle - start; i++)
+				{
+					selButtons[i].update(p);
+					if(i == selected - start && selButtons[i].getEvent() == BUTTON_RELEASED)
+					{
+						data::curData = data::curUser.titles[selected];
+						if(fs::mountSave(data::curUser, data::curData))
+						{
+							util::makeTitleDir(data::curUser, data::curData);
+							folderMenuInfo = util::getInfoString(data::curUser, data::curData);
+
+							mstate = FLD_SEL;
+						}
+
+						retEvent = MENU_DOUBLE_REL;
+						break;
+					}
+					else if(selButtons[i].getEvent() == BUTTON_RELEASED && !swiping)
+					{
+						if(start + i < (int)data::curUser.titles.size())
+							selected = start + i;
+
+						retEvent = MENU_NOTHING;
+						updatemenu = true;
+						
+						if(maxTitles == 24) {
+							if(selected < start + 6) {
+								start -= 6;
+								if(start < 0) {
+									start = 0;
+									maxTitles = 18;
+								}
+
+								updatemenu = true;
+								return;
+							} else if(selected >= start + 18) {
+								start += 6;
+
+								updatemenu = true;
+								return;
+							}
+						} else if(selected >= start + 12) {
+							maxTitles = 24;
+
+							updatemenu = true;
+							return;
+						}
+					} else {
+						retEvent = MENU_NOTHING;
+					}
+				}
+			}
+
+			gfxBeginFrame();
+			texDraw(screen, frameBuffer, 0, 0);
+			drawGlowElem(selRectX, selRectY, 178, 178, clrSh, ui::iconSel, 2);
+			drawTitlebox(title, tiX, tiY - 63, 48);
+			gfxEndFrame();
+
+			if(updatemenu == true) break;
 
 			if(down & KEY_RIGHT || ((held & KEY_RIGHT) && move))
 			{
@@ -175,13 +264,13 @@ namespace ui
 				if(selected > 11 && selected < 18) maxTitles = 24;
 				break;
 			}
-			else if(down & KEY_A || ttlNav[0].getEvent() == BUTTON_RELEASED)
+			else if(down & KEY_A || ttlNav[0].getEvent() == BUTTON_RELEASED || (!swiping && retEvent == MENU_DOUBLE_REL))
 			{
 				data::curData = data::curUser.titles[selected];
 				if(fs::mountSave(data::curUser, data::curData))
 				{
 					util::makeTitleDir(data::curUser, data::curData);
-					folderMenuPrepare(data::curUser, data::curData);
+					// folderMenuPrepare(data::curUser, data::curData);
 					folderMenuInfo = util::getInfoString(data::curUser, data::curData);
 
 					mstate = FLD_SEL;
@@ -218,40 +307,6 @@ namespace ui
 				ui::finish = true;
 				break;
 			}
-
-			//Update touchtracking
-			track.update(p); 
-			switch(track.getEvent())
-			{
-				case TRACK_SWIPE_UP:
-					{
-						if(start + maxTitles < (int)data::curUser.titles.size())
-						{
-							start += 6;
-							selected += 6;
-							if(selected > (int)data::curUser.titles.size() - 1)
-								selected = data::curUser.titles.size() - 1;
-							maxTitles = 24;
-						}
-					}
-					break;
-
-				case TRACK_SWIPE_DOWN:
-					{
-						if(start - 6 >= 0)
-						{
-							start -= 6;
-							selected -= 6;
-						} else maxTitles = 18;
-					}
-					break;
-			}
-
-			gfxBeginFrame();
-			texDraw(screen, frameBuffer, 0, 0);
-			drawGlowElem(selRectX, selRectY, 178, 178, clrSh, ui::iconSel, 2);
-			drawTitlebox(title, tiX, tiY - 63, 48);
-			gfxEndFrame();
 		}
 /*
 		char char_arr[200];

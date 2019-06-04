@@ -234,7 +234,7 @@ void drawTextWrap(const char *str, tex *target, const font *f, int x, int y, int
             {
                 case '\n':
                     tmpX = x;
-                    y += sz + 8;
+                    y += sz + 17;
                     continue;
                     break;
 				/*

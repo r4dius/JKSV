@@ -30,7 +30,7 @@ namespace ui
     std::string folderMenuInfo;
 
     //Touch button vector
-    std::vector<ui::button> selButtons;
+    // std::vector<ui::button> selButtons;
 
     //UI colors
     clr clearClr, mnuTxt, txtClr, tboxClr, sideRect, divClr, sepClr, boundClr, popupClr, popupbgClr, blurClr;
@@ -165,7 +165,7 @@ namespace ui
         else
             shared = fontLoadSharedFonts();
 
-        setupSelButtons();
+        //setupSelButtons();
         setupNavButtons();
 
         if(fs::fileExists(fs::getWorkDir() + "back.jpg"))
@@ -234,20 +234,20 @@ namespace ui
         fontDestroy(shared);
     }
 
-    void setupSelButtons()
-    {
-        int x = 93, y = 187;
-        for(int i = 0; i < 18; y += 184)
-        {
-            int endRow = i + 8;
-            for(int tX = x; i < endRow; tX += 184, i++)
-            {
-                //Make a new button with no text. We're not drawing them anyway
-                ui::button newSelButton("", tX, y, 174, 174);
-                selButtons.push_back(newSelButton);
-            }
-        }
-    }
+    // void setupSelButtons()
+    // {
+        // int x = 93, y = 187;
+        // for(int i = 0; i < 12; y += 184)
+        // {
+            // int endRow = i + 6;
+            // for(int tX = x; i < endRow; tX += 184, i++)
+            // {
+                // Make a new button with no text. We're not drawing them anyway
+                // ui::button newSelButton("", tX, y, 174, 174);
+                // selButtons.push_back(newSelButton);
+            // }
+        // }
+    // }
 
     void setupNavButtons()
     {

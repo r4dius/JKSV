@@ -27,7 +27,7 @@ namespace data
             void load(const uint64_t & _id, const std::string& _png);
 
             void draw(unsigned x, unsigned y) { texDrawNoAlpha(iconTex, frameBuffer, x, y); }
-            void drawHalf(unsigned x, unsigned y) { texDrawResize(iconTex, frameBuffer, x, y, 174, 174); }
+            void drawResize(unsigned x, unsigned y, unsigned w, unsigned h) { texDrawResize(iconTex, frameBuffer, x, y, w, h); }
 
             uint64_t getTitleID() { return titleID; }
 
@@ -91,7 +91,7 @@ namespace data
             std::vector<titledata> titles;
 
             void drawIcon(int x, int y){ texDrawNoAlpha(userIcon, frameBuffer, x, y); }
-            void drawHalf(unsigned x, unsigned y) { texDrawResize(userIcon, frameBuffer, x, y, 174, 174); }
+            void drawResize(unsigned x, unsigned y, unsigned w, unsigned h) { texDrawResize(userIcon, frameBuffer, x, y, w, h); }
             void delIcon(){ texDestroy(userIcon); }
 
         private:

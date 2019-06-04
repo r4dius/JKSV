@@ -8,7 +8,6 @@
 #include "gfx.h"
 
 //ui headers - split up to keep a bit more organized
-#include "menu.h"
 #include "miscui.h"
 #include "uiupdate.h"
 
@@ -19,9 +18,15 @@ enum menuState
     FLD_SEL
 };
 
+enum menuTouch
+{
+	MENU_NOTHING,
+	MENU_DOUBLE_REL
+};
 
 namespace ui
 {
+
     //Current menu/ui state
     extern int mstate, prevState;
 
@@ -45,7 +50,7 @@ namespace ui
     //Shared font
     extern font *shared;
 
-    extern std::vector<ui::button> selButtons;
+    // extern std::vector<ui::button> selButtons;
 
     //Loads in the A, B, X, Y button graphics
     void init();
@@ -53,7 +58,7 @@ namespace ui
 
     //Prepares ui
     //Sets up buttons for icon touchin
-    void setupSelButtons();
+    //void setupSelButtons();
     void setupNavButtons();
 
     //Clears and draws general stuff used by multiple screens
