@@ -34,11 +34,14 @@ namespace ui
 		static int retEvent = MENU_NOTHING;
 
 		bool updatemenu = false;
+		static bool swiping = false;
+
+		unsigned list_size = data::users.size();
 
 		if(maxTitles == 24) y = 3;
 		unsigned endUser = start + maxTitles;
-		if(start + maxTitles > (int)data::users.size())
-			endUser = data::users.size();
+		if(start + maxTitles > (int)list_size)
+			endUser = list_size;
 
 		for(unsigned i = start; i < endUser; y += 184)
 		{
@@ -99,10 +102,50 @@ namespace ui
 				move = false;
 			}
 
-			if(movespeed >= 20) {
+			if(movespeed >= 10) {
 				move = true;
-				movespeed = 18;
+				movespeed = 12;
 			} else move = false;
+
+			//Update touchtracking
+			track.update(p); 
+			switch(track.getEvent()) 
+			{
+				case TRACK_SWIPE_UP:
+					if(start + 18 < (int)list_size) {
+						swiping = true;
+						selected += 6;
+						if(selected > (int)list_size - 1)
+							selected = list_size - 1;
+
+						if(maxTitles == 24)
+							start += 6;
+
+						if((int)list_size > 12)
+							maxTitles = 24;
+
+						updatemenu = true;
+						return;
+					}
+					break;
+
+				case TRACK_SWIPE_DOWN:
+					if(maxTitles != 18) {
+						swiping = true;
+						selected -= 6;
+						if(selected < 0)
+							selected = 0;
+						start -= 6;
+						if(start < 0) {
+							start = 0;
+							maxTitles = 18;
+						}
+
+						updatemenu = true;
+						return;
+					}
+					break;
+			}
 
 			//Update nav
 			for(unsigned i = 0; i < usrNav.size(); i++)
@@ -114,21 +157,52 @@ namespace ui
 				selButtons[i].update(p);
 				if(i == selected - start && selButtons[i].getEvent() == BUTTON_RELEASED)
 				{
-					data::curUser = data::users[selected];
+					if(!swiping) {
+						data::curUser = data::users[selected];
 
-					retEvent = MENU_DOUBLE_REL;
-					break;
+						retEvent = MENU_DOUBLE_REL;
+						break;
+					}
 				}
-				else if(selButtons[i].getEvent() == BUTTON_RELEASED && i + start < (int)data::users.size())
+				else if(selButtons[i].getEvent() == BUTTON_RELEASED)
 				{
-					selected = i + start;
+					if(!swiping) {
+						if(start + i < (int)list_size)
+							selected = start + i;
 
-					retEvent = MENU_NOTHING;
-					updatemenu = true;
+						retEvent = MENU_NOTHING;
+						updatemenu = true;
+						
+						if(maxTitles == 24) {
+							if(selected < start + 6) {
+								start -= 6;
+								if(start < 0) {
+									start = 0;
+									maxTitles = 18;
+								}
+
+								updatemenu = true;
+								return;
+							} else if(selected >= start + 18) {
+								start += 6;
+
+								updatemenu = true;
+								return;
+							}
+						} else if(selected >= start + 12) {
+							maxTitles = 24;
+
+							updatemenu = true;
+							return;
+						}
+					}
 				} else {
 					retEvent = MENU_NOTHING;
 				}
 			}
+
+			// reset swiping check
+			if(swiping && hidTouchCount() <= 0) swiping = false;
 
 			gfxBeginFrame();
 			texDraw(screen, frameBuffer, 0, 0);
@@ -140,7 +214,7 @@ namespace ui
 
 			if(down & KEY_RIGHT || ((held & KEY_RIGHT) && move))
 			{
-				if(selected < (int)data::users.size() - 1)
+				if(selected < (int)list_size - 1)
 					selected++;
 
 				if(selected >= (int)start + 18)
@@ -178,8 +252,8 @@ namespace ui
 			else if(down & KEY_DOWN || ((held & KEY_DOWN) && move))
 			{
 				selected += 6;
-				if(selected > (int)data::users.size() - 1)
-					selected = data::users.size() - 1;
+				if(selected > (int)list_size - 1)
+					selected = list_size - 1;
 
 				if(selected - start >= 18)
 					start += 6;
@@ -201,7 +275,7 @@ namespace ui
 			{
 				if(confirm("Are you sure you want to backup all users saves?", "Backup"))
                 {
-					for(unsigned i = 0; i < data::users.size(); i++)
+					for(unsigned i = 0; i < list_size; i++)
 						fs::dumpAllUserSaves(data::users[i]);
                 }
                 break;

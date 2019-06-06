@@ -36,10 +36,12 @@ namespace ui
 		bool updatemenu = false;
 		static bool swiping = false;
 
+		unsigned list_size = data::curUser.titles.size();
+
 		if(maxTitles == 24) y = 3;
         unsigned endTitle = start + maxTitles;
-        if(start + maxTitles > (int)data::curUser.titles.size())
-            endTitle = data::curUser.titles.size();
+        if(start + maxTitles > (int)list_size)
+            endTitle = list_size;
 
         for(unsigned i = start; i < endTitle; y += 184)
         {
@@ -58,7 +60,6 @@ namespace ui
                     }
 
 					title = data::curUser.titles[selected].getTitle();
-                    // drawTitlebox(title, tX, y - 63, 48);
 					tiX = tX, tiY = y;
                 }
                 data::curUser.titles[i].icon.drawResize(tX, y, 174, 174);
@@ -101,35 +102,36 @@ namespace ui
 				move = false;
 			}
 
-			if(movespeed >= 20) {
+			if(movespeed >= 10) {
 				move = true;
-				movespeed = 18;
+				movespeed = 12;
 			} else move = false;
 
 			//Update touchtracking
 			track.update(p); 
-			switch(track.getEvent())
+			switch(track.getEvent()) 
 			{
 				case TRACK_SWIPE_UP:
-					swiping = true;
-					if(start + 18 < (int)data::curUser.titles.size()) {
+					if(start + 18 < (int)list_size) {
+						swiping = true;
 						selected += 6;
-						if(selected > (int)data::curUser.titles.size() - 1)
-							selected = data::curUser.titles.size() - 1;
+						if(selected > (int)list_size - 1)
+							selected = list_size - 1;
 
-						//if(selected - start >= 18)
-						if(maxTitles == 24) start += 6;
+						if(maxTitles == 24)
+							start += 6;
 
+						if((int)list_size > 12)
+							maxTitles = 24;
 
-						if((int)data::curUser.titles.size() > 12) maxTitles = 24;
 						updatemenu = true;
 						return;
 					}
 					break;
 
 				case TRACK_SWIPE_DOWN:
-					swiping = true;
 					if(maxTitles != 18) {
+						swiping = true;
 						selected -= 6;
 						if(selected < 0)
 							selected = 0;
@@ -143,22 +145,19 @@ namespace ui
 						return;
 					}
 					break;
-				default :
-					if(swiping && hidTouchCount() <= 0) swiping = false;
-					break;
 			}
-			
-			if(!swiping) {
-				//Update nav
-				for(unsigned i = 0; i < ttlNav.size(); i++)
-					ttlNav[i].update(p);
 
-				//Update invisible buttons
-				for(int i = 0; (unsigned)i < endTitle - start; i++)
+			//Update nav
+			for(unsigned i = 0; i < ttlNav.size(); i++)
+				ttlNav[i].update(p);
+
+			//Update invisible buttons
+			for(int i = 0; (unsigned)i < endTitle - start; i++)
+			{
+				selButtons[i].update(p);
+				if(i == selected - start && selButtons[i].getEvent() == BUTTON_RELEASED)
 				{
-					selButtons[i].update(p);
-					if(i == selected - start && selButtons[i].getEvent() == BUTTON_RELEASED)
-					{
+					if(!swiping) {
 						data::curData = data::curUser.titles[selected];
 						if(fs::mountSave(data::curUser, data::curData))
 						{
@@ -171,9 +170,11 @@ namespace ui
 						retEvent = MENU_DOUBLE_REL;
 						break;
 					}
-					else if(selButtons[i].getEvent() == BUTTON_RELEASED && !swiping)
-					{
-						if(start + i < (int)data::curUser.titles.size())
+				}
+				else if(selButtons[i].getEvent() == BUTTON_RELEASED)
+				{
+					if(!swiping) {
+						if(start + i < (int)list_size)
 							selected = start + i;
 
 						retEvent = MENU_NOTHING;
@@ -201,11 +202,14 @@ namespace ui
 							updatemenu = true;
 							return;
 						}
-					} else {
-						retEvent = MENU_NOTHING;
 					}
+				} else {
+					retEvent = MENU_NOTHING;
 				}
 			}
+
+			// reset swiping check
+			if(swiping && hidTouchCount() <= 0) swiping = false;
 
 			gfxBeginFrame();
 			texDraw(screen, frameBuffer, 0, 0);
@@ -217,7 +221,7 @@ namespace ui
 
 			if(down & KEY_RIGHT || ((held & KEY_RIGHT) && move))
 			{
-				if(selected < (int)data::curUser.titles.size() - 1)
+				if(selected < (int)list_size - 1)
 					selected++;
 
 				if(selected >= (int)start + 18)
@@ -255,8 +259,8 @@ namespace ui
 			else if(down & KEY_DOWN || ((held & KEY_DOWN) && move))
 			{
 				selected += 6;
-				if(selected > (int)data::curUser.titles.size() - 1)
-					selected = data::curUser.titles.size() - 1;
+				if(selected > (int)list_size - 1)
+					selected = list_size - 1;
 
 				if(selected - start >= 18)
 					start += 6;
@@ -264,13 +268,13 @@ namespace ui
 				if(selected > 11 && selected < 18) maxTitles = 24;
 				break;
 			}
-			else if(down & KEY_A || ttlNav[0].getEvent() == BUTTON_RELEASED || (!swiping && retEvent == MENU_DOUBLE_REL))
+			else if(down & KEY_A || ttlNav[0].getEvent() == BUTTON_RELEASED || retEvent == MENU_DOUBLE_REL)
 			{
 				data::curData = data::curUser.titles[selected];
 				if(fs::mountSave(data::curUser, data::curData))
 				{
 					util::makeTitleDir(data::curUser, data::curData);
-					// folderMenuPrepare(data::curUser, data::curData);
+														
 					folderMenuInfo = util::getInfoString(data::curUser, data::curData);
 
 					mstate = FLD_SEL;
