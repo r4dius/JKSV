@@ -15,7 +15,8 @@ enum menuState
 {
     USR_SEL,
     TTL_SEL,
-    FLD_SEL
+    FLD_SEL,
+    BKL_SEL
 };
 
 enum menuTouch

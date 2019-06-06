@@ -348,6 +348,20 @@ namespace ui
                     drawText("Backup", frameBuffer, shared, startX += 38, 675, 18, mnuTxt);
                 }
                 break;
+
+            case BKL_SEL:
+                {
+                    unsigned startX = 604;
+                    texDraw(buttonY, frameBuffer, startX, 672);
+                    drawText("Backup All", frameBuffer, shared, startX += 38, 675, 18, mnuTxt);
+                    texDraw(buttonX, frameBuffer, startX += 163, 672);
+                    drawText("Unblacklist", frameBuffer, shared, startX += 38, 675, 18, mnuTxt);
+                    texDraw(buttonB, frameBuffer, startX += 134, 672);
+                    drawText("Back", frameBuffer, shared, startX += 38, 675, 18, mnuTxt);
+                    texDraw(buttonA, frameBuffer, startX += 96, 672);
+                    drawText("Select", frameBuffer, shared, startX += 38, 675, 18, mnuTxt);
+                }
+                break;
         }
     }
 
@@ -368,6 +382,10 @@ namespace ui
 
             case FLD_SEL:
                 updateFolderMenu(down, held, p);
+                break;
+
+            case BKL_SEL:
+                updateBlacklistMenu(down, held, p);
                 break;
         }
     }

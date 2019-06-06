@@ -11,7 +11,7 @@ extern std::vector<ui::button> ttlNav;
 
 namespace ui
 {
-    void updateTitleMenu(const uint64_t& down, const uint64_t& held, const touchPosition& p)
+    void updateBlacklistMenu(const uint64_t& down, const uint64_t& held, const touchPosition& p)
     {
         //Static so they don't get reset every loop
         //Where to start in titles, selected title
@@ -303,13 +303,8 @@ namespace ui
 				selected = 0;
 				maxTitles = 18;
 				selRectX = 93, selRectY = 187;
-				mstate = USR_SEL;
+				mstate = TTL_SEL;
 				return;
-			}
-			else if(down & KEY_MINUS)
-			{
-				mstate = BKL_SEL;
-				break;
 			}
 			else if(down & KEY_PLUS)
 			{
