@@ -35,6 +35,7 @@ To do :
 - ~~left menu list / buttons separator should be customizable~~ (deleted text list)
 - forgot to adapt hidden buttons overlay at bottom
 - some untouched menus (progress menu only?)
+- fix empty menu button actions
 
 Stuff I'd like to add
 - would like some scrolling effect and a scollbar when list is more than 1 screen in height
