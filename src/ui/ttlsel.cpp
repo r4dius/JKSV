@@ -293,8 +293,20 @@ namespace ui
 			{
 				std::string confStr = "Are you 100% sure you want to add \"" + data::curUser.titles[selected].getTitle() + \
 									  "\" to your blacklist?";
-				if(ui::confirm(confStr, "Blacklist"))
+				if(ui::confirm(confStr, "Blacklist")) {
 					data::blacklistAdd(data::curUser, data::curUser.titles[selected]);
+					// deleting last icon
+					if(selected == list_size - 1) {
+						if(selected > 0)
+							selected--;
+
+						if(selected - 6 < (int)start)
+							start -= 6;
+
+						if(start < 0) start = 0;
+						if(selected == 5) maxTitles = 18;
+					}
+				}
 				break;
 			}
 			else if(down & KEY_B || ttlNav[3].getEvent() == BUTTON_RELEASED)

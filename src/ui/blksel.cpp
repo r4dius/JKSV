@@ -36,7 +36,7 @@ namespace ui
 		bool updatemenu = false;
 		static bool swiping = false;
 
-		unsigned list_size = data::curUser.titles.size();
+		unsigned list_size = data::curUser.blktitles.size();
 
 		if(maxTitles == 24) y = 3;
         unsigned endTitle = start + maxTitles;
@@ -59,10 +59,10 @@ namespace ui
                         selRectY = y;
                     }
 
-					title = data::curUser.titles[selected].getTitle();
+					title = data::curUser.blktitles[selected].getTitle();
 					tiX = tX, tiY = y;
                 }
-                data::curUser.titles[i].icon.drawResize(tX, y, 174, 174);
+                data::curUser.blktitles[i].icon.drawResize(tX, y, 174, 174);
 				ui::button newSelButton("", tX, y, 174, 174);
                 selButtons.push_back(newSelButton);
             }
@@ -213,8 +213,10 @@ namespace ui
 
 			gfxBeginFrame();
 			texDraw(screen, frameBuffer, 0, 0);
-			drawGlowElem(selRectX, selRectY, 178, 178, clrSh, ui::iconSel, 2);
-			drawTitlebox(title, tiX, tiY - 63, 48);
+			if(list_size > 0) {
+				drawGlowElem(selRectX, selRectY, 178, 178, clrSh, ui::iconSel, 2);
+				drawTitlebox(title, tiX, tiY - 63, 48);
+			}
 			gfxEndFrame();
 
 			if(updatemenu == true) break;
@@ -270,7 +272,7 @@ namespace ui
 			}
 			else if(down & KEY_A || ttlNav[0].getEvent() == BUTTON_RELEASED || retEvent == MENU_DOUBLE_REL)
 			{
-				data::curData = data::curUser.titles[selected];
+				data::curData = data::curUser.blktitles[selected];
 				if(fs::mountSave(data::curUser, data::curData))
 				{
 					util::makeTitleDir(data::curUser, data::curData);
@@ -291,10 +293,22 @@ namespace ui
 			}
 			else if(down & KEY_X || ttlNav[2].getEvent() == BUTTON_RELEASED)
 			{
-				std::string confStr = "Are you 100% sure you want to add \"" + data::curUser.titles[selected].getTitle() + \
-									  "\" to your blacklist?";
-				if(ui::confirm(confStr, "Blacklist"))
-					data::blacklistAdd(data::curUser, data::curUser.titles[selected]);
+				std::string confStr = "Are you 100% sure you want to remove \"" + data::curUser.blktitles[selected].getTitle() + \
+									  "\" from your blacklist?";
+				if(ui::confirm(confStr, "Blacklist")) {
+					data::blacklistRemove(data::curUser, data::curUser.blktitles[selected]);
+					// deleting last icon
+					if(selected == list_size - 1) {
+						if(selected > 0)
+							selected--;
+
+						if(selected - 6 < (int)start)
+							start -= 6;
+
+						if(start < 0) start = 0;
+						if(selected == 5) maxTitles = 18;
+					}
+				}
 				break;
 			}
 			else if(down & KEY_B || ttlNav[3].getEvent() == BUTTON_RELEASED)

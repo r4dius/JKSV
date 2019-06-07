@@ -89,6 +89,7 @@ namespace data
 
             //Vector for storing save data info for user
             std::vector<titledata> titles;
+            std::vector<titledata> blktitles;
 
             void drawIcon(int x, int y){ texDrawNoAlpha(userIcon, frameBuffer, x, y); }
             void drawResize(unsigned x, unsigned y, unsigned w, unsigned h) { texDrawResize(userIcon, frameBuffer, x, y, w, h); }
@@ -102,6 +103,8 @@ namespace data
     };
     //Adds title to blacklist
     void blacklistAdd(user& u, titledata& t);
+	//Remove title from blacklist
+    void blacklistRemove(user& u, titledata& t);
 
     //User vector
     extern std::vector<user> users;

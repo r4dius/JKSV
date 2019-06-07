@@ -68,8 +68,10 @@ namespace data
     void loadDataInfo()
     {
         //Clear titles + users just in case
-        for(unsigned i = 0; i < users.size(); i++)
+        for(unsigned i = 0; i < users.size(); i++) {
             users[i].titles.clear();
+            users[i].blktitles.clear();
+		}
 
         users.clear();
 
@@ -95,7 +97,7 @@ namespace data
                 break;
 
             //If save data, not black listed or just ignore
-            if((info.SaveDataType == FsSaveDataType_SaveData && !blacklisted(info.titleID)) || sysSave)
+            if(info.SaveDataType == FsSaveDataType_SaveData || sysSave)
             {
                 int u = getUserIndex(info.userID);
                 if(u == -1)
@@ -108,24 +110,34 @@ namespace data
                         u = getUserIndex(info.userID);
                         titledata newData;
                         newData.init(info);
-                        if(newData.isMountable(newUser.getUID()) || !forceMount)
-                            users[u].titles.push_back(newData);
+                        if(newData.isMountable(newUser.getUID()) || !forceMount) {
+                            if(!blacklisted(info.titleID))
+								users[u].titles.push_back(newData);
+							else
+								users[u].blktitles.push_back(newData);
+						}
                     }
                 }
                 else
                 {
                     titledata newData;
                     newData.init(info);
-                    if(newData.isMountable(users[u].getUID()) || !forceMount)
-                        users[u].titles.push_back(newData);
+                    if(newData.isMountable(users[u].getUID()) || !forceMount) {
+						if(!blacklisted(info.titleID))
+							users[u].titles.push_back(newData);
+						else
+							users[u].blktitles.push_back(newData);
+					}
                 }
             }
         }
 
         fsSaveDataIteratorClose(&saveIt);
 
-        for(unsigned i = 0; i < users.size(); i++)
+        for(unsigned i = 0; i < users.size(); i++) {
             std::sort(users[i].titles.begin(), users[i].titles.end(), sortTitles);
+            std::sort(users[i].blktitles.begin(), users[i].blktitles.end(), sortTitles);
+		}
 
         curUser = users[0];
     }
@@ -317,8 +329,40 @@ namespace data
         {
             for(unsigned j = 0; j < users[i].titles.size(); j++)
             {
-                if(users[i].titles[j].getID() == t.getID())
+                if(users[i].titles[j].getID() == t.getID()) {
+                    users[i].blktitles.push_back(users[i].titles[j]);
+					std::sort(users[i].blktitles.begin(), users[i].blktitles.end(), sortTitles);
                     users[i].titles.erase(users[i].titles.begin() + j);
+				}
+            }
+        }
+
+        int uInd = getUserIndex(u.getUID());
+        u = users[uInd];
+    }
+	
+	void blacklistRemove(user& u, titledata& t)
+    {
+        // std::fstream bl(fs::getWorkDir() + "blacklist.txt", std::ios::app);
+
+        // std::string titleLine = "#" + t.getTitle() + "\n";
+        // char idLine[32];
+        // sprintf(idLine, "0x%016lX\n", t.getID());
+
+        // bl.write(titleLine.c_str(), titleLine.length());
+        // bl.write(idLine, std::strlen(idLine));
+        // bl.close();
+
+        //Remove it from every user
+        for(unsigned i = 0; i < users.size(); i++)
+        {
+            for(unsigned j = 0; j < users[i].blktitles.size(); j++)
+            {
+                if(users[i].blktitles[j].getID() == t.getID()) {
+                    users[i].titles.push_back(users[i].blktitles[j]);
+					std::sort(users[i].titles.begin(), users[i].titles.end(), sortTitles);
+                    users[i].blktitles.erase(users[i].blktitles.begin() + j);
+				}
             }
         }
 
