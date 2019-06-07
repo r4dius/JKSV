@@ -11,20 +11,20 @@ extern std::vector<ui::button> usrNav;
 
 namespace ui
 {
-    void updateUserMenu(const uint64_t& down, const uint64_t& held, const touchPosition& p)
-    {
-        //Static so they don't get reset every loop
-        //Where to start in titles, selected user
-        static int start = 0, selected = 0, maxTitles = 18, movespeed = 0;
+	void updateUserMenu(const uint64_t& down, const uint64_t& held, const touchPosition& p)
+	{
+		//Static so they don't get reset every loop
+		//Where to start in titles, selected user
+		static int start = 0, selected = 0, maxTitles = 18, movespeed = 0;
 		static bool move = false;
 
-        //Color shift for rect
-        static int clrSh = 0;
-        //Whether or not we're adding or subtracting from clrShft
-        static bool clrAdd = true;
+		//Color shift for rect
+		static int clrSh = 0;
+		//Whether or not we're adding or subtracting from clrShft
+		static bool clrAdd = true;
 
 		std::vector<ui::button> selButtons;
-        static ui::touchTrack track;
+		static ui::touchTrack track;
 		unsigned x = 93, y = 187;
 		static unsigned tiX = 0, tiY = 0;
 
@@ -64,14 +64,14 @@ namespace ui
 				}
 				data::users[i].drawResize(tX, y, 174, 174);
 				ui::button newSelButton("", tX, y, 174, 174);
-                selButtons.push_back(newSelButton);
+				selButtons.push_back(newSelButton);
 			}
 		}
 
 		memcpy(screen->data, frameBuffer->data, frameBuffer->size * 4);
 			
 		while(true)
-        {
+		{
 			hidScanInput();
 			uint64_t down = hidKeysDown(CONTROLLER_P1_AUTO);
 			uint64_t held = hidKeysHeld(CONTROLLER_P1_AUTO);
@@ -206,8 +206,13 @@ namespace ui
 
 			gfxBeginFrame();
 			texDraw(screen, frameBuffer, 0, 0);
-			drawGlowElem(selRectX, selRectY, 178, 178, clrSh, ui::iconSel, 2);
-			drawTitlebox(title, tiX, tiY - 63, 48);
+			if(list_size > 0) {
+				drawGlowElem(selRectX, selRectY, 178, 178, clrSh, ui::iconSel, 2);
+				drawTitlebox(title, tiX, tiY - 63, 48);
+			} else {
+				std::string message = "No user with saved game, try playing something and get back";
+				drawText(message.c_str(), frameBuffer, ui::shared, (1280 - textGetWidth(message.c_str(), ui::shared, 22)) / 2, 340, 22, mnuTxt);
+			}
 			gfxEndFrame();
 
 			if(updatemenu == true) break;
@@ -222,7 +227,7 @@ namespace ui
 
 				if(start < 0) start = 0;
 				if(selected == 12) maxTitles = 24;
-                break;
+				break;
 			}
 			else if(down & KEY_LEFT || ((held & KEY_LEFT) && move))
 			{
@@ -269,16 +274,16 @@ namespace ui
 				//selected = 0;
 				//selRectX = 93, selRectY = 187;
 				mstate = TTL_SEL;
-                break;
+				break;
 			}
 			else if(down & KEY_Y || usrNav[1].getEvent() == BUTTON_RELEASED)
 			{
 				if(confirm("Are you sure you want to backup all users saves?", "Backup"))
-                {
+				{
 					for(unsigned i = 0; i < list_size; i++)
 						fs::dumpAllUserSaves(data::users[i]);
-                }
-                break;
+				}
+				break;
 			}
 			else if(down & KEY_PLUS)
 			{
@@ -286,5 +291,5 @@ namespace ui
 				break;
 			}
 		}
-    }
+	}
 }

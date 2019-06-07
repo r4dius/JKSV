@@ -11,25 +11,25 @@ extern std::vector<ui::button> ttlNav;
 
 namespace ui
 {
-    void updateTitleMenu(const uint64_t& down, const uint64_t& held, const touchPosition& p)
-    {
-        //Static so they don't get reset every loop
-        //Where to start in titles, selected title
-        static int start = 0, selected = 0, maxTitles = 18, movespeed = 0;
+	void updateTitleMenu(const uint64_t& down, const uint64_t& held, const touchPosition& p)
+	{
+		//Static so they don't get reset every loop
+		//Where to start in titles, selected title
+		static int start = 0, selected = 0, maxTitles = 18, movespeed = 0;
 		static bool move = false;
 
-        //Color shift for rect
-        static int clrSh = 0;
-        //Whether or not we're adding or subtracting from clrShft
-        static bool clrAdd = true;
+		//Color shift for rect
+		static int clrSh = 0;
+		//Whether or not we're adding or subtracting from clrShft
+		static bool clrAdd = true;
 
 		std::vector<ui::button> selButtons;
-        static ui::touchTrack track;
-        unsigned x = 93, y = 187;
+		static ui::touchTrack track;
+		unsigned x = 93, y = 187;
 		static unsigned tiX = 0, tiY = 0;
 
-        //Selected rectangle X and Y.
-        static unsigned selRectX = x, selRectY = y;
+		//Selected rectangle X and Y.
+		static unsigned selRectX = x, selRectY = y;
 		static std::string title = "";
 		static int retEvent = MENU_NOTHING;
 
@@ -39,44 +39,44 @@ namespace ui
 		unsigned list_size = data::curUser.titles.size();
 
 		if(maxTitles == 24) y = 3;
-        unsigned endTitle = start + maxTitles;
-        if(start + maxTitles > (int)list_size)
-            endTitle = list_size;
+		unsigned endTitle = start + maxTitles;
+		if(start + maxTitles > (int)list_size)
+			endTitle = list_size;
 
-        for(unsigned i = start; i < endTitle; y += 184)
-        {
-            unsigned endRow = i + 6;
-            for(unsigned tX = x; i < endRow; i++, tX += 184)
-            {
-                if(i == endTitle)
-                    break;
+		for(unsigned i = start; i < endTitle; y += 184)
+		{
+			unsigned endRow = i + 6;
+			for(unsigned tX = x; i < endRow; i++, tX += 184)
+			{
+				if(i == endTitle)
+					break;
 
-                if((int)i == selected)
-                {
-                    if(selRectX != tX || selRectY != y)
-                    {
-                        selRectX = tX;
-                        selRectY = y;
-                    }
+				if((int)i == selected)
+				{
+					if(selRectX != tX || selRectY != y)
+					{
+						selRectX = tX;
+						selRectY = y;
+					}
 
 					title = data::curUser.titles[selected].getTitle();
 					tiX = tX, tiY = y;
-                }
-                data::curUser.titles[i].icon.drawResize(tX, y, 174, 174);
+				}
+				data::curUser.titles[i].icon.drawResize(tX, y, 174, 174);
 				ui::button newSelButton("", tX, y, 174, 174);
-                selButtons.push_back(newSelButton);
-            }
-        }
+				selButtons.push_back(newSelButton);
+			}
+		}
 
 		memcpy(screen->data, frameBuffer->data, frameBuffer->size * 4);
 
 		while(true)
-        {
-            hidScanInput();
-            uint64_t down = hidKeysDown(CONTROLLER_P1_AUTO);
+		{
+			hidScanInput();
+			uint64_t down = hidKeysDown(CONTROLLER_P1_AUTO);
 			uint64_t held = hidKeysHeld(CONTROLLER_P1_AUTO);
-            touchPosition p;
-            hidTouchRead(&p, 0);
+			touchPosition p;
+			hidTouchRead(&p, 0);
 
 			if(clrAdd)
 			{
@@ -213,8 +213,13 @@ namespace ui
 
 			gfxBeginFrame();
 			texDraw(screen, frameBuffer, 0, 0);
-			drawGlowElem(selRectX, selRectY, 178, 178, clrSh, ui::iconSel, 2);
-			drawTitlebox(title, tiX, tiY - 63, 48);
+			if(list_size > 0) {
+				drawGlowElem(selRectX, selRectY, 178, 178, clrSh, ui::iconSel, 2);
+				drawTitlebox(title, tiX, tiY - 63, 48);
+			} else {
+				std::string message = "No saved game, please have a look in the blacklist";
+				drawText(message.c_str(), frameBuffer, ui::shared, (1280 - textGetWidth(message.c_str(), ui::shared, 22)) / 2, 340, 22, mnuTxt);
+			}
 			gfxEndFrame();
 
 			if(updatemenu == true) break;
@@ -284,19 +289,19 @@ namespace ui
 			else if(down & KEY_Y || ttlNav[1].getEvent() == BUTTON_RELEASED)
 			{
 				if(confirm("Are you sure you want to backup all saves?", "Backup"))
-                {
+				{
 					fs::dumpAllUserSaves(data::curUser);
 					break;
 				}
 			}
 			else if(down & KEY_X || ttlNav[2].getEvent() == BUTTON_RELEASED)
 			{
-				std::string confStr = "Are you 100% sure you want to add \"" + data::curUser.titles[selected].getTitle() + \
-									  "\" to your blacklist?";
+				std::string confStr = "Are you sure you want to add \"" + data::curUser.titles[selected].getTitle() + \
+									  "\" to your blacklist? It will apply to all users";
 				if(ui::confirm(confStr, "Blacklist")) {
 					data::blacklistAdd(data::curUser, data::curUser.titles[selected]);
 					// deleting last icon
-					if(selected == list_size - 1) {
+					if((unsigned)selected == list_size - 1) {
 						if(selected > 0)
 							selected--;
 
