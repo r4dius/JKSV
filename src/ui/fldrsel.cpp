@@ -49,6 +49,7 @@ char char_arr[200];
         }
 
         opt.clear();
+		fldNav.clear();
 
         util::makeTitleDir(data::curUser, data::curData);
         std::string scanPath = util::getTitleDir(data::curUser, data::curData);
@@ -95,6 +96,45 @@ char char_arr[200];
 
 		data::curData.icon.drawResize(115, 130, 200, 200);
 		drawTextWrap(folderMenuInfo.c_str(), frameBuffer, ui::shared, 76, 359, 19, ui::mnuTxt, 280);
+
+		unsigned endX = 1218, butSize = 0;
+		std::string butTxt = "Backup";
+		butSize = textGetWidth(butTxt.c_str(), shared, 18);
+		drawText(butTxt.c_str(), frameBuffer, shared, endX -= textGetWidth(butTxt.c_str(), shared, 18), 675, 18, mnuTxt);
+		texDraw(buttonA, frameBuffer, endX -= 38, 672);
+		ui::button fldSel("", endX, 656, butSize + 38, 64);
+		fldNav.push_back(fldSel);
+		endX -= 41;
+		butTxt = "Back";
+		butSize = textGetWidth(butTxt.c_str(), shared, 18);
+		drawText(butTxt.c_str(), frameBuffer, shared, endX -= textGetWidth(butTxt.c_str(), shared, 18), 675, 18, mnuTxt);
+		texDraw(buttonB, frameBuffer, endX -= 38, 672);
+		ui::button fldBck("", endX, 656, butSize + 38, 64);
+		fldNav.push_back(fldBck);
+		endX -= 41;
+		if(selected > 0)
+		{
+			butTxt = "Delete";
+			butSize = textGetWidth(butTxt.c_str(), shared, 18);
+			drawText(butTxt.c_str(), frameBuffer, shared, endX -= textGetWidth(butTxt.c_str(), shared, 18), 675, 18, mnuTxt);
+			texDraw(buttonX, frameBuffer, endX -= 38, 672);
+			ui::button fldDel("", endX, 656, butSize + 38, 64);
+			fldNav.push_back(fldDel);
+			endX -= 41;
+			butTxt = "Restore";
+			butSize = textGetWidth(butTxt.c_str(), shared, 18);
+			drawText(butTxt.c_str(), frameBuffer, shared, endX -= textGetWidth(butTxt.c_str(), shared, 18), 675, 18, mnuTxt);
+			texDraw(buttonY, frameBuffer, endX -= 38, 672);
+			ui::button fldRes("", endX, 656, butSize + 38, 64);
+			fldNav.push_back(fldRes);
+			endX -= 41;
+		}
+		butTxt = "Exit";
+		butSize = textGetWidth(butTxt.c_str(), shared, 18);
+		drawText(butTxt.c_str(), frameBuffer, shared, endX -= textGetWidth(butTxt.c_str(), shared, 18), 675, 18, mnuTxt);
+		texDraw(buttonP, frameBuffer, endX -= 38, 672);
+		ui::button fldExt("", endX, 656, butSize + 38, 64);
+		fldNav.push_back(fldExt);
 
 		memcpy(screen->data, frameBuffer->data, frameBuffer->size * 4);
 
@@ -240,11 +280,10 @@ drawText("touch 3", frameBuffer, ui::shared, 800, 40, 14, txtClr);
 			drawGlowElem(selRectX, selRectY, rW, 70, clrSh, ui::menuSel, 0);
 			drawText(title, frameBuffer, shared, selRectX + 15, selRectY + 26, fontSize, mnuTxt);
 
-sprintf(char_arr, "selected %d", selected);
+sprintf(char_arr, "fldNav %d", fldNav.size());
 drawText(char_arr, frameBuffer, ui::shared, 500, 10, 14, txtClr);
 sprintf(char_arr, "start %d", start);
 drawText(char_arr, frameBuffer, ui::shared, 500, 40, 14, txtClr);
-
 			gfxEndFrame();
 			
 			if(down & KEY_A || fldNav[0].getEvent() == BUTTON_RELEASED || retEvent == MENU_DOUBLE_REL)
@@ -279,8 +318,6 @@ drawText(char_arr, frameBuffer, ui::shared, 500, 40, 14, txtClr);
 
 						std::string root = "sv:/";
 						fs::copyDirToDir(root, path);
-
-						// folderMenuPrepare(data::curUser, data::curData);
 					}
 				}
 				else
@@ -303,9 +340,30 @@ drawText(char_arr, frameBuffer, ui::shared, 500, 40, 14, txtClr);
 				}
 				break;
 			}
-			else if(down & KEY_Y || fldNav[1].getEvent() == BUTTON_RELEASED)
+			else if(down & KEY_B || fldNav[1].getEvent() == BUTTON_RELEASED)
 			{
-				if(data::curData.getType() != FsSaveDataType_SystemSaveData && selected > 0)
+				start = 0;
+				selected = 0;
+				fsdevUnmountDevice("sv");
+				mstate = prevState;
+				return;
+			}
+			else if(selected > 0 && (down & KEY_X || fldNav[2].getEvent() == BUTTON_RELEASED))
+			{
+				std::string scanPath = util::getTitleDir(data::curUser, data::curData);
+				fs::dirList list(scanPath);
+
+				std::string folderName = list.getItem(selected - 1);
+				if(confirm("Are you sure you want to delete \"" + util::cutStr(folderName, 690, 24) + "\"?", "Delete"))
+				{
+					std::string delPath = scanPath + folderName + "/";
+					fs::delDir(delPath);
+				}
+				break;
+			}
+			else if(down & KEY_Y || fldNav[3].getEvent() == BUTTON_RELEASED)
+			{
+				if(selected > 0 && data::curData.getType() != FsSaveDataType_SystemSaveData)
 				{
 					std::string scanPath = util::getTitleDir(data::curUser, data::curData);
 					fs::dirList list(scanPath);
@@ -326,31 +384,7 @@ drawText(char_arr, frameBuffer, ui::shared, 500, 40, 14, txtClr);
 					ui::showMessage("Writing data to system save data is not allowed currently. It CAN brick your system.", "Sorry, bro:");
 				break;
 			}
-			else if(down & KEY_X || fldNav[2].getEvent() == BUTTON_RELEASED)
-			{
-				if(selected > 0)
-				{
-					std::string scanPath = util::getTitleDir(data::curUser, data::curData);
-					fs::dirList list(scanPath);
-
-					std::string folderName = list.getItem(selected - 1);
-					if(confirm("Are you sure you want to delete \"" + util::cutStr(folderName, 690, 24) + "\"?", "Delete"))
-					{
-						std::string delPath = scanPath + folderName + "/";
-						fs::delDir(delPath);
-
-						// folderMenuPrepare(data::curUser, data::curData);
-					}
-					break;
-				}
-			}
-			else if(down & KEY_B || fldNav[3].getEvent() == BUTTON_RELEASED)
-			{
-				fsdevUnmountDevice("sv");
-				mstate = TTL_SEL;
-				return;
-			}
-			else if(down & KEY_PLUS)
+			else if(down & KEY_PLUS || fldNav[fldNav.size() - 1].getEvent() == BUTTON_RELEASED)
 			{
 				ui::finish = true;
 				break;

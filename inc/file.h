@@ -29,6 +29,7 @@ namespace fs
 
     //Dumps all titles for 'user'
     void dumpAllUserSaves(data::user& u);
+    void dumpAllUserSavesBlacklisted(data::user& u);
 
     //returns file properties as C++ string
     std::string getFileProps(const std::string& _path);

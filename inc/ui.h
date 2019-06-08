@@ -39,7 +39,7 @@ namespace ui
 
 	extern tex *screen;
     //Button tex
-    extern tex *buttonA, *buttonB, *buttonX, *buttonY, *buttonMin, *iconSel, *menuSel, *buttonSel;
+    extern tex *buttonA, *buttonB, *buttonX, *buttonY, *buttonM, *buttonP, *iconSel, *menuSel, *buttonSel, *buttonLrg;
     //Selection box
     extern tex *mnuTopLeft, *mnuTopRight, *mnuBotLeft, *mnuBotRight, *mnuBotShadow;
     //Textbox graphics

@@ -18,7 +18,7 @@
 static tex *background = NULL, *txtSide = NULL, *fldSide = NULL;
 
 //Nav buttons
-std::vector<ui::button> usrNav, ttlNav, fldNav;
+std::vector<ui::button> usrNav, ttlNav, blkNav, fldNav;
 
 namespace ui
 {
@@ -41,8 +41,8 @@ namespace ui
     tex *mnuTopLeft, *mnuTopRight, *mnuBotLeft, *mnuBotRight, *mnuBotShadow;
     tex *popupTopLeft, *popupTopRight, *popupBotLeft, *popupBotRight, *popupBotShadow;
     tex *popupButTopLeft, *popupButTopRight, *popupButBotLeft, *popupButBotRight;
-    tex *buttonA, *buttonB, *buttonX, *buttonY, *buttonMin;
-    tex *icn, *mnuGrad, *iconSel, *menuSel, *buttonSel;
+    tex *buttonA, *buttonB, *buttonX, *buttonY, *buttonM, *buttonP;
+    tex *icn, *mnuGrad, *iconSel, *menuSel, *buttonSel, *buttonLrg;
     font *shared;
 	
 	tex	*screen = texCreate(1280, 720);
@@ -72,6 +72,7 @@ namespace ui
         iconSel = texLoadPNGFile("romfs:/img/mnu/iconSel.png");
         menuSel = texLoadPNGFile("romfs:/img/mnu/menuSel.png");
         buttonSel = texLoadPNGFile("romfs:/img/mnu/buttonSel.png");
+        buttonLrg = texLoadPNGFile("romfs:/img/mnu/buttonLrg.png");
 
         switch(gthm)
         {
@@ -94,7 +95,8 @@ namespace ui
                 buttonB = texLoadPNGFile("romfs:/img/button/buttonB_drk.png");
                 buttonX = texLoadPNGFile("romfs:/img/button/buttonX_drk.png");
                 buttonY = texLoadPNGFile("romfs:/img/button/buttonY_drk.png");
-                buttonMin = texLoadPNGFile("romfs:/img/button/buttonMin_drk.png");
+                buttonM = texLoadPNGFile("romfs:/img/button/buttonM_drk.png");
+                buttonP = texLoadPNGFile("romfs:/img/button/buttonP_drk.png");
 
                 icn = texLoadPNGFile("romfs:/img/icn/icnDrk.png");
                 mnuGrad = texLoadPNGFile("romfs:/img/mnu/gradLght.png");
@@ -137,7 +139,8 @@ namespace ui
                 buttonB = texLoadPNGFile("romfs:/img/button/buttonB_lght.png");
                 buttonX = texLoadPNGFile("romfs:/img/button/buttonX_lght.png");
                 buttonY = texLoadPNGFile("romfs:/img/button/buttonY_lght.png");
-                buttonMin = texLoadPNGFile("romfs:/img/button/buttonMin_lght.png");
+                buttonM = texLoadPNGFile("romfs:/img/button/buttonM_lght.png");
+                buttonP = texLoadPNGFile("romfs:/img/button/buttonP_lght.png");
 	
                 icn = texLoadPNGFile("romfs:/img/icn/icnLght.png");
                 mnuGrad = texLoadPNGFile("romfs:/img/mnu/gradDrk.png");
@@ -197,6 +200,7 @@ namespace ui
         texDestroy(iconSel);
         texDestroy(menuSel);
         texDestroy(buttonSel);
+        texDestroy(buttonLrg);
 
         texDestroy(popupTopLeft);
         texDestroy(popupTopRight);
@@ -219,7 +223,8 @@ namespace ui
         texDestroy(buttonB);
         texDestroy(buttonX);
         texDestroy(buttonY);
-        texDestroy(buttonMin);
+        texDestroy(buttonM);
+        texDestroy(buttonP);
 
         texDestroy(mnuGrad);
         texDestroy(temp);
@@ -252,37 +257,37 @@ namespace ui
     void setupNavButtons()
     {
         //User Select
-        int startX = 754;
-        ui::button sel("", startX, 656, 110, 64);
-        ui::button dmp("", startX += 110, 656, 134, 64);
-        ui::button cls("", startX += 134, 656, 110, 64);
-        ui::button ex("", startX += 110, 656, 110, 64);
-        usrNav.push_back(sel);
-        usrNav.push_back(dmp);
-        usrNav.push_back(cls);
-        usrNav.push_back(ex);
+        // int startX = 754;
+        // ui::button sel("", startX, 656, 110, 64);
+        // ui::button dmp("", startX += 110, 656, 134, 64);
+        // ui::button cls("", startX += 134, 656, 110, 64);
+        // ui::button ex("", startX += 110, 656, 110, 64);
+        // usrNav.push_back(sel);
+        // usrNav.push_back(dmp);
+        // usrNav.push_back(cls);
+        // usrNav.push_back(ex);
 
         //Title
-        startX = 804;
-        ui::button ttlSel("", startX, 656, 110, 64);
-        ui::button ttlDmp("", startX += 110, 656, 134, 64);
-        ui::button ttlBlk("", startX += 134, 656, 110, 64);
-        ui::button ttlBck("", startX += 110, 656, 110, 64);
-        ttlNav.push_back(ttlSel);
-        ttlNav.push_back(ttlDmp);
-        ttlNav.push_back(ttlBlk);
-        ttlNav.push_back(ttlBck);
+        // startX = 804;
+        // ui::button ttlSel("", startX, 656, 110, 64);
+        // ui::button ttlDmp("", startX += 110, 656, 134, 64);
+        // ui::button ttlBlk("", startX += 134, 656, 110, 64);
+        // ui::button ttlBck("", startX += 110, 656, 110, 64);
+        // ttlNav.push_back(ttlSel);
+        // ttlNav.push_back(ttlDmp);
+        // ttlNav.push_back(ttlBlk);
+        // ttlNav.push_back(ttlBck);
 
         //Folder. Skip adv since it can't be touch controlled
-        startX = 800;
-        ui::button fldBackup("", startX, 656, 110, 64);
-        ui::button fldRestor("", startX += 110, 656, 110, 64);
-        ui::button fldDelete("", startX += 110, 656, 110, 64);
-        ui::button fldBack("", startX += 110, 672, 110, 64);
-        fldNav.push_back(fldBackup);
-        fldNav.push_back(fldRestor);
-        fldNav.push_back(fldDelete);
-        fldNav.push_back(fldBack);
+        // startX = 800;
+        // ui::button fldBackup("", startX, 656, 110, 64);
+        // ui::button fldRestor("", startX += 110, 656, 110, 64);
+        // ui::button fldDelete("", startX += 110, 656, 110, 64);
+        // ui::button fldBack("", startX += 110, 672, 110, 64);
+        // fldNav.push_back(fldBackup);
+        // fldNav.push_back(fldRestor);
+        // fldNav.push_back(fldDelete);
+        // fldNav.push_back(fldBack);
     }
 
     void drawUI()
@@ -301,65 +306,11 @@ namespace ui
         switch(mstate)
         {
             case FLD_SEL:
-                if(fldSide == NULL)
-                    texDraw(mnuGrad, frameBuffer, 0, 88);
-                else
-                    texDraw(fldSide, frameBuffer, 30, 88);
-                break;
-        }
-
-        switch(mstate)
-        {
-            case USR_SEL:
-                {
-                    //Input guide
-                    unsigned startX = 910;					
-                    texDraw(buttonY, frameBuffer, startX, 672);
-                    drawText("Backup All", frameBuffer, shared, startX += 38, 675, 18, mnuTxt);
-                    texDraw(buttonA, frameBuffer, startX += 163, 672);
-                    drawText("Select", frameBuffer, shared, startX += 38, 675, 18, mnuTxt);
-                }
-                break;
-
-            case TTL_SEL:
-                {
-                    unsigned startX = 604;
-                    texDraw(buttonY, frameBuffer, startX, 672);
-                    drawText("Backup All", frameBuffer, shared, startX += 38, 675, 18, mnuTxt);
-                    texDraw(buttonX, frameBuffer, startX += 163, 672);
-                    drawText("Blacklist", frameBuffer, shared, startX += 38, 675, 18, mnuTxt);
-                    texDraw(buttonB, frameBuffer, startX += 134, 672);
-                    drawText("Back", frameBuffer, shared, startX += 38, 675, 18, mnuTxt);
-                    texDraw(buttonA, frameBuffer, startX += 96, 672);
-                    drawText("Select", frameBuffer, shared, startX += 38, 675, 18, mnuTxt);
-                }
-                break;
-
-            case FLD_SEL:
 				{
-					unsigned startX = 643;
-                    texDraw(buttonY, frameBuffer, startX, 672);
-                    drawText("Restore", frameBuffer, shared, startX += 38, 675, 18, mnuTxt);
-                    texDraw(buttonX, frameBuffer, startX += 126, 672);
-                    drawText("Delete", frameBuffer, shared, startX += 38, 675, 18, mnuTxt);
-                    texDraw(buttonB, frameBuffer, startX += 117, 672);
-                    drawText("Back", frameBuffer, shared, startX += 38, 675, 18, mnuTxt);
-                    texDraw(buttonA, frameBuffer, startX += 96, 672);
-                    drawText("Backup", frameBuffer, shared, startX += 38, 675, 18, mnuTxt);
-                }
-                break;
-
-            case BKL_SEL:
-                {
-                    unsigned startX = 604;
-                    texDraw(buttonY, frameBuffer, startX, 672);
-                    drawText("Backup All", frameBuffer, shared, startX += 38, 675, 18, mnuTxt);
-                    texDraw(buttonX, frameBuffer, startX += 163, 672);
-                    drawText("Unblacklist", frameBuffer, shared, startX += 38, 675, 18, mnuTxt);
-                    texDraw(buttonB, frameBuffer, startX += 134, 672);
-                    drawText("Back", frameBuffer, shared, startX += 38, 675, 18, mnuTxt);
-                    texDraw(buttonA, frameBuffer, startX += 96, 672);
-                    drawText("Select", frameBuffer, shared, startX += 38, 675, 18, mnuTxt);
+					if(fldSide == NULL)
+						texDraw(mnuGrad, frameBuffer, 0, 88);
+					else
+						texDraw(fldSide, frameBuffer, 30, 88);
                 }
                 break;
         }
@@ -380,12 +331,12 @@ namespace ui
                 updateTitleMenu(down, held, p);
                 break;
 
-            case FLD_SEL:
-                updateFolderMenu(down, held, p);
-                break;
-
             case BKL_SEL:
                 updateBlacklistMenu(down, held, p);
+                break;
+
+            case FLD_SEL:
+                updateFolderMenu(down, held, p);
                 break;
         }
     }

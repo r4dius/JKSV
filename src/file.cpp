@@ -207,8 +207,11 @@ namespace fs
             prog.update(i);
 
             gfxBeginFrame();
+			texDraw(ui::screen, frameBuffer, 0, 0);
+			ui::drawTextPopupBg(255, 189, 770, 342);
             prog.draw(from, "Copying File:");
             gfxEndFrame();
+			usleep(100000);
         }
 
         delete[] buff;
@@ -245,8 +248,11 @@ namespace fs
             prog.update(i);
 
             gfxBeginFrame();
+			texDraw(ui::screen, frameBuffer, 0, 0);
+			ui::drawTextPopupBg(255, 189, 770, 342);
             prog.draw(from, "Copying File:");
             gfxEndFrame();
+			usleep(100000);
         }
 
         delete[] buff;
@@ -341,6 +347,28 @@ namespace fs
 
                 //sdmc:/JKSV/[title]/[user] - [date]/
                 std::string outPath = util::getTitleDir(u, u.titles[i]) + u.getUsernameSafe() + " - " + util::getDateTime(util::DATE_FMT_YMD);
+                mkdir(outPath.c_str(), 777);
+                outPath += "/";
+
+                std::string root = "sv:/";
+
+                fs::copyDirToDir(root, outPath);
+
+                fsdevUnmountDevice("sv");
+            }
+        }
+    }
+	
+	void dumpAllUserSavesBlacklisted(data::user& u)
+    {
+        for(unsigned i = 0; i < u.blktitles.size(); i++)
+        {
+            if(fs::mountSave(u, u.blktitles[i]))
+            {
+                util::makeTitleDir(u, u.blktitles[i]);
+
+                //sdmc:/JKSV/[title]/[user] - [date]/
+                std::string outPath = util::getTitleDir(u, u.blktitles[i]) + u.getUsernameSafe() + " - " + util::getDateTime(util::DATE_FMT_YMD);
                 mkdir(outPath.c_str(), 777);
                 outPath += "/";
 
