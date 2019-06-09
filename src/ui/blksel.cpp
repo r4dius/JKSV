@@ -281,7 +281,6 @@ namespace ui
 				std::string message = "No blacklisted game, see ya";
 				drawText(message.c_str(), frameBuffer, ui::shared, (1280 - textGetWidth(message.c_str(), ui::shared, 22)) / 2, 340, 22, mnuTxt);
 			}
-
 			gfxEndFrame();
 
 			if(updatemenu == true)

@@ -173,7 +173,7 @@ namespace ui
 
 			if(clrAdd)
 			{
-				clrSh += 5;
+				clrSh += 8;
 				if(clrSh > 100) {
 					if(clrSh > 254) clrSh = 254;
 					clrAdd = false;
@@ -181,7 +181,7 @@ namespace ui
 			}
 			else
 			{
-				clrSh -= 10;
+				clrSh -= 14;
 				if(clrSh <= 0) {
 					if(clrSh < 0) clrSh = 0;
 					clrAdd = true;
@@ -241,7 +241,7 @@ namespace ui
 
 			if(clrAdd)
 			{
-				clrSh += 5;
+				clrSh += 8;
 				if(clrSh > 100) {
 					if(clrSh > 254) clrSh = 254;
 					clrAdd = false;
@@ -249,7 +249,7 @@ namespace ui
 			}
 			else
 			{
-				clrSh -= 10;
+				clrSh -= 14;
 				if(clrSh <= 0) {
 					if(clrSh < 0) clrSh = 0;
 					clrAdd = true;

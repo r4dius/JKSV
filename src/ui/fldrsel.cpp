@@ -30,7 +30,6 @@ namespace ui
         static unsigned selRectX = x, selRectY = y;
 		static int fontSize = 19, retEvent = MENU_NOTHING;
 
-char char_arr[200];
 		//Color shift for rect
         static int clrSh = 0;
         //Whether or not we're adding or subtracting from clrShft
@@ -59,25 +58,24 @@ char char_arr[200];
         for(unsigned i = 0; i < list.getCount(); i++)
             addOpt(list.getItem(i), rW, fontSize);
 
-        if(selected > (int)opt.size() - 1)
+		int list_size = opt.size() - 1;
+        if(selected > list_size)
             selected = opt.size() - 1;
 
         if(opt.size() < 6)
             start = 0;
-        else if(opt.size() > 6 && start + 6 > (int)opt.size() - 1)
+        else if(opt.size() > 6 && start + 6 > list_size)
             start = opt.size() - 7;
 
 
 		int length = 0;
-		if((opt.size() - 1) < 7)
+		if(list_size < 7)
 			length = opt.size();
 		else
 			length = start + 7;
 
 		for(int i = start; i < length; i++)
 		{
-			//Don't draw separator on top and bottom of selected item
-			//if(i - 1 != selected && i != selected)
 			drawRect(frameBuffer, x, y - 1 + ((i - start) * 71), rW, 1, ui::sepClr);
 			
 			if((int)i == selected)
@@ -163,68 +161,21 @@ char char_arr[200];
 				}
 			}
 
-			//Update nav
-			for(unsigned i = 0; i < fldNav.size(); i++)
-				fldNav[i].update(p);
-
-			if((held & KEY_UP) || (held & KEY_DOWN))
+			if((held & KEY_RIGHT) || (held & KEY_LEFT) || (held & KEY_UP) || (held & KEY_DOWN))
 				movespeed++;
-			else {
+			else
+			{
 				movespeed = 0;
 				move = false;
 			}
 
-			if(movespeed >= 15) {
+			if(movespeed >= 10 && selected != 0 && selected != list_size)
+			{
 				move = true;
 				movespeed = 12;
 			} else move = false;
 
-			int size = opt.size() - 1;
-			if((down & KEY_UP) || ((held & KEY_UP) && move))
-			{
-				selected--;
-				if(selected < 0)
-					selected = size;
-
-				if((start > selected)  && (start > 0))
-					start--;
-				if(size < 7)
-					start = 0;
-				if((selected - 6) > start)
-					start = selected - 6;
-				break;
-			}
-			else if((down & KEY_DOWN) || ((held & KEY_DOWN) && move))
-			{
-				selected++;
-				if(selected > size)
-					selected = 0;
-
-				if((selected > (start + 6)) && ((start + 6) < size))
-					start++;
-				if(selected == 0)
-					start = 0;
-				break;
-			}
-			else if(down & KEY_RIGHT)
-			{
-				selected += 7;
-				if(selected > size)
-					selected = size;
-				if((selected - 6) > start)
-					start = selected - 6;
-				break;
-			}
-			else if(down & KEY_LEFT)
-			{
-				selected -= 7;
-				if(selected < 0)
-					selected = 0;
-				if(selected < start)
-					start = selected;
-				break;
-			}
-
+			//Update touchtracking
 			track.update(p);
 			switch(track.getEvent())
 			{
@@ -242,19 +193,18 @@ char char_arr[200];
 					}
 					break;
 			}
-			
-			//New touch shit
+
+			//Update nav
+			for(unsigned i = 0; i < fldNav.size(); i++)
+				fldNav[i].update(p);
+
+			//Update invisible buttons
 			for(int i = 0; i < 7; i++)
 			{
 				optButtons[i].update(p);
 				if(selected  == i + start && optButtons[i].getEvent() == BUTTON_RELEASED)
 				{
 					retEvent = MENU_DOUBLE_REL;
-					// selRectY = y + (i * 71);
-					// title = opt[i + start].c_str();
-
-sprintf(char_arr, "touch 1 %d", i);
-drawText(char_arr, frameBuffer, ui::shared, 800, 10, 14, txtClr);
 					break;
 				}
 				else if(optButtons[i].getEvent() == BUTTON_RELEASED && i + start < (int)opt.size())
@@ -263,15 +213,11 @@ drawText(char_arr, frameBuffer, ui::shared, 800, 10, 14, txtClr);
 					selRectY = y + (i * 71);
 					title = opt[i + start].c_str();
 					retEvent = MENU_NOTHING;
-
-sprintf(char_arr, "touch 2 %d", i);
-drawText("touch 2", frameBuffer, ui::shared, 800, 30, 14, txtClr);
+					return;
 				}
-				else {
+				else
+				{
 					retEvent = MENU_NOTHING;
-
-sprintf(char_arr, "touch 3 %d", i);
-drawText("touch 3", frameBuffer, ui::shared, 800, 40, 14, txtClr);
 				}
 			}
 
@@ -279,14 +225,53 @@ drawText("touch 3", frameBuffer, ui::shared, 800, 40, 14, txtClr);
 			texDraw(screen, frameBuffer, 0, 0);
 			drawGlowElem(selRectX, selRectY, rW, 70, clrSh, ui::menuSel, 0);
 			drawText(title, frameBuffer, shared, selRectX + 15, selRectY + 26, fontSize, mnuTxt);
-
-sprintf(char_arr, "fldNav %d", fldNav.size());
-drawText(char_arr, frameBuffer, ui::shared, 500, 10, 14, txtClr);
-sprintf(char_arr, "start %d", start);
-drawText(char_arr, frameBuffer, ui::shared, 500, 40, 14, txtClr);
 			gfxEndFrame();
-			
-			if(down & KEY_A || fldNav[0].getEvent() == BUTTON_RELEASED || retEvent == MENU_DOUBLE_REL)
+
+			if((down & KEY_UP) || ((held & KEY_UP) && move))
+			{
+				selected--;
+				if(selected < 0)
+					selected = list_size;
+
+				if((start > selected)  && (start > 0))
+					start--;
+				if(list_size < 7)
+					start = 0;
+				if((selected - 6) > start)
+					start = selected - 6;
+				break;
+			}
+			else if((down & KEY_DOWN) || ((held & KEY_DOWN) && move))
+			{
+				selected++;
+				if(selected > list_size)
+					selected = 0;
+
+				if((selected > (start + 6)) && ((start + 6) < list_size))
+					start++;
+				if(selected == 0)
+					start = 0;
+				break;
+			}
+			else if(down & KEY_RIGHT || ((held & KEY_RIGHT) && move))
+			{
+				selected += 6;
+				if(selected > list_size)
+					selected = list_size;
+				if((selected - 6) > start)
+					start = selected - 6;
+				break;
+			}
+			else if(down & KEY_LEFT || ((held & KEY_LEFT) && move))
+			{
+				selected -= 6;
+				if(selected < 0)
+					selected = 0;
+				if(selected < start)
+					start = selected;
+				break;
+			}
+			else if(down & KEY_A || fldNav[0].getEvent() == BUTTON_RELEASED || retEvent == MENU_DOUBLE_REL)
 			{
 				if(selected == 0)
 				{
@@ -361,9 +346,9 @@ drawText(char_arr, frameBuffer, ui::shared, 500, 40, 14, txtClr);
 				}
 				break;
 			}
-			else if(down & KEY_Y || fldNav[3].getEvent() == BUTTON_RELEASED)
+			else if(selected > 0 && (down & KEY_Y || fldNav[3].getEvent() == BUTTON_RELEASED))
 			{
-				if(selected > 0 && data::curData.getType() != FsSaveDataType_SystemSaveData)
+				if(data::curData.getType() != FsSaveDataType_SystemSaveData)
 				{
 					std::string scanPath = util::getTitleDir(data::curUser, data::curData);
 					fs::dirList list(scanPath);
@@ -381,7 +366,7 @@ drawText(char_arr, frameBuffer, ui::shared, 500, 40, 14, txtClr);
 					}
 				}
 				else
-					ui::showMessage("Writing data to system save data is not allowed currently. It CAN brick your system.", "Sorry, bro:");
+					ui::showMessage("Writing data to system save data is not allowed currently. It can brick your system.", "Sorry, bro:");
 				break;
 			}
 			else if(down & KEY_PLUS || fldNav[fldNav.size() - 1].getEvent() == BUTTON_RELEASED)
