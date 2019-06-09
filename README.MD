@@ -29,10 +29,11 @@ Changed stuff to match the original switch menus :
 
 To do :
 - adapt missing stuff for dark them
-- fix hidden bottom nav buttons
-- redo progress popup
-- fix empty menu button actions
 - do confirmation popup navigation
+- check progress and message popup text sizes
+- ~~fix hidden bottom nav buttons~~
+- ~~redo progress popup~~
+- ~~fix empty menu button actions~~
 - ~~button selection color is not correct, nor is the effect speed~~
 - ~~would like to resize icons to match switch "all software" size~~
 - ~~left menu list / buttons should split to 2 lines when too large~~ (deleted text list)
