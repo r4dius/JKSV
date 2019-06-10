@@ -86,7 +86,6 @@ namespace ui
     bool confirmDelete(const std::string& p);
     void drawTextPopup(int x, int y, int w, int h);
     void drawTextPopupBg(int x, int y, int w, int h);
-    void drawPopupButton(int x, int y, int w, int h, int clrSh);
     void drawGlowElem(int x, int y, int w, int h, int clrSh, tex *elem, int offset);
     void drawTitlebox(std::string& title, int x, int y, int h);
     void drawTextboxInvert(int x, int y, int w, int h);

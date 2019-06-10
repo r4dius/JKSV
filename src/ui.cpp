@@ -23,7 +23,7 @@ std::vector<ui::button> usrNav, ttlNav, blkNav, fldNav;
 namespace ui
 {
     //Current menu state
-    int mstate = USR_SEL, prevState = USR_SEL;
+    int mstate = USR_SEL, prevState = USR_SEL, glowR, glowG, glowB;
 	bool finish = false;
 
     //Info printed on folder menu
@@ -33,7 +33,7 @@ namespace ui
     // std::vector<ui::button> selButtons;
 
     //UI colors
-    clr clearClr, mnuTxt, txtClr, tboxClr, sideRect, divClr, sepClr, boundClr, popupClr, popupbgClr, blurClr;
+    clr clearClr, mnuTxt, txtClr, tboxClr, sideRect, divClr, sepClr, popupClr, popupbgClr, blurClr;
 
     //textbox pieces
     //I was going to flip them when I draw them, but then laziness kicked in.
@@ -52,31 +52,46 @@ namespace ui
         ColorSetId gthm;
         setsysGetColorSetId(&gthm);
 
-		popupClr = clrCreateU32(0xFFF0F0F0);
 		popupbgClr = clrCreateU32(0xB2160F05);
-		blurClr = clrCreateU32(0xFFF15230);
-
-		temp = texLoadPNGFile("romfs:/img/mnu/popup.png");
-		popupTopLeft = texCreateFromPart(temp, 0, 0, 15, 15);
-		popupTopRight = texCreateFromPart(temp, 15, 0, 15, 15);
-		popupBotLeft = texCreateFromPart(temp, 0, 15, 15, 15);
-		popupBotRight = texCreateFromPart(temp, 15, 15, 15, 15);
-		popupBotShadow = texCreateFromPart(temp, 15, 15, 1, 15);
-
-		temp = texLoadPNGFile("romfs:/img/mnu/popupsel.png");
-		popupButTopLeft = texCreateFromPart(temp, 0, 0, 15, 15);
-		popupButTopRight = texCreateFromPart(temp, 15, 0, 15, 15);
-		popupButBotLeft = texCreateFromPart(temp, 0, 15, 15, 15);
-		popupButBotRight = texCreateFromPart(temp, 15, 15, 15, 15);
-
-        iconSel = texLoadPNGFile("romfs:/img/mnu/iconSel.png");
-        menuSel = texLoadPNGFile("romfs:/img/mnu/menuSel.png");
-        buttonSel = texLoadPNGFile("romfs:/img/mnu/buttonSel.png");
-        buttonLrg = texLoadPNGFile("romfs:/img/mnu/buttonLrg.png");
 
         switch(gthm)
         {
             case ColorSetId_Light:
+				glowR = 89;
+				glowG = 253;
+				glowB = 219;
+
+				popupClr = clrCreateU32(0xFFF0F0F0);
+                clearClr = clrCreateU32(0xFFEBEBEB);
+                mnuTxt = clrCreateU32(0xFF282828);
+                txtClr = clrCreateU32(0xFFCBC000);
+                tboxClr = clrCreateU32(0xF0FFFFFF);
+                sideRect = clrCreateU32(0xFFDCDCDC);
+                divClr = clrCreateU32(0xFF2D2D2D);
+				sepClr = clrCreateU32(0xFFCDCDCD);
+				blurClr = clrCreateU32(0xFFF15230);
+
+				iconSel = texLoadPNGFile("romfs:/img/mnu/iconSelLght.png");
+				menuSel = texLoadPNGFile("romfs:/img/mnu/menuSelLght.png");
+				buttonSel = texLoadPNGFile("romfs:/img/mnu/buttonSelLght.png");
+				buttonLrg = texLoadPNGFile("romfs:/img/mnu/buttonLrgLght.png");
+                tip = texLoadPNGFile("romfs:/img/mnu/tboxTipLght.png");
+                icn = texLoadPNGFile("romfs:/img/icn/icnDrk.png");
+                mnuGrad = texLoadPNGFile("romfs:/img/mnu/gradLght.png");
+
+				temp = texLoadPNGFile("romfs:/img/mnu/popupselLght.png");
+				popupButTopLeft = texCreateFromPart(temp, 0, 0, 15, 15);
+				popupButTopRight = texCreateFromPart(temp, 15, 0, 15, 15);
+				popupButBotLeft = texCreateFromPart(temp, 0, 15, 15, 15);
+				popupButBotRight = texCreateFromPart(temp, 15, 15, 15, 15);
+
+				temp = texLoadPNGFile("romfs:/img/mnu/popupLght.png");
+				popupTopLeft = texCreateFromPart(temp, 0, 0, 15, 15);
+				popupTopRight = texCreateFromPart(temp, 15, 0, 15, 15);
+				popupBotLeft = texCreateFromPart(temp, 0, 15, 15, 15);
+				popupBotRight = texCreateFromPart(temp, 15, 15, 15, 15);
+				popupBotShadow = texCreateFromPart(temp, 15, 15, 1, 15);
+
                 //Light corners
 		        temp = texLoadPNGFile("romfs:/img/mnu/tboxLght.png");
 				cornerTopHor = texCreateFromPart(temp, 12, 0, 1, 12);
@@ -88,8 +103,6 @@ namespace ui
 				cornerBottomLeft = texCreateFromPart(temp, 0, 52, 12, 12);
 				cornerBottomRight = texCreateFromPart(temp, 52, 52, 12, 12);
 
-                tip = texLoadPNGFile("romfs:/img/mnu/tboxTipLght.png");
-
                 //Dark buttons
                 buttonA = texLoadPNGFile("romfs:/img/button/buttonA_drk.png");
                 buttonB = texLoadPNGFile("romfs:/img/button/buttonB_drk.png");
@@ -98,9 +111,6 @@ namespace ui
                 buttonM = texLoadPNGFile("romfs:/img/button/buttonM_drk.png");
                 buttonP = texLoadPNGFile("romfs:/img/button/buttonP_drk.png");
 
-                icn = texLoadPNGFile("romfs:/img/icn/icnDrk.png");
-                mnuGrad = texLoadPNGFile("romfs:/img/mnu/gradLght.png");
-
 				temp = texLoadPNGFile("romfs:/img/mnu/msel.png");
 				mnuTopLeft = texCreateFromPart(temp, 0, 0, 15, 15);
 				mnuTopRight = texCreateFromPart(temp, 15, 0, 15, 15);
@@ -108,19 +118,44 @@ namespace ui
 				mnuBotRight = texCreateFromPart(temp, 15, 15, 15, 15);
 				mnuBotShadow = texCreateFromPart(temp, 15, 15, 1, 15);
 
-                clearClr = clrCreateU32(0xFFEBEBEB);
-                // clearClr = clrCreateU32(0xFF505050);
-                mnuTxt = clrCreateU32(0xFF282828);
-                txtClr = clrCreateU32(0xFFCBC000);
-                tboxClr = clrCreateU32(0xF0FFFFFF);
-                sideRect = clrCreateU32(0xFFDCDCDC);
-                divClr = clrCreateU32(0xFF2D2D2D);
-				sepClr = clrCreateU32(0xFFCDCDCD);
-				boundClr = clrCreateU32(0xFFFCFCFC);
                 break;
-
             default:
             case ColorSetId_Dark:
+				glowR = 73;
+				glowG = 166;
+				glowB = 208;
+
+				popupClr = clrCreateU32(0xFF464646);
+                clearClr = clrCreateU32(0xFF2D2D2D);
+                mnuTxt = clrCreateU32(0xFFFFFFFF);
+                txtClr = clrCreateU32(0xFFFDBD1B);
+                tboxClr = clrCreateU32(0xF04F4F4F);
+                sideRect = clrCreateU32(0xFF373737);
+                divClr = clrCreateU32(0xFFFFFFFF);
+				sepClr = clrCreateU32(0xFF4D4D4D);
+				blurClr = clrCreateU32(0xFFC8FF00);
+
+				iconSel = texLoadPNGFile("romfs:/img/mnu/iconSelDrk.png");
+				menuSel = texLoadPNGFile("romfs:/img/mnu/menuSelDrk.png");
+				buttonSel = texLoadPNGFile("romfs:/img/mnu/buttonSelDrk.png");
+				buttonLrg = texLoadPNGFile("romfs:/img/mnu/buttonLrgDrk.png");
+                tip = texLoadPNGFile("romfs:/img/mnu/tboxTipDrk.png");
+                icn = texLoadPNGFile("romfs:/img/icn/icnLght.png");
+                mnuGrad = texLoadPNGFile("romfs:/img/mnu/gradDrk.png");
+
+				temp = texLoadPNGFile("romfs:/img/mnu/popupselLght.png");
+				popupButTopLeft = texCreateFromPart(temp, 0, 0, 15, 15);
+				popupButTopRight = texCreateFromPart(temp, 15, 0, 15, 15);
+				popupButBotLeft = texCreateFromPart(temp, 0, 15, 15, 15);
+				popupButBotRight = texCreateFromPart(temp, 15, 15, 15, 15);
+
+				temp = texLoadPNGFile("romfs:/img/mnu/popupDrk.png");
+				popupTopLeft = texCreateFromPart(temp, 0, 0, 15, 15);
+				popupTopRight = texCreateFromPart(temp, 15, 0, 15, 15);
+				popupBotLeft = texCreateFromPart(temp, 0, 15, 15, 15);
+				popupBotRight = texCreateFromPart(temp, 15, 15, 15, 15);
+				popupBotShadow = texCreateFromPart(temp, 15, 15, 1, 15);
+
                 //Dark corners
 		        temp = texLoadPNGFile("romfs:/img/mnu/tboxDrk.png");
 				cornerTopHor = texCreateFromPart(temp, 12, 0, 1, 12);
@@ -132,8 +167,6 @@ namespace ui
 				cornerBottomLeft = texCreateFromPart(temp, 0, 52, 12, 12);
 				cornerBottomRight = texCreateFromPart(temp, 52, 52, 12, 12);
 
-                tip = texLoadPNGFile("romfs:/img/mnu/tboxTipDrk.png");
-
                 //Light buttons
                 buttonA = texLoadPNGFile("romfs:/img/button/buttonA_lght.png");
                 buttonB = texLoadPNGFile("romfs:/img/button/buttonB_lght.png");
@@ -141,9 +174,6 @@ namespace ui
                 buttonY = texLoadPNGFile("romfs:/img/button/buttonY_lght.png");
                 buttonM = texLoadPNGFile("romfs:/img/button/buttonM_lght.png");
                 buttonP = texLoadPNGFile("romfs:/img/button/buttonP_lght.png");
-	
-                icn = texLoadPNGFile("romfs:/img/icn/icnLght.png");
-                mnuGrad = texLoadPNGFile("romfs:/img/mnu/gradDrk.png");
 
 				temp = texLoadPNGFile("romfs:/img/mnu/msel.png");
 				mnuTopLeft = texCreateFromPart(temp, 0, 0, 8, 8);
@@ -152,14 +182,6 @@ namespace ui
 				mnuBotRight = texCreateFromPart(temp, 8, 8, 8, 12);
 				mnuBotShadow = texCreateFromPart(temp, 8, 11, 1, 11);
 
-                clearClr = clrCreateU32(0xFF2D2D2D);
-                mnuTxt = clrCreateU32(0xFFFFFFFF);
-                txtClr = clrCreateU32(0xFFFDBD1B);
-                tboxClr = clrCreateU32(0xF04F4F4F);
-                sideRect = clrCreateU32(0xFF373737);
-                divClr = clrCreateU32(0xFFFFFFFF);
-				sepClr = clrCreateU32(0xFFCDCDCD);
-				boundClr = clrCreateU32(0xFF27221F);
                 break;
         }
 

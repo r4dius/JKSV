@@ -197,7 +197,7 @@ namespace ui
 			
 			int top = 191 + 266 / 2 - textGetHeight(mess.c_str(), ui::shared, 19, 630) / 2;
 			drawTextWrap(mess.c_str(), frameBuffer, ui::shared, 325, top, 19, mnuTxt, 630);
-			drawRect(frameBuffer, 255, 459, 770, 2, clrCreateU32(0xFFD1D1D1));
+			drawRectAlpha(frameBuffer, 255, 459, 770, 2, clrCreateU32(0x64A0A0A0));
 			drawGlowElem(255, 461, 770, 70, clrSh, ui::buttonLrg, 0);
             ok.draw();
             gfxEndFrame();
@@ -212,6 +212,8 @@ namespace ui
 	
         button no("Cancel", 255, 461, 384, 70);
         button yes(buttontext, 641, 461, 384, 70);
+
+		unsigned int bX = 641;
 
 		//Color shift for rect
 		static int clrSh = 0;
@@ -228,16 +230,33 @@ namespace ui
             yes.update(p);
             no.update(p);
 
-            if(down & KEY_A || yes.getEvent() == BUTTON_RELEASED)
-            {
-                ret = true;
-                break;
-            }
-            else if(down & KEY_B || no.getEvent() == BUTTON_RELEASED)
-            {
-                ret = false;
-                break;
-            }
+			if(down & KEY_A || yes.getEvent() == BUTTON_RELEASED)
+			{
+				if(bX < 641)
+					ret = false;
+				else
+					ret = true;
+				break;
+			}
+			else if(down & KEY_B || no.getEvent() == BUTTON_RELEASED)
+			{
+				ret = false;
+				break;
+			}
+			else if(down & KEY_RIGHT || yes.getEvent() == BUTTON_RELEASED)
+			{
+				if(bX < 641)
+					bX = 641;
+
+				ret = false;
+			}
+			else if(down & KEY_LEFT || no.getEvent() == BUTTON_RELEASED)
+			{
+				if(bX > 255)
+					bX = 255;
+
+				ret = false;
+			}
 
 			if(clrAdd)
 			{
@@ -262,9 +281,9 @@ namespace ui
 			
 			int top = 191 + 266 / 2 - textGetHeight(mess.c_str(), ui::shared, 19, 630) / 2;
 			drawTextWrap(mess.c_str(), frameBuffer, ui::shared, 325, top, 19, mnuTxt, 630);
-			drawRect(frameBuffer, 255, 459, 770, 2, clrCreateU32(0xFFD1D1D1));
-			drawRect(frameBuffer, 639, 461, 2, 70, clrCreateU32(0xFFD1D1D1));
-			drawGlowElem(641, 461, 384, 70, clrSh, ui::buttonSel, 0);
+			drawRectAlpha(frameBuffer, 255, 459, 770, 2, clrCreateU32(0x64A0A0A0));
+			drawRectAlpha(frameBuffer, 639, 461, 2, 70, clrCreateU32(0x64A0A0A0));
+			drawGlowElem(bX, 461, 384, 70, clrSh, ui::buttonSel, 0);
 			no.draw();
 			yes.draw();
 			gfxEndFrame();
@@ -351,27 +370,17 @@ namespace ui
 		drawTextPopup(x, y, w, h);
     }
 	
-    void drawPopupButton(int x, int y, int w, int h, int clrSh)
-    {
-		clr rectClr = clrCreateRGBA(0x59 - clrSh, 0xFD - clrSh, 0xDB - clrSh, 0xFF);
-
-		drawRect(frameBuffer, x, y, w, h, boundClr);
-		texSwapColors(ui::buttonSel, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF), rectClr);
-		texDraw(ui::buttonSel, frameBuffer, x - 5, y - 5);
-		texSwapColors(ui::buttonSel, rectClr, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF));
-    }
-	
 	void drawGlowElem(int x, int y, int w, int h, int clrSh, tex *elem, int offset)
 	{
-		int R = 89 - clrSh; if(R < 0) R = 0; if(R > 254) R = 254;
-		int G = 253 - clrSh; if(G < 0) G = 0; if(G > 254) G = 254;
-		int B = 219 - clrSh / 2; if(B < 0) B = 0; if(B > 254) B = 254;
+		int R = glowR - clrSh; if(R < 0) R = 0; if(R > 254) R = 254;
+		int G = glowG - clrSh; if(G < 0) G = 0; if(G > 254) G = 254;
+		int B = glowB - clrSh / 2; if(B < 0) B = 0; if(B > 254) B = 254;
 
 		clr rectClr = clrCreateRGBA(R, G, B, 0xFF);
 
-		texSwapColors(elem, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF), rectClr);
+		texSwapColors(elem, clrCreateRGBA(glowR, glowG, glowB, 0xFF), rectClr);
 		texDraw(elem, frameBuffer, x - 5 - offset, y - 5 - offset);
-		texSwapColors(elem, rectClr, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF));
+		texSwapColors(elem, rectClr, clrCreateRGBA(glowR, glowG, glowB, 0xFF));
 	}
 
     void drawTextboxInvert(int x, int y, int w, int h)

@@ -29,7 +29,7 @@ namespace ui
 {
 
     //Current menu/ui state
-    extern int mstate, prevState;
+    extern int mstate, prevState, glowR, glowG, glowB;
 
     //Both UI modes need access to this
     extern std::string folderMenuInfo;
