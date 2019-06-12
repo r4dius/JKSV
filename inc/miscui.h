@@ -17,6 +17,13 @@ enum trackEvents
     TRACK_SWIPE_RIGHT
 };
 
+enum buttonTypes
+{
+    BUTTON_ICON,
+    BUTTON_LIST,
+    BUTTON_POPUP
+};
+
 //For smaller classes that aren't easy to get lost in and general functions
 namespace ui
 {
@@ -87,6 +94,7 @@ namespace ui
     void drawTextPopup(int x, int y, int w, int h);
     void drawTextPopupBg(int x, int y, int w, int h);
     void drawGlowElem(int x, int y, int w, int h, int clrSh, tex *elem, int offset);
+    void drawGlowButton(int x, int y, int w, int h, int clrSh, int type);
     void drawTitlebox(std::string& title, int x, int y, int h);
     void drawTextboxInvert(int x, int y, int w, int h);
     void drawBoundBox(int x, int y, int w, int h, int clrSh);

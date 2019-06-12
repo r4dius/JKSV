@@ -289,7 +289,7 @@ namespace ui
 				std::string message = "No saved game, please have a look in the blacklist";
 				drawText(message.c_str(), frameBuffer, ui::shared, (1280 - textGetWidth(message.c_str(), ui::shared, 22)) / 2, 340, 22, mnuTxt);
 			}
-			gfxEndFrame();
+			gfxEndFrame(ui::shared);
 
 			if(updatemenu == true)
 				break;

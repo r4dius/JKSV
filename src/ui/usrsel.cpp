@@ -252,7 +252,7 @@ namespace ui
 			texDraw(screen, frameBuffer, 0, 0);
 			if(list_size > 0)
 			{
-				drawGlowElem(selRectX, selRectY, 178, 178, clrSh, ui::iconSel, 2);
+				drawGlowButton(selRectX, selRectY, 174, 174, clrSh, BUTTON_ICON);
 				drawTitlebox(title, tiX, tiY - 63, 48);
 			}
 			else
@@ -260,7 +260,7 @@ namespace ui
 				std::string message = "No user with saved game, try playing something and get back";
 				drawText(message.c_str(), frameBuffer, ui::shared, (1280 - textGetWidth(message.c_str(), ui::shared, 22)) / 2, 340, 22, mnuTxt);
 			}
-			gfxEndFrame();
+			gfxEndFrame(ui::shared);
 
 			if(updatemenu == true)
 				break;

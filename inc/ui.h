@@ -39,6 +39,7 @@ namespace ui
 
 	extern tex *screen;
     //Button tex
+	extern tex *iconSelTopLeft, *iconSelTopRight, *iconSelBotLeft, *iconSelBotRight, *iconSelShadowLeft, *iconSelShadowBot, *iconSelShadowRight;
     extern tex *buttonA, *buttonB, *buttonX, *buttonY, *buttonM, *buttonP, *iconSel, *menuSel, *buttonSel, *buttonLrg;
     //Selection box
     extern tex *mnuTopLeft, *mnuTopRight, *mnuBotLeft, *mnuBotRight, *mnuBotShadow;
@@ -56,11 +57,6 @@ namespace ui
     //Loads in the A, B, X, Y button graphics
     void init();
     void exit();
-
-    //Prepares ui
-    //Sets up buttons for icon touchin
-    //void setupSelButtons();
-    void setupNavButtons();
 
     //Clears and draws general stuff used by multiple screens
     void drawUI();

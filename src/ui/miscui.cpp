@@ -200,7 +200,7 @@ namespace ui
 			drawRectAlpha(frameBuffer, 255, 459, 770, 2, clrCreateU32(0x64A0A0A0));
 			drawGlowElem(255, 461, 770, 70, clrSh, ui::buttonLrg, 0);
             ok.draw();
-            gfxEndFrame();
+            gfxEndFrame(ui::shared);
         }
     }
 
@@ -286,7 +286,7 @@ namespace ui
 			drawGlowElem(bX, 461, 384, 70, clrSh, ui::buttonSel, 0);
 			no.draw();
 			yes.draw();
-			gfxEndFrame();
+			gfxEndFrame(ui::shared);
         }
 
         return ret;
@@ -381,6 +381,61 @@ namespace ui
 		texSwapColors(elem, clrCreateRGBA(glowR, glowG, glowB, 0xFF), rectClr);
 		texDraw(elem, frameBuffer, x - 5 - offset, y - 5 - offset);
 		texSwapColors(elem, rectClr, clrCreateRGBA(glowR, glowG, glowB, 0xFF));
+	}
+	
+	void drawGlowButton(int x, int y, int w, int h, int clrSh, int type)
+	{
+		int R = glowR - clrSh; if(R < 0) R = 0; if(R > 254) R = 254;
+		int G = glowG - clrSh; if(G < 0) G = 0; if(G > 254) G = 254;
+		int B = glowB - clrSh / 2; if(B < 0) B = 0; if(B > 254) B = 254;
+
+		clr rectClr = clrCreateRGBA(R, G, B, 0xFF);
+
+		switch(type)
+		{
+			case BUTTON_ICON:
+				texSwapColors(iconSelTopLeft, clrCreateRGBA(glowR, glowG, glowB, 0xFF), rectClr);
+				texSwapColors(iconSelTopRight, clrCreateRGBA(glowR, glowG, glowB, 0xFF), rectClr);
+				texSwapColors(iconSelBotLeft, clrCreateRGBA(glowR, glowG, glowB, 0xFF), rectClr);
+				texSwapColors(iconSelBotRight, clrCreateRGBA(glowR, glowG, glowB, 0xFF), rectClr);
+
+				// draw shadow first
+				texDraw(iconSelShadowLeft, frameBuffer, x - 7, y + h + 5);
+				texDrawH(iconSelShadowBot, frameBuffer, x, y + h + 5, w);
+				texDraw(iconSelShadowRight, frameBuffer, x + w, y + h + 5);
+
+				// top
+				texDraw(iconSelTopLeft, frameBuffer, x - 7, y - 7);
+				drawRectAlpha(frameBuffer, x, y - 7, w, 5, rectClr);
+				drawRectAlpha(frameBuffer, x, y - 2, w, 2, tboxClr);
+				texDraw(iconSelTopRight, frameBuffer, x + w, y - 7);
+
+				// left
+				drawRectAlpha(frameBuffer, x - 7, y, 5, h, rectClr);
+				drawRectAlpha(frameBuffer, x - 2, y, 2, h, tboxClr);
+
+				// right
+				drawRectAlpha(frameBuffer, x + w, y, 2, h, tboxClr);
+				drawRectAlpha(frameBuffer, x + w + 2, y, 5, h, rectClr);
+
+				// bottom
+				texDraw(iconSelBotLeft, frameBuffer, x - 7, y + h);
+				drawRectAlpha(frameBuffer, x, y + h, w, 2, tboxClr);
+				drawRectAlpha(frameBuffer, x, y + h + 2, w, 5, rectClr);
+				texDraw(iconSelBotRight, frameBuffer, x + w, y + h);
+
+				texSwapColors(iconSelTopLeft, rectClr, clrCreateRGBA(glowR, glowG, glowB, 0xFF));				
+				texSwapColors(iconSelTopRight, rectClr, clrCreateRGBA(glowR, glowG, glowB, 0xFF));				
+				texSwapColors(iconSelBotLeft, rectClr, clrCreateRGBA(glowR, glowG, glowB, 0xFF));				
+				texSwapColors(iconSelBotRight, rectClr, clrCreateRGBA(glowR, glowG, glowB, 0xFF));				
+				break;
+			case BUTTON_LIST:
+				
+				break;
+			case BUTTON_POPUP:
+				
+				break;
+		}
 	}
 
     void drawTextboxInvert(int x, int y, int w, int h)

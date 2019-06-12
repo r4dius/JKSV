@@ -41,7 +41,7 @@ bool graphicsInit(int windowWidth, int windowHeight);
 bool graphicsExit();
 
 void gfxBeginFrame();
-void gfxEndFrame();
+void gfxEndFrame(const font *f);
 
 //Creates color from uint32_t
 inline clr clrCreateU32(uint32_t color)

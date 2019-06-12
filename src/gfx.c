@@ -4,15 +4,20 @@
 #include <malloc.h>
 #include <png.h>
 #include <jpeglib.h>
+#include <time.h>
 
 #include "gfx.h"
 
 tex *frameBuffer;
 clr textClr;
 
+#define BILLION 1000000000L
+
 static NWindow *window;
 static Framebuffer fb;
 static bool framestarted = false;
+struct timespec start, end;
+char char_arr[200];
 
 static inline uint32_t blend(const clr px, const clr fb)
 {
@@ -71,6 +76,7 @@ bool graphicsExit()
 
 void gfxBeginFrame()
 {
+	clock_gettime(CLOCK_MONOTONIC, &start);
     if(!framestarted)
     {
         frameBuffer->data = (uint32_t *)framebufferBegin(&fb, NULL);
@@ -78,8 +84,14 @@ void gfxBeginFrame()
     }
 }
 
-void gfxEndFrame()
+void gfxEndFrame(const font *f)
 {
+	uint64_t diff;
+	clock_gettime(CLOCK_MONOTONIC, &end);
+	diff = (BILLION * (end.tv_sec - start.tv_sec) + end.tv_nsec - start.tv_nsec) / 1000000;
+	sprintf(char_arr, "%llu ms\n", (long long unsigned int) diff);
+
+	drawText(char_arr, frameBuffer, f, 1200, 10, 14, clrCreateU32(0xFF464646));
     if(framestarted)
     {
         framebufferEnd(&fb);

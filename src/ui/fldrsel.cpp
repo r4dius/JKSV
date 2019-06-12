@@ -225,7 +225,7 @@ namespace ui
 			texDraw(screen, frameBuffer, 0, 0);
 			drawGlowElem(selRectX, selRectY, rW, 70, clrSh, ui::menuSel, 0);
 			drawText(title, frameBuffer, shared, selRectX + 15, selRectY + 26, fontSize, mnuTxt);
-			gfxEndFrame();
+			gfxEndFrame(ui::shared);
 
 			if((down & KEY_UP) || ((held & KEY_UP) && move))
 			{
