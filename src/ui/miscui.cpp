@@ -92,7 +92,7 @@ namespace ui
     {
         if(pressed)
         {
-            ui::drawTextboxInvert(x, y, w, h);
+            drawRect(frameBuffer, x, y, w, h, butselClr);
             drawText(text.c_str(), frameBuffer, ui::shared, tx, ty, fontsize, blurClr);
         }
         else
@@ -457,25 +457,5 @@ namespace ui
 				texSwapColors(popupButBotRight, rectClr, clrCreateRGBA(glowR, glowG, glowB, 0xFF));		
 				break;
 		}
-
 	}
-
-    void drawTextboxInvert(int x, int y, int w, int h)
-    {
-        clr temp = ui::tboxClr;
-        clrInvert(&temp);
-
-        //Top
-        texDrawInvert(ui::cornerTopLeft, frameBuffer, x, y);
-        drawRect(frameBuffer, x + 32, y, w - 64, 32, temp);
-        texDrawInvert(ui::cornerTopRight, frameBuffer, (x + w) - 32, y);
-
-        //middle
-        drawRect(frameBuffer, x, y + 32,  w, h - 64, temp);
-
-        //bottom
-        texDrawInvert(ui::cornerBottomLeft, frameBuffer, x, (y + h) - 32);
-        drawRect(frameBuffer, x + 32, (y + h) - 32, w - 64, 32, temp);
-        texDrawInvert(ui::cornerBottomRight, frameBuffer, (x + w) - 32, (y + h) - 32);
-    }
 }

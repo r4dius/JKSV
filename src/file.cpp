@@ -211,7 +211,7 @@ namespace fs
 			ui::drawTextPopupBg(255, 189, 770, 342);
             prog.draw(from, "Copying File:");
             gfxEndFrame(ui::shared);
-			usleep(100000);
+			//usleep(100000);
         }
 
         delete[] buff;
@@ -252,7 +252,7 @@ namespace fs
 			ui::drawTextPopupBg(255, 189, 770, 342);
             prog.draw(from, "Copying File:");
             gfxEndFrame(ui::shared);
-			usleep(100000);
+			//usleep(100000);
         }
 
         delete[] buff;

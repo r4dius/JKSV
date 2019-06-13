@@ -33,7 +33,7 @@ namespace ui
 	// std::vector<ui::button> selButtons;
 
 	//UI colors
-	clr clearClr, mnuTxt, txtClr, tboxClr, sideRect, divClr, sepClr, popupClr, popupbgClr, blurClr;
+	clr clearClr, mnuTxt, txtClr, tboxClr, sideRect, divClr, sepClr, popupClr, popupbgClr, blurClr, butselClr;
 
 	//textbox pieces
 	//I was going to flip them when I draw them, but then laziness kicked in.
@@ -85,6 +85,7 @@ namespace ui
 				divClr = clrCreateU32(0xFF2D2D2D);
 				sepClr = clrCreateU32(0xFFCDCDCD);
 				blurClr = clrCreateU32(0xFFF15230);
+				butselClr = clrCreateU32(0xFF5D593C);
 
 				tip = texLoadPNGFile("romfs:/img/mnu/tboxTipLght.png");
 				icn = texLoadPNGFile("romfs:/img/icn/icnDrk.png");
@@ -128,6 +129,7 @@ namespace ui
 				divClr = clrCreateU32(0xFFFFFFFF);
 				sepClr = clrCreateU32(0xFF4D4D4D);
 				blurClr = clrCreateU32(0xFFC8FF00);
+				butselClr = clrCreateU32(0xFF5D593C);
 
 				tip = texLoadPNGFile("romfs:/img/mnu/tboxTipDrk.png");
 				icn = texLoadPNGFile("romfs:/img/icn/icnLght.png");

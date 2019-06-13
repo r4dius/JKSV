@@ -169,7 +169,7 @@ namespace ui
 				move = false;
 			}
 
-			if(movespeed >= 10 && selected != 0 && selected != list_size)
+			if(movespeed >= 10 && (((held & KEY_UP) && selected != 0) || ((held & KEY_DOWN) && selected != list_size)))
 			{
 				move = true;
 				movespeed = 12;
