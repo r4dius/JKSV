@@ -252,7 +252,7 @@ namespace ui
 			texDraw(screen, frameBuffer, 0, 0);
 			if(list_size > 0)
 			{
-				drawGlowButton(selRectX, selRectY, 174, 174, clrSh, BUTTON_ICON);
+				drawGlowButton(selRectX, selRectY, 174, 174, clrSh, BUTTON_ICON, 2);
 				drawTitlebox(title, tiX, tiY - 63, 48);
 			}
 			else

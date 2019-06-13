@@ -87,20 +87,23 @@ namespace ui
 		ui::button ttlBck("", endX, 656, butSize + 38, 64);
 		ttlNav.push_back(ttlBck);
 		endX -= 41;
-		butTxt = "Blacklist";
-		butSize = textGetWidth(butTxt.c_str(), shared, 18);
-		drawText(butTxt.c_str(), frameBuffer, shared, endX -= butSize, 675, 18, mnuTxt);
-		texDraw(buttonX, frameBuffer, endX -= 38, 672);
-		ui::button ttlBlk("", endX, 656, butSize + 38, 64);
-		ttlNav.push_back(ttlBlk);
-		endX -= 41;
-		butTxt = "Backup All";
-		butSize = textGetWidth(butTxt.c_str(), shared, 18);
-		drawText(butTxt.c_str(), frameBuffer, shared, endX -= butSize, 675, 18, mnuTxt);
-		texDraw(buttonY, frameBuffer, endX -= 38, 672);
-		ui::button ttlDmp("", endX, 656, butSize + 38, 64);
-		ttlNav.push_back(ttlDmp);
-		endX -= 41;
+		if(list_size > 0)
+		{
+			butTxt = "Blacklist";
+			butSize = textGetWidth(butTxt.c_str(), shared, 18);
+			drawText(butTxt.c_str(), frameBuffer, shared, endX -= butSize, 675, 18, mnuTxt);
+			texDraw(buttonX, frameBuffer, endX -= 38, 672);
+			ui::button ttlBlk("", endX, 656, butSize + 38, 64);
+			ttlNav.push_back(ttlBlk);
+			endX -= 41;
+			butTxt = "Backup All";
+			butSize = textGetWidth(butTxt.c_str(), shared, 18);
+			drawText(butTxt.c_str(), frameBuffer, shared, endX -= butSize, 675, 18, mnuTxt);
+			texDraw(buttonY, frameBuffer, endX -= 38, 672);
+			ui::button ttlDmp("", endX, 656, butSize + 38, 64);
+			ttlNav.push_back(ttlDmp);
+			endX -= 41;
+		}
 		butTxt = "View Blacklisted";
 		butSize = textGetWidth(butTxt.c_str(), shared, 18);
 		drawText(butTxt.c_str(), frameBuffer, shared, endX -= butSize, 675, 18, mnuTxt);
@@ -281,7 +284,7 @@ namespace ui
 			texDraw(screen, frameBuffer, 0, 0);
 			if(list_size > 0)
 			{
-				drawGlowElem(selRectX, selRectY, 178, 178, clrSh, ui::iconSel, 2);
+				drawGlowButton(selRectX, selRectY, 174, 174, clrSh, BUTTON_ICON, 2);
 				drawTitlebox(title, tiX, tiY - 63, 48);
 			}
 			else
@@ -411,12 +414,12 @@ namespace ui
 				mstate = USR_SEL;
 				return;
 			}
-			else if(down & KEY_MINUS || ttlNav[4].getEvent() == BUTTON_RELEASED)
+			else if(down & KEY_MINUS || ttlNav[ttlNav.size() - 2].getEvent() == BUTTON_RELEASED)
 			{
 				mstate = BKL_SEL;
 				break;
 			}
-			else if(down & KEY_PLUS || ttlNav[5].getEvent() == BUTTON_RELEASED)
+			else if(down & KEY_PLUS || ttlNav[ttlNav.size() - 1].getEvent() == BUTTON_RELEASED)
 			{
 				ui::finish = true;
 				break;

@@ -78,15 +78,6 @@ namespace ui
         }
     }
 
-	void drawBoundBox(int x, int y, int w, int h, int clrSh)
-	{
-		clr rectClr = clrCreateRGBA(0x59 - clrSh, 0xFD - clrSh, 0xDB - clrSh, 0xFF);
-
-		texSwapColors(ui::iconSel, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF), rectClr);
-		texDraw(ui::iconSel, frameBuffer, x - 7, y - 7);
-		texSwapColors(ui::iconSel, rectClr, clrCreateRGBA(0x59, 0xFD, 0xDB, 0xFF));
-	}
-
     bool button::isOver()
     {
         return (cur.px > x && cur.px < x + w && cur.py > y && cur.py < y + h);
@@ -198,7 +189,7 @@ namespace ui
 			int top = 191 + 266 / 2 - textGetHeight(mess.c_str(), ui::shared, 19, 630) / 2;
 			drawTextWrap(mess.c_str(), frameBuffer, ui::shared, 325, top, 19, mnuTxt, 630);
 			drawRectAlpha(frameBuffer, 255, 459, 770, 2, clrCreateU32(0x64A0A0A0));
-			drawGlowElem(255, 461, 770, 70, clrSh, ui::buttonLrg, 0);
+			drawGlowButton(255, 461, 770, 70, clrSh, BUTTON_POPUP, 0);
             ok.draw();
             gfxEndFrame(ui::shared);
         }
@@ -283,7 +274,7 @@ namespace ui
 			drawTextWrap(mess.c_str(), frameBuffer, ui::shared, 325, top, 19, mnuTxt, 630);
 			drawRectAlpha(frameBuffer, 255, 459, 770, 2, clrCreateU32(0x64A0A0A0));
 			drawRectAlpha(frameBuffer, 639, 461, 2, 70, clrCreateU32(0x64A0A0A0));
-			drawGlowElem(bX, 461, 384, 70, clrSh, ui::buttonSel, 0);
+			drawGlowButton(bX, 461, 384, 70, clrSh, BUTTON_POPUP, 0);
 			no.draw();
 			yes.draw();
 			gfxEndFrame(ui::shared);
@@ -383,7 +374,7 @@ namespace ui
 		texSwapColors(elem, rectClr, clrCreateRGBA(glowR, glowG, glowB, 0xFF));
 	}
 	
-	void drawGlowButton(int x, int y, int w, int h, int clrSh, int type)
+	void drawGlowButton(int x, int y, int w, int h, int clrSh, int type, int offset)
 	{
 		int R = glowR - clrSh; if(R < 0) R = 0; if(R > 254) R = 254;
 		int G = glowG - clrSh; if(G < 0) G = 0; if(G > 254) G = 254;
@@ -391,51 +382,82 @@ namespace ui
 
 		clr rectClr = clrCreateRGBA(R, G, B, 0xFF);
 
+		if(type == BUTTON_LIST || type == BUTTON_POPUP)
+			drawRect(frameBuffer, x - offset, y - offset, w + offset * 2, h + offset * 2, tboxClr);
+
 		switch(type)
 		{
 			case BUTTON_ICON:
+			case BUTTON_LIST:
 				texSwapColors(iconSelTopLeft, clrCreateRGBA(glowR, glowG, glowB, 0xFF), rectClr);
 				texSwapColors(iconSelTopRight, clrCreateRGBA(glowR, glowG, glowB, 0xFF), rectClr);
 				texSwapColors(iconSelBotLeft, clrCreateRGBA(glowR, glowG, glowB, 0xFF), rectClr);
 				texSwapColors(iconSelBotRight, clrCreateRGBA(glowR, glowG, glowB, 0xFF), rectClr);
 
 				// draw shadow first
-				texDraw(iconSelShadowLeft, frameBuffer, x - 7, y + h + 5);
-				texDrawH(iconSelShadowBot, frameBuffer, x, y + h + 5, w);
-				texDraw(iconSelShadowRight, frameBuffer, x + w, y + h + 5);
+				texDraw(iconSelShadowLeft, frameBuffer, x - 5 - offset, y + h + 3 + offset);
+				texDrawH(iconSelShadowBot, frameBuffer, x - offset, y + h + 3 + offset, w + offset * 2);
+				texDraw(iconSelShadowRight, frameBuffer, x + w + offset, y + h + 3 + offset);
 
 				// top
-				texDraw(iconSelTopLeft, frameBuffer, x - 7, y - 7);
-				drawRectAlpha(frameBuffer, x, y - 7, w, 5, rectClr);
-				drawRectAlpha(frameBuffer, x, y - 2, w, 2, tboxClr);
-				texDraw(iconSelTopRight, frameBuffer, x + w, y - 7);
+				texDraw(iconSelTopLeft, frameBuffer, x - 5 - offset, y - 5 - offset);
+				drawRect(frameBuffer, x - offset + 10, y - 5 - offset, w + offset * 2 - 20, 5, rectClr);
+				drawRect(frameBuffer, x - offset, y - offset, w + offset * 2, offset, tboxClr);
+				texDraw(iconSelTopRight, frameBuffer, x + w + offset - 10, y - 5 - offset);
 
 				// left
-				drawRectAlpha(frameBuffer, x - 7, y, 5, h, rectClr);
-				drawRectAlpha(frameBuffer, x - 2, y, 2, h, tboxClr);
+				drawRect(frameBuffer, x - 5 - offset, y - offset + 10, 5, h + offset * 2 - 20, rectClr);
+				drawRect(frameBuffer, x - offset, y - offset, offset, h + offset * 2, tboxClr);
 
 				// right
-				drawRectAlpha(frameBuffer, x + w, y, 2, h, tboxClr);
-				drawRectAlpha(frameBuffer, x + w + 2, y, 5, h, rectClr);
+				drawRect(frameBuffer, x + w, y - offset, offset, h + offset * 2, tboxClr);
+				drawRect(frameBuffer, x + w + offset, y - offset + 10, 5, h + offset * 2 - 20, rectClr);
 
 				// bottom
-				texDraw(iconSelBotLeft, frameBuffer, x - 7, y + h);
-				drawRectAlpha(frameBuffer, x, y + h, w, 2, tboxClr);
-				drawRectAlpha(frameBuffer, x, y + h + 2, w, 5, rectClr);
-				texDraw(iconSelBotRight, frameBuffer, x + w, y + h);
+				texDraw(iconSelBotLeft, frameBuffer, x - 5 - offset, y + h + offset - 10);
+				drawRect(frameBuffer, x - offset, y + h, w + offset * 2, offset, tboxClr);
+				drawRect(frameBuffer, x - offset + 10 , y + h + offset, w + offset * 2 - 20, 5, rectClr);
+				texDraw(iconSelBotRight, frameBuffer, x + w + offset - 10, y + h + offset - 10);
 
 				texSwapColors(iconSelTopLeft, rectClr, clrCreateRGBA(glowR, glowG, glowB, 0xFF));				
 				texSwapColors(iconSelTopRight, rectClr, clrCreateRGBA(glowR, glowG, glowB, 0xFF));				
 				texSwapColors(iconSelBotLeft, rectClr, clrCreateRGBA(glowR, glowG, glowB, 0xFF));				
 				texSwapColors(iconSelBotRight, rectClr, clrCreateRGBA(glowR, glowG, glowB, 0xFF));				
 				break;
-			case BUTTON_LIST:
-				
-				break;
+
 			case BUTTON_POPUP:
-				
+				texSwapColors(popupButTopLeft, clrCreateRGBA(glowR, glowG, glowB, 0xFF), rectClr);
+				texSwapColors(popupButTopRight, clrCreateRGBA(glowR, glowG, glowB, 0xFF), rectClr);
+				texSwapColors(popupButBotLeft, clrCreateRGBA(glowR, glowG, glowB, 0xFF), rectClr);
+				texSwapColors(popupButBotRight, clrCreateRGBA(glowR, glowG, glowB, 0xFF), rectClr);
+
+				// top
+				texDraw(popupButTopLeft, frameBuffer, x - 5 - offset, y - 5 - offset);
+				drawRect(frameBuffer, x - offset + 10, y - 5 - offset, w + offset * 2 - 20, 5, rectClr);
+				drawRect(frameBuffer, x - offset, y - offset, w + offset * 2, offset, tboxClr);
+				texDraw(popupButTopRight, frameBuffer, x + w + offset - 10, y - 5 - offset);
+
+				// left
+				drawRect(frameBuffer, x - 5 - offset, y - offset + 10, 5, h + offset * 2 - 20, rectClr);
+				drawRect(frameBuffer, x - offset, y - offset, offset, h + offset * 2, tboxClr);
+
+				// right
+				drawRect(frameBuffer, x + w, y - offset, offset, h + offset * 2, tboxClr);
+				drawRect(frameBuffer, x + w + offset, y - offset + 10, 5, h + offset * 2 - 20, rectClr);
+
+				// bottom
+				texDraw(popupButBotLeft, frameBuffer, x - 5 - offset, y + h + offset - 10);
+				drawRect(frameBuffer, x - offset, y + h, w + offset * 2, offset, tboxClr);
+				drawRect(frameBuffer, x - offset + 10 , y + h + offset, w + offset * 2 - 20, 5, rectClr);
+				texDraw(popupButBotRight, frameBuffer, x + w + offset - 10, y + h + offset - 10);
+
+				texSwapColors(popupButTopLeft, rectClr, clrCreateRGBA(glowR, glowG, glowB, 0xFF));				
+				texSwapColors(popupButTopRight, rectClr, clrCreateRGBA(glowR, glowG, glowB, 0xFF));				
+				texSwapColors(popupButBotLeft, rectClr, clrCreateRGBA(glowR, glowG, glowB, 0xFF));				
+				texSwapColors(popupButBotRight, rectClr, clrCreateRGBA(glowR, glowG, glowB, 0xFF));		
 				break;
 		}
+
 	}
 
     void drawTextboxInvert(int x, int y, int w, int h)

@@ -94,10 +94,9 @@ namespace ui
     void drawTextPopup(int x, int y, int w, int h);
     void drawTextPopupBg(int x, int y, int w, int h);
     void drawGlowElem(int x, int y, int w, int h, int clrSh, tex *elem, int offset);
-    void drawGlowButton(int x, int y, int w, int h, int clrSh, int type);
+    void drawGlowButton(int x, int y, int w, int h, int clrSh, int type, int offset);
     void drawTitlebox(std::string& title, int x, int y, int h);
     void drawTextboxInvert(int x, int y, int w, int h);
-    void drawBoundBox(int x, int y, int w, int h, int clrSh);
 }
 
 #endif // MISCUI_H

@@ -223,7 +223,7 @@ namespace ui
 
 			gfxBeginFrame();
 			texDraw(screen, frameBuffer, 0, 0);
-			drawGlowElem(selRectX, selRectY, rW, 70, clrSh, ui::menuSel, 0);
+			drawGlowButton(selRectX, selRectY, rW, 70, clrSh, BUTTON_LIST, 0);
 			drawText(title, frameBuffer, shared, selRectX + 15, selRectY + 26, fontSize, mnuTxt);
 			gfxEndFrame(ui::shared);
 
