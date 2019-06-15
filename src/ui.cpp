@@ -23,7 +23,7 @@ std::vector<ui::button> usrNav, ttlNav, blkNav, fldNav;
 namespace ui
 {
 	//Current menu state
-	int mstate = USR_SEL, prevState = USR_SEL, glowR, glowG, glowB;
+	int mstate = USR_SEL, prevState = USR_SEL;
 	bool finish = false;
 
 	//Info printed on folder menu
@@ -33,13 +33,13 @@ namespace ui
 	// std::vector<ui::button> selButtons;
 
 	//UI colors
-	clr clearClr, mnuTxt, txtClr, tboxClr, sideRect, divClr, sepClr, popupClr, popupbgClr, blurClr, butselClr;
+	clr clearClr, mnutxtClr, tipbgClr, tiptxtClr, sideRect, divClr, sepClr, popupClr, popupbgClr, buttxtClr, butbgovrClr, glowClr, glowbgClr, glowpopbgClr;
 
 	//textbox pieces
 	//I was going to flip them when I draw them, but then laziness kicked in.
 	tex *cornerTopHor, *cornerBottomHor, *cornerLeftVer, *cornerRightVer, *cornerTopLeft, *cornerTopRight, *cornerBottomLeft, *cornerBottomRight, *tip, *temp;
-	tex *popupTopLeft, *popupTopRight, *popupBotLeft, *popupBotRight, *popupBotShadow;
-	tex *iconSelTopLeft, *iconSelTopRight, *iconSelBotLeft, *iconSelBotRight, *iconSelShadowLeft, *iconSelShadowBot, *iconSelShadowRight;
+	tex *popupTopLeft, *popupTopRight, *popupBotLeft, *popupBotRight, *popupShadowLeft, *popupShadowMiddle, *popupShadowRight;
+	tex *iconSelTopLeft, *iconSelTopRight, *iconSelBotLeft, *iconSelBotRight, *iconSelShadowLeft, *iconSelShadowMiddle, *iconSelShadowRight;
 	tex *popupButTopLeft, *popupButTopRight, *popupButBotLeft, *popupButBotRight;
 	tex *buttonA, *buttonB, *buttonX, *buttonY, *buttonM, *buttonP;
 	tex *icn, *mnuGrad;
@@ -52,51 +52,35 @@ namespace ui
 		ColorSetId gthm;
 		setsysGetColorSetId(&gthm);
 
-		glowR = 89;
-		glowG = 253;
-		glowB = 219;
+		// glowR = 89;
+		// glowG = 253;
+		// glowB = 219;
 
 		popupbgClr = clrCreateU32(0xB2160F05);
-
-		temp = texLoadPNGFile("romfs:/img/mnu/popupsel.png");
-		popupButTopLeft = texCreateFromPart(temp, 0, 0, 15, 15);
-		popupButTopRight = texCreateFromPart(temp, 15, 0, 15, 15);
-		popupButBotLeft = texCreateFromPart(temp, 0, 15, 15, 15);
-		popupButBotRight = texCreateFromPart(temp, 15, 15, 15, 15);
-
-		temp = texLoadPNGFile("romfs:/img/mnu/iconSel.png");
-		iconSelTopLeft = texCreateFromPart(temp, 0, 0, 15, 15);
-		iconSelTopRight = texCreateFromPart(temp, 15, 0, 15, 15);
-		iconSelBotLeft = texCreateFromPart(temp, 0, 15, 15, 15);
-		iconSelBotRight = texCreateFromPart(temp, 15, 15, 15, 15);
-		iconSelShadowLeft = texCreateFromPart(temp, 0, 30, 5, 6);
-		iconSelShadowBot = texCreateFromPart(temp, 15, 30, 1, 6);
-		iconSelShadowRight = texCreateFromPart(temp, 25, 30, 5, 6);
 
 		switch(gthm)
 		{
 			case ColorSetId_Light:
+				glowClr = clrCreateRGBA(90, 255, 220, 0xFF);
+				glowbgClr = clrCreateU32(0xFFFCFCFC);
+				glowpopbgClr = clrCreateU32(0xFFFDFDFD);
+
 				popupClr = clrCreateU32(0xFFF0F0F0);
 				clearClr = clrCreateU32(0xFFEBEBEB);
-				mnuTxt = clrCreateU32(0xFF282828);
-				txtClr = clrCreateU32(0xFFCBC000);
-				tboxClr = clrCreateU32(0xF0FFFFFF);
+				mnutxtClr = clrCreateU32(0xFF282828);
+
+				tipbgClr = clrCreateU32(0xF0FFFFFF);
+				tiptxtClr = clrCreateU32(0xFFCBC000);
+
 				sideRect = clrCreateU32(0xFFDCDCDC);
 				divClr = clrCreateU32(0xFF2D2D2D);
 				sepClr = clrCreateU32(0xFFCDCDCD);
-				blurClr = clrCreateU32(0xFFF15230);
-				butselClr = clrCreateU32(0xFF5D593C);
+				buttxtClr = clrCreateU32(0xFFF15230);
+				butbgovrClr = clrCreateU32(0xFFF2F1D7);
 
 				tip = texLoadPNGFile("romfs:/img/mnu/tboxTipLght.png");
 				icn = texLoadPNGFile("romfs:/img/icn/icnDrk.png");
 				mnuGrad = texLoadPNGFile("romfs:/img/mnu/gradLght.png");
-
-				temp = texLoadPNGFile("romfs:/img/mnu/popupLght.png");
-				popupTopLeft = texCreateFromPart(temp, 0, 0, 15, 15);
-				popupTopRight = texCreateFromPart(temp, 15, 0, 15, 15);
-				popupBotLeft = texCreateFromPart(temp, 0, 15, 15, 15);
-				popupBotRight = texCreateFromPart(temp, 15, 15, 15, 15);
-				popupBotShadow = texCreateFromPart(temp, 15, 15, 1, 15);
 
 				//Light corners
 				temp = texLoadPNGFile("romfs:/img/mnu/tboxLght.png");
@@ -120,27 +104,26 @@ namespace ui
 				break;
 			default:
 			case ColorSetId_Dark:
+				glowClr = clrCreateRGBA(145, 250, 250, 0xFF);
+				glowbgClr = clrCreateU32(0xFF27221F);
+				glowpopbgClr = clrCreateU32(0xFF423D3A);
+
 				popupClr = clrCreateU32(0xFF464646);
 				clearClr = clrCreateU32(0xFF2D2D2D);
-				mnuTxt = clrCreateU32(0xFFFFFFFF);
-				txtClr = clrCreateU32(0xFFFDBD1B);
-				tboxClr = clrCreateU32(0xF04F4F4F);
+				mnutxtClr = clrCreateU32(0xFFFFFFFF);
+
+				tipbgClr = clrCreateU32(0xF04F4F4F);
+				tiptxtClr = clrCreateU32(0xFFFDBD1B);
+
 				sideRect = clrCreateU32(0xFF373737);
 				divClr = clrCreateU32(0xFFFFFFFF);
 				sepClr = clrCreateU32(0xFF4D4D4D);
-				blurClr = clrCreateU32(0xFFC8FF00);
-				butselClr = clrCreateU32(0xFF5D593C);
+				buttxtClr = clrCreateU32(0xFFC8FF00);
+				butbgovrClr = clrCreateU32(0xFF5D593C);
 
 				tip = texLoadPNGFile("romfs:/img/mnu/tboxTipDrk.png");
 				icn = texLoadPNGFile("romfs:/img/icn/icnLght.png");
 				mnuGrad = texLoadPNGFile("romfs:/img/mnu/gradDrk.png");
-
-				temp = texLoadPNGFile("romfs:/img/mnu/popupDrk.png");
-				popupTopLeft = texCreateFromPart(temp, 0, 0, 15, 15);
-				popupTopRight = texCreateFromPart(temp, 15, 0, 15, 15);
-				popupBotLeft = texCreateFromPart(temp, 0, 15, 15, 15);
-				popupBotRight = texCreateFromPart(temp, 15, 15, 15, 15);
-				popupBotShadow = texCreateFromPart(temp, 15, 15, 1, 15);
 
 				//Dark corners
 				temp = texLoadPNGFile("romfs:/img/mnu/tboxDrk.png");
@@ -163,6 +146,33 @@ namespace ui
 
 				break;
 		}
+
+		temp = texLoadPNGFile("romfs:/img/mnu/popup.png");
+		texSwapColors(temp, clrCreateRGBA(0xFF, 0xFF, 0xFF, 0xFF), popupClr);
+		popupTopLeft = texCreateFromPart(temp, 0, 0, 15, 15);
+		popupTopRight = texCreateFromPart(temp, 15, 0, 15, 15);
+		popupBotLeft = texCreateFromPart(temp, 0, 15, 15, 15);
+		popupBotRight = texCreateFromPart(temp, 15, 15, 15, 15);
+		popupShadowLeft = texCreateFromPart(temp, 0, 30, 10, 10);
+		popupShadowMiddle = texCreateFromPart(temp, 15, 30, 1, 10);
+		popupShadowRight = texCreateFromPart(temp, 20, 30, 10, 10);
+
+		temp = texLoadPNGFile("romfs:/img/mnu/iconSel.png");
+		texSwapColors(temp, clrCreateRGBA(0xFF, 0xFF, 0xFF, 0xFF), glowClr);
+		iconSelTopLeft = texCreateFromPart(temp, 0, 0, 15, 15);
+		iconSelTopRight = texCreateFromPart(temp, 15, 0, 15, 15);
+		iconSelBotLeft = texCreateFromPart(temp, 0, 15, 15, 15);
+		iconSelBotRight = texCreateFromPart(temp, 15, 15, 15, 15);
+		iconSelShadowLeft = texCreateFromPart(temp, 0, 30, 5, 6);
+		iconSelShadowMiddle = texCreateFromPart(temp, 15, 30, 1, 6);
+		iconSelShadowRight = texCreateFromPart(temp, 25, 30, 5, 6);
+
+		temp = texLoadPNGFile("romfs:/img/mnu/popupsel.png");
+		texSwapColors(temp, clrCreateRGBA(0xFF, 0xFF, 0xFF, 0xFF), glowClr);
+		popupButTopLeft = texCreateFromPart(temp, 0, 0, 15, 15);
+		popupButTopRight = texCreateFromPart(temp, 15, 0, 15, 15);
+		popupButBotLeft = texCreateFromPart(temp, 0, 15, 15, 15);
+		popupButBotRight = texCreateFromPart(temp, 15, 15, 15, 15);
 
 		if(fs::fileExists(fs::getWorkDir() + "font.ttf"))
 			shared = fontLoadTTF(std::string(fs::getWorkDir() + "font.ttf").c_str());
@@ -201,14 +211,16 @@ namespace ui
 		texDestroy(iconSelBotLeft);
 		texDestroy(iconSelBotRight);
 		texDestroy(iconSelShadowLeft);
-		texDestroy(iconSelShadowBot);
+		texDestroy(iconSelShadowMiddle);
 		texDestroy(iconSelShadowRight);
 
 		texDestroy(popupTopLeft);
 		texDestroy(popupTopRight);
 		texDestroy(popupBotLeft);
 		texDestroy(popupBotRight);
-		texDestroy(popupBotShadow);
+		texDestroy(popupShadowLeft);
+		texDestroy(popupShadowMiddle);
+		texDestroy(popupShadowRight);
 
 		texDestroy(popupButTopLeft);
 		texDestroy(popupButTopRight);
@@ -243,8 +255,8 @@ namespace ui
 			texDrawNoAlpha(background, frameBuffer, 0, 0);
 
 		texDraw(icn, frameBuffer, 66, 27);
-		drawText("JKSV", frameBuffer, shared, 130, 38, 24, mnuTxt);
-		//drawText(VER_STRING, frameBuffer, shared, 8, 702, 12, mnuTxt);
+		drawText("JKSV", frameBuffer, shared, 130, 38, 24, mnutxtClr);
+		//drawText(VER_STRING, frameBuffer, shared, 8, 702, 12, mnutxtClr);
 		drawRect(frameBuffer, 30, 87, 1220, 1, divClr);
 		drawRect(frameBuffer, 30, 647, 1220, 1, divClr);
 

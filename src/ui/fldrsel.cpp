@@ -86,26 +86,26 @@ namespace ui
 				title = opt[i].c_str();
 			}
 
-			drawText(opt[i].c_str(), frameBuffer, shared, x + 15, (y + 26) + ((i - start) * 71), fontSize, mnuTxt);
+			drawText(opt[i].c_str(), frameBuffer, shared, x + 15, (y + 26) + ((i - start) * 71), fontSize, mnutxtClr);
 
 			if(i != selected)
 				drawRect(frameBuffer, x, y - 1 + ((i - start +1) * 71), rW, 1, ui::sepClr);
 		}
 
 		data::curData.icon.drawResize(115, 130, 200, 200);
-		drawTextWrap(folderMenuInfo.c_str(), frameBuffer, ui::shared, 76, 359, 19, ui::mnuTxt, 280);
+		drawTextWrap(folderMenuInfo.c_str(), frameBuffer, ui::shared, 76, 359, 19, ui::mnutxtClr, 280);
 
 		unsigned endX = 1218, butSize = 0;
 		std::string butTxt = "Backup";
 		butSize = textGetWidth(butTxt.c_str(), shared, 18);
-		drawText(butTxt.c_str(), frameBuffer, shared, endX -= textGetWidth(butTxt.c_str(), shared, 18), 675, 18, mnuTxt);
+		drawText(butTxt.c_str(), frameBuffer, shared, endX -= textGetWidth(butTxt.c_str(), shared, 18), 675, 18, mnutxtClr);
 		texDraw(buttonA, frameBuffer, endX -= 38, 672);
 		ui::button fldSel("", endX, 656, butSize + 38, 64);
 		fldNav.push_back(fldSel);
 		endX -= 41;
 		butTxt = "Back";
 		butSize = textGetWidth(butTxt.c_str(), shared, 18);
-		drawText(butTxt.c_str(), frameBuffer, shared, endX -= textGetWidth(butTxt.c_str(), shared, 18), 675, 18, mnuTxt);
+		drawText(butTxt.c_str(), frameBuffer, shared, endX -= textGetWidth(butTxt.c_str(), shared, 18), 675, 18, mnutxtClr);
 		texDraw(buttonB, frameBuffer, endX -= 38, 672);
 		ui::button fldBck("", endX, 656, butSize + 38, 64);
 		fldNav.push_back(fldBck);
@@ -114,14 +114,14 @@ namespace ui
 		{
 			butTxt = "Delete";
 			butSize = textGetWidth(butTxt.c_str(), shared, 18);
-			drawText(butTxt.c_str(), frameBuffer, shared, endX -= textGetWidth(butTxt.c_str(), shared, 18), 675, 18, mnuTxt);
+			drawText(butTxt.c_str(), frameBuffer, shared, endX -= textGetWidth(butTxt.c_str(), shared, 18), 675, 18, mnutxtClr);
 			texDraw(buttonX, frameBuffer, endX -= 38, 672);
 			ui::button fldDel("", endX, 656, butSize + 38, 64);
 			fldNav.push_back(fldDel);
 			endX -= 41;
 			butTxt = "Restore";
 			butSize = textGetWidth(butTxt.c_str(), shared, 18);
-			drawText(butTxt.c_str(), frameBuffer, shared, endX -= textGetWidth(butTxt.c_str(), shared, 18), 675, 18, mnuTxt);
+			drawText(butTxt.c_str(), frameBuffer, shared, endX -= textGetWidth(butTxt.c_str(), shared, 18), 675, 18, mnutxtClr);
 			texDraw(buttonY, frameBuffer, endX -= 38, 672);
 			ui::button fldRes("", endX, 656, butSize + 38, 64);
 			fldNav.push_back(fldRes);
@@ -129,7 +129,7 @@ namespace ui
 		}
 		butTxt = "Exit";
 		butSize = textGetWidth(butTxt.c_str(), shared, 18);
-		drawText(butTxt.c_str(), frameBuffer, shared, endX -= textGetWidth(butTxt.c_str(), shared, 18), 675, 18, mnuTxt);
+		drawText(butTxt.c_str(), frameBuffer, shared, endX -= textGetWidth(butTxt.c_str(), shared, 18), 675, 18, mnutxtClr);
 		texDraw(buttonP, frameBuffer, endX -= 38, 672);
 		ui::button fldExt("", endX, 656, butSize + 38, 64);
 		fldNav.push_back(fldExt);
@@ -224,7 +224,7 @@ namespace ui
 			gfxBeginFrame();
 			texDraw(screen, frameBuffer, 0, 0);
 			drawGlowButton(selRectX, selRectY, rW, 70, clrSh, BUTTON_LIST, 0);
-			drawText(title, frameBuffer, shared, selRectX + 15, selRectY + 26, fontSize, mnuTxt);
+			drawText(title, frameBuffer, shared, selRectX + 15, selRectY + 26, fontSize, mnutxtClr);
 			gfxEndFrame(ui::shared);
 
 			if((down & KEY_UP) || ((held & KEY_UP) && move))

@@ -75,14 +75,14 @@ namespace ui
 		unsigned endX = 1218, butSize = 0;
 		std::string butTxt = "Select";
 		butSize = textGetWidth(butTxt.c_str(), shared, 18);
-		drawText(butTxt.c_str(), frameBuffer, shared, endX -= butSize, 675, 18, mnuTxt);
+		drawText(butTxt.c_str(), frameBuffer, shared, endX -= butSize, 675, 18, mnutxtClr);
 		texDraw(buttonA, frameBuffer, endX -= 38, 672);
 		ui::button blkSel("", endX, 656, butSize + 38, 64);
 		blkNav.push_back(blkSel);
 		endX -= 41;
 		butTxt = "Back";
 		butSize = textGetWidth(butTxt.c_str(), shared, 18);
-		drawText(butTxt.c_str(), frameBuffer, shared, endX -= butSize, 675, 18, mnuTxt);
+		drawText(butTxt.c_str(), frameBuffer, shared, endX -= butSize, 675, 18, mnutxtClr);
 		texDraw(buttonB, frameBuffer, endX -= 38, 672);
 		ui::button blkBck("", endX, 656, butSize + 38, 64);
 		blkNav.push_back(blkBck);
@@ -91,14 +91,14 @@ namespace ui
 		{
 			butTxt = "Unblacklist";
 			butSize = textGetWidth(butTxt.c_str(), shared, 18);
-			drawText(butTxt.c_str(), frameBuffer, shared, endX -= butSize, 675, 18, mnuTxt);
+			drawText(butTxt.c_str(), frameBuffer, shared, endX -= butSize, 675, 18, mnutxtClr);
 			texDraw(buttonX, frameBuffer, endX -= 38, 672);
 			ui::button blkUnb("", endX, 656, butSize + 38, 64);
 			blkNav.push_back(blkUnb);
 			endX -= 41;
 			butTxt = "Backup All";
 			butSize = textGetWidth(butTxt.c_str(), shared, 18);
-			drawText(butTxt.c_str(), frameBuffer, shared, endX -= butSize, 675, 18, mnuTxt);
+			drawText(butTxt.c_str(), frameBuffer, shared, endX -= butSize, 675, 18, mnutxtClr);
 			texDraw(buttonY, frameBuffer, endX -= 38, 672);
 			ui::button blkDmp("", endX, 656, butSize + 38, 64);
 			blkNav.push_back(blkDmp);
@@ -106,7 +106,7 @@ namespace ui
 		}
 		butTxt = "Exit";
 		butSize = textGetWidth(butTxt.c_str(), shared, 18);
-		drawText(butTxt.c_str(), frameBuffer, shared, endX -= butSize, 675, 18, mnuTxt);
+		drawText(butTxt.c_str(), frameBuffer, shared, endX -= butSize, 675, 18, mnutxtClr);
 		texDraw(buttonP, frameBuffer, endX -= 38, 672);
 		ui::button blkExt("", endX, 656, butSize + 38, 64);
 		blkNav.push_back(blkExt);
@@ -159,7 +159,7 @@ namespace ui
 			switch(track.getEvent()) 
 			{
 				case TRACK_SWIPE_UP:
-					if(start + 18 < (int)list_size)
+					if(start + 12 < (int)list_size)
 					{
 						swiping = true;
 						selected += 6;
@@ -225,14 +225,16 @@ namespace ui
 				}
 				else if(selButtons[i].getEvent() == BUTTON_RELEASED)
 				{
-					if(!swiping) {
+					if(!swiping)
+					{
 						if(start + i < (int)list_size)
 							selected = start + i;
 
 						retEvent = MENU_NOTHING;
 						updatemenu = true;
 						
-						if(maxTitles == 24) {
+						if(maxTitles == 24)
+						{
 							if(selected < start + 6)
 							{
 								start -= 6;
@@ -282,7 +284,7 @@ namespace ui
 			else
 			{
 				std::string message = "No blacklisted game, see ya";
-				drawText(message.c_str(), frameBuffer, ui::shared, (1280 - textGetWidth(message.c_str(), ui::shared, 22)) / 2, 340, 22, mnuTxt);
+				drawText(message.c_str(), frameBuffer, ui::shared, (1280 - textGetWidth(message.c_str(), ui::shared, 22)) / 2, 340, 22, mnutxtClr);
 			}
 			gfxEndFrame(ui::shared);
 
@@ -346,7 +348,8 @@ namespace ui
 					if(selected - start >= 18)
 						start += 6;
 
-					if(selected > 11 && selected < 18) maxTitles = 24;
+					if(selected > 11 && selected < 18)
+						maxTitles = 24;
 					break;
 				}
 				else if(down & KEY_A || blkNav[0].getEvent() == BUTTON_RELEASED || retEvent == MENU_DOUBLE_REL)
@@ -410,11 +413,11 @@ namespace ui
 /*
 		char char_arr[200];
 		sprintf(char_arr, "selected %d", selected);
-		drawText(char_arr, frameBuffer, ui::shared, 500, 10, 14, txtClr);
+		drawText(char_arr, frameBuffer, ui::shared, 500, 10, 14, mnutxtClr);
 		sprintf(char_arr, "endTitle %d", endTitle);
-		drawText(char_arr, frameBuffer, ui::shared, 500, 25, 14, txtClr);
+		drawText(char_arr, frameBuffer, ui::shared, 500, 25, 14, mnutxtClr);
 		sprintf(char_arr, "start %d", start);
-		drawText(char_arr, frameBuffer, ui::shared, 500, 40, 14, txtClr);
+		drawText(char_arr, frameBuffer, ui::shared, 500, 40, 14, mnutxtClr);
 */
-    }
+	}
 }

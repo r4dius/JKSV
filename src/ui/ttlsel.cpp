@@ -75,14 +75,14 @@ namespace ui
 		unsigned endX = 1218, butSize = 0;
 		std::string butTxt = "Select";
 		butSize = textGetWidth(butTxt.c_str(), shared, 18);
-		drawText(butTxt.c_str(), frameBuffer, shared, endX -= butSize, 675, 18, mnuTxt);
+		drawText(butTxt.c_str(), frameBuffer, shared, endX -= butSize, 675, 18, mnutxtClr);
 		texDraw(buttonA, frameBuffer, endX -= 38, 672);
 		ui::button ttlSel("", endX, 656, butSize + 38, 64);
 		ttlNav.push_back(ttlSel);
 		endX -= 41;
 		butTxt = "Back";
 		butSize = textGetWidth(butTxt.c_str(), shared, 18);
-		drawText(butTxt.c_str(), frameBuffer, shared, endX -= butSize, 675, 18, mnuTxt);
+		drawText(butTxt.c_str(), frameBuffer, shared, endX -= butSize, 675, 18, mnutxtClr);
 		texDraw(buttonB, frameBuffer, endX -= 38, 672);
 		ui::button ttlBck("", endX, 656, butSize + 38, 64);
 		ttlNav.push_back(ttlBck);
@@ -91,14 +91,14 @@ namespace ui
 		{
 			butTxt = "Blacklist";
 			butSize = textGetWidth(butTxt.c_str(), shared, 18);
-			drawText(butTxt.c_str(), frameBuffer, shared, endX -= butSize, 675, 18, mnuTxt);
+			drawText(butTxt.c_str(), frameBuffer, shared, endX -= butSize, 675, 18, mnutxtClr);
 			texDraw(buttonX, frameBuffer, endX -= 38, 672);
 			ui::button ttlBlk("", endX, 656, butSize + 38, 64);
 			ttlNav.push_back(ttlBlk);
 			endX -= 41;
 			butTxt = "Backup All";
 			butSize = textGetWidth(butTxt.c_str(), shared, 18);
-			drawText(butTxt.c_str(), frameBuffer, shared, endX -= butSize, 675, 18, mnuTxt);
+			drawText(butTxt.c_str(), frameBuffer, shared, endX -= butSize, 675, 18, mnutxtClr);
 			texDraw(buttonY, frameBuffer, endX -= 38, 672);
 			ui::button ttlDmp("", endX, 656, butSize + 38, 64);
 			ttlNav.push_back(ttlDmp);
@@ -106,14 +106,14 @@ namespace ui
 		}
 		butTxt = "View Blacklisted";
 		butSize = textGetWidth(butTxt.c_str(), shared, 18);
-		drawText(butTxt.c_str(), frameBuffer, shared, endX -= butSize, 675, 18, mnuTxt);
+		drawText(butTxt.c_str(), frameBuffer, shared, endX -= butSize, 675, 18, mnutxtClr);
 		texDraw(buttonM, frameBuffer, endX -= 38, 672);
 		ui::button ttlBll("", endX, 656, butSize + 38, 64);
 		ttlNav.push_back(ttlBll);
 		endX -= 41;
 		butTxt = "Exit";
 		butSize = textGetWidth(butTxt.c_str(), shared, 18);
-		drawText(butTxt.c_str(), frameBuffer, shared, endX -= butSize, 675, 18, mnuTxt);
+		drawText(butTxt.c_str(), frameBuffer, shared, endX -= butSize, 675, 18, mnutxtClr);
 		texDraw(buttonP, frameBuffer, endX -= 38, 672);
 		ui::button ttlExt("", endX, 656, butSize + 38, 64);
 		ttlNav.push_back(ttlExt);
@@ -166,7 +166,7 @@ namespace ui
 			switch(track.getEvent()) 
 			{
 				case TRACK_SWIPE_UP:
-					if(start + 18 < (int)list_size)
+					if(start + 12 < (int)list_size)
 					{
 						swiping = true;
 						selected += 6;
@@ -245,7 +245,8 @@ namespace ui
 							if(selected < start + 6)
 							{
 								start -= 6;
-								if(start < 0) {
+								if(start < 0)
+								{
 									start = 0;
 									maxTitles = 18;
 								}
@@ -290,7 +291,7 @@ namespace ui
 			else
 			{
 				std::string message = "No saved game, please have a look in the blacklist";
-				drawText(message.c_str(), frameBuffer, ui::shared, (1280 - textGetWidth(message.c_str(), ui::shared, 22)) / 2, 340, 22, mnuTxt);
+				drawText(message.c_str(), frameBuffer, ui::shared, (1280 - textGetWidth(message.c_str(), ui::shared, 22)) / 2, 340, 22, mnutxtClr);
 			}
 			gfxEndFrame(ui::shared);
 
@@ -428,11 +429,11 @@ namespace ui
 /*
 		char char_arr[200];
 		sprintf(char_arr, "selected %d", selected);
-		drawText(char_arr, frameBuffer, ui::shared, 500, 10, 14, txtClr);
+		drawText(char_arr, frameBuffer, ui::shared, 500, 10, 14, mnutxtClr);
 		sprintf(char_arr, "endTitle %d", endTitle);
-		drawText(char_arr, frameBuffer, ui::shared, 500, 25, 14, txtClr);
+		drawText(char_arr, frameBuffer, ui::shared, 500, 25, 14, mnutxtClr);
 		sprintf(char_arr, "start %d", start);
-		drawText(char_arr, frameBuffer, ui::shared, 500, 40, 14, txtClr);
+		drawText(char_arr, frameBuffer, ui::shared, 500, 40, 14, mnutxtClr);
 */
 	}
 }

@@ -75,21 +75,21 @@ namespace ui
 		unsigned endX = 1218, butSize = 0;
 		std::string butTxt = "Select";
 		butSize = textGetWidth(butTxt.c_str(), shared, 18);
-		drawText(butTxt.c_str(), frameBuffer, shared, endX -= butSize, 675, 18, mnuTxt);
+		drawText(butTxt.c_str(), frameBuffer, shared, endX -= butSize, 675, 18, mnutxtClr);
 		texDraw(buttonA, frameBuffer, endX -= 38, 672);
 		ui::button usrSel("", endX, 656, butSize + 38, 64);
 		usrNav.push_back(usrSel);
 		endX -= 41;
 		butTxt = "Backup All";
 		butSize = textGetWidth(butTxt.c_str(), shared, 18);
-		drawText(butTxt.c_str(), frameBuffer, shared, endX -= butSize, 675, 18, mnuTxt);
+		drawText(butTxt.c_str(), frameBuffer, shared, endX -= butSize, 675, 18, mnutxtClr);
 		texDraw(buttonY, frameBuffer, endX -= 38, 672);
 		ui::button usrDmp("", endX, 656, butSize + 38, 64);
 		usrNav.push_back(usrDmp);
 		endX -= 41;
 		butTxt = "Exit";
 		butSize = textGetWidth(butTxt.c_str(), shared, 18);
-		drawText(butTxt.c_str(), frameBuffer, shared, endX -= butSize, 675, 18, mnuTxt);
+		drawText(butTxt.c_str(), frameBuffer, shared, endX -= butSize, 675, 18, mnutxtClr);
 		texDraw(buttonP, frameBuffer, endX -= 38, 672);
 		ui::button usrExt("", endX, 656, butSize + 38, 64);
 		usrNav.push_back(usrExt);
@@ -258,7 +258,7 @@ namespace ui
 			else
 			{
 				std::string message = "No user with saved game, try playing something and get back";
-				drawText(message.c_str(), frameBuffer, ui::shared, (1280 - textGetWidth(message.c_str(), ui::shared, 22)) / 2, 340, 22, mnuTxt);
+				drawText(message.c_str(), frameBuffer, ui::shared, (1280 - textGetWidth(message.c_str(), ui::shared, 22)) / 2, 340, 22, mnutxtClr);
 			}
 			gfxEndFrame(ui::shared);
 

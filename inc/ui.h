@@ -29,21 +29,21 @@ namespace ui
 {
 
     //Current menu/ui state
-    extern int mstate, prevState, glowR, glowG, glowB;
+    extern int mstate, prevState;
 
     //Both UI modes need access to this
     extern std::string folderMenuInfo;
 
     //Colors to use now that I added theme detection
-    extern clr clearClr, mnuTxt, txtClr, tboxClr, sideRect, sepClr, boundClr, popupClr, popupbgClr, blurClr, butselClr;
+    extern clr clearClr, mnutxtClr, tipbgClr, tiptxtClr, sideRect, sepClr, boundClr, popupClr, popupbgClr, buttxtClr, butbgovrClr, glowClr, glowbgClr, glowpopbgClr;
 
 	extern tex *screen;
     //Button tex
-	extern tex *iconSelTopLeft, *iconSelTopRight, *iconSelBotLeft, *iconSelBotRight, *iconSelShadowLeft, *iconSelShadowBot, *iconSelShadowRight;
+	extern tex *iconSelTopLeft, *iconSelTopRight, *iconSelBotLeft, *iconSelBotRight, *iconSelShadowLeft, *iconSelShadowMiddle, *iconSelShadowRight;
     extern tex *buttonA, *buttonB, *buttonX, *buttonY, *buttonM, *buttonP;
     //Textbox graphics
     extern tex *cornerTopHor, *cornerBottomHor, *cornerLeftVer, *cornerRightVer, *cornerTopLeft, *cornerTopRight, *cornerBottomLeft, *cornerBottomRight, *tip, *horEdgeTop, *horEdgeBot, *vertEdgeLeft, *vertEdgeRight;
-	extern tex *popupTopLeft, *popupTopRight, *popupBotLeft, *popupBotRight, *popupBotShadow;
+	extern tex *popupTopLeft, *popupTopRight, *popupBotLeft, *popupBotRight, *popupShadowLeft, *popupShadowMiddle, *popupShadowRight;
     extern tex *popupButTopLeft, *popupButTopRight, *popupButBotLeft, *popupButBotRight;
 	extern bool finish;
 

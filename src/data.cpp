@@ -306,7 +306,7 @@ namespace data
                 if(line[0] == '#' || line[0] == '\n')
                     continue;
 
-                blacklist.push_back(std::strtoull(line.c_str(), NULL, 16));
+                blacklist.push_back(std::strtoull(line.substr(0,18).c_str(), NULL, 16));
             }
             bl.close();
         }
@@ -317,10 +317,10 @@ namespace data
         std::fstream bl(fs::getWorkDir() + "blacklist.txt", std::ios::app);
 
         std::string titleLine = "#" + t.getTitle() + "\n";
-        char idLine[32];
-        sprintf(idLine, "0x%016lX\n", t.getID());
+        char idLine[255];
+        sprintf(idLine, "0x%016lX %s\n", t.getID(), titleLine.c_str());
 
-        bl.write(titleLine.c_str(), titleLine.length());
+        //bl.write(titleLine.c_str(), titleLine.length());
         bl.write(idLine, std::strlen(idLine));
         bl.close();
 
