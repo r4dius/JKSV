@@ -317,11 +317,11 @@ namespace data
         std::fstream bl(fs::getWorkDir() + "blacklist.txt", std::ios::app);
 
         std::string titleLine = "#" + t.getTitle() + "\n";
-        char idLine[255];
-        sprintf(idLine, "0x%016lX %s\n", t.getID(), titleLine.c_str());
+        char line[255];
+        sprintf(line, "0x%016lX %s\n", t.getID(), titleLine.c_str());
 
         //bl.write(titleLine.c_str(), titleLine.length());
-        bl.write(idLine, std::strlen(idLine));
+        bl.write(line, std::strlen(line));
         bl.close();
 
         //Remove it from every user
@@ -353,6 +353,16 @@ namespace data
         // bl.write(idLine, std::strlen(idLine));
         // bl.close();
 
+		std::string filename = fs::getWorkDir() + "blacklist.txt";
+		std::ifstream input(filename, std::ios::binary | ios::in);  // Open the file
+		std::string line;                                           // Temp variable
+		std::vector<std::string> lines;                             // Vector for holding all lines in the file
+		while (std::getline(input, line))                           // Read lines as long as the file is
+		{
+			if(std::strtoull(line.substr(0,18).c_str(), NULL, 16) != t.getID())
+				lines.push_back(line);                                   // Save the line in the vector
+		}
+	
         //Remove it from every user
         for(unsigned i = 0; i < users.size(); i++)
         {

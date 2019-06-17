@@ -147,16 +147,6 @@ namespace ui
 				break;
 		}
 
-		temp = texLoadPNGFile("romfs:/img/mnu/popup.png");
-		texSwapColors(temp, clrCreateRGBA(0xFF, 0xFF, 0xFF, 0xFF), popupClr);
-		popupTopLeft = texCreateFromPart(temp, 0, 0, 15, 15);
-		popupTopRight = texCreateFromPart(temp, 15, 0, 15, 15);
-		popupBotLeft = texCreateFromPart(temp, 0, 15, 15, 15);
-		popupBotRight = texCreateFromPart(temp, 15, 15, 15, 15);
-		popupShadowLeft = texCreateFromPart(temp, 0, 30, 10, 10);
-		popupShadowMiddle = texCreateFromPart(temp, 15, 30, 1, 10);
-		popupShadowRight = texCreateFromPart(temp, 20, 30, 10, 10);
-
 		temp = texLoadPNGFile("romfs:/img/mnu/iconSel.png");
 		texSwapColors(temp, clrCreateRGBA(0xFF, 0xFF, 0xFF, 0xFF), glowClr);
 		iconSelTopLeft = texCreateFromPart(temp, 0, 0, 15, 15);
@@ -166,6 +156,16 @@ namespace ui
 		iconSelShadowLeft = texCreateFromPart(temp, 0, 30, 5, 6);
 		iconSelShadowMiddle = texCreateFromPart(temp, 15, 30, 1, 6);
 		iconSelShadowRight = texCreateFromPart(temp, 25, 30, 5, 6);
+
+		temp = texLoadPNGFile("romfs:/img/mnu/popup.png");
+		texSwapColors(temp, clrCreateRGBA(0xFF, 0xFF, 0xFF, 0xFF), popupClr);
+		popupTopLeft = texCreateFromPart(temp, 0, 0, 15, 15);
+		popupTopRight = texCreateFromPart(temp, 15, 0, 15, 15);
+		popupBotLeft = texCreateFromPart(temp, 0, 15, 15, 15);
+		popupBotRight = texCreateFromPart(temp, 15, 15, 15, 15);
+		popupShadowLeft = texCreateFromPart(temp, 0, 30, 10, 10);
+		popupShadowMiddle = texCreateFromPart(temp, 15, 30, 1, 10);
+		popupShadowRight = texCreateFromPart(temp, 20, 30, 10, 10);
 
 		temp = texLoadPNGFile("romfs:/img/mnu/popupsel.png");
 		texSwapColors(temp, clrCreateRGBA(0xFF, 0xFF, 0xFF, 0xFF), glowClr);

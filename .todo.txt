@@ -1,1 +1,6 @@
 - check blacklist not in console
+- blacklist file
+- nav bar(s)
+- swipe nav last row position
+- shadows redo
+- popup touch buttons redo
