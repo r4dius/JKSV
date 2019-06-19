@@ -344,19 +344,21 @@ namespace data
 	void blacklistRemove(user& u, titledata& t)
     {
 		std::string filename = fs::getWorkDir() + "blacklist.txt";
-		std::ifstream input(filename, std::ios::binary | std::ios::in);
 		std::string line;
 		std::vector<std::string> lines;
+
+		std::ifstream input(filename, std::ios::binary | std::ios::in);
 		while (std::getline(input, line))
 		{
 			if(std::strtoull(line.substr(0,18).c_str(), NULL, 16) != t.getID())
 				lines.push_back(line);
 		}
 		input.close();
-
-        std::fstream output(filename, std::ios::trunc);
-		for(unsigned i = 0; i < blacklist.size(); i++)
+		
+        std::ofstream output(filename, std::ios::trunc);
+		for(unsigned i = 0; i < lines.size(); i++)
 		{
+			line = lines[i] + "\n";
 			output.write(line.c_str(), std::strlen(line.c_str()));
 		}
 		output.close();
