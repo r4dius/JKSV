@@ -33,13 +33,13 @@ namespace ui
 	// std::vector<ui::button> selButtons;
 
 	//UI colors
-	clr clearClr, mnutxtClr, tipbgClr, tiptxtClr, sideRect, divClr, sepClr, popupClr, popupbgClr, buttxtClr, butbgovrClr, glowClr, glowbgClr, glowpopbgClr;
+	clr clearClr, mnutxtClr, tipbgClr, tiptxtClr, sideRect, divClr, sepClr, popupClr, popupbgClr, buttxtClr, butbgovrClr, glowClr, glowbgClr, glowpopbgClr, thatthingontherightClr;
 
 	//textbox pieces
 	//I was going to flip them when I draw them, but then laziness kicked in.
 	tex *cornerTopHor, *cornerBottomHor, *cornerLeftVer, *cornerRightVer, *cornerTopLeft, *cornerTopRight, *cornerBottomLeft, *cornerBottomRight, *tip, *temp;
 	tex *popupTopLeft, *popupTopRight, *popupBotLeft, *popupBotRight, *popupShadowLeft, *popupShadowMiddle, *popupShadowRight;
-	tex *iconSelTopLeft, *iconSelTopRight, *iconSelBotLeft, *iconSelBotRight, *iconSelShadowLeft, *iconSelShadowMiddle, *iconSelShadowRight;
+	tex *iconShadow, *iconSelTopLeft, *iconSelTopRight, *iconSelBotLeft, *iconSelBotRight, *iconSelShadowLeft, *iconSelShadowMiddle, *iconSelShadowRight;
 	tex *popupButTopLeft, *popupButTopRight, *popupButBotLeft, *popupButBotRight;
 	tex *buttonA, *buttonB, *buttonX, *buttonY, *buttonM, *buttonP;
 	tex *icn, *mnuGrad;
@@ -65,6 +65,8 @@ namespace ui
 				glowbgClr = clrCreateU32(0xFFFCFCFC);
 				glowpopbgClr = clrCreateU32(0xFFFDFDFD);
 
+				thatthingontherightClr = clrCreateU32(0xFFC6C6C6);
+
 				popupClr = clrCreateU32(0xFFF0F0F0);
 				clearClr = clrCreateU32(0xFFEBEBEB);
 				mnutxtClr = clrCreateU32(0xFF282828);
@@ -76,7 +78,7 @@ namespace ui
 				divClr = clrCreateU32(0xFF2D2D2D);
 				sepClr = clrCreateU32(0xFFCDCDCD);
 				buttxtClr = clrCreateU32(0xFFF15230);
-				butbgovrClr = clrCreateU32(0xFFF2F1D7);
+				butbgovrClr = clrCreateU32(0x28FFFA00);
 
 				tip = texLoadPNGFile("romfs:/img/mnu/tboxTipLght.png");
 				icn = texLoadPNGFile("romfs:/img/icn/icnDrk.png");
@@ -108,6 +110,8 @@ namespace ui
 				glowbgClr = clrCreateU32(0xFF27221F);
 				glowpopbgClr = clrCreateU32(0xFF423D3A);
 
+				thatthingontherightClr = clrCreateU32(0xFF565656);
+
 				popupClr = clrCreateU32(0xFF464646);
 				clearClr = clrCreateU32(0xFF2D2D2D);
 				mnutxtClr = clrCreateU32(0xFFFFFFFF);
@@ -119,7 +123,7 @@ namespace ui
 				divClr = clrCreateU32(0xFFFFFFFF);
 				sepClr = clrCreateU32(0xFF4D4D4D);
 				buttxtClr = clrCreateU32(0xFFC8FF00);
-				butbgovrClr = clrCreateU32(0xFF5D593C);
+				butbgovrClr = clrCreateU32(0x28FFE600);
 
 				tip = texLoadPNGFile("romfs:/img/mnu/tboxTipDrk.png");
 				icn = texLoadPNGFile("romfs:/img/icn/icnLght.png");
@@ -146,6 +150,8 @@ namespace ui
 
 				break;
 		}
+
+		iconShadow = texLoadPNGFile("romfs:/img/mnu/iconShadow.png");
 
 		temp = texLoadPNGFile("romfs:/img/mnu/iconSel.png");
 		texSwapColors(temp, clrCreateRGBA(0xFF, 0xFF, 0xFF, 0xFF), glowClr);
@@ -205,6 +211,8 @@ namespace ui
 		texDestroy(cornerBottomLeft);
 		texDestroy(cornerBottomRight);
 		texDestroy(tip);
+
+		texDestroy(iconShadow);
 
 		texDestroy(iconSelTopLeft);
 		texDestroy(iconSelTopRight);

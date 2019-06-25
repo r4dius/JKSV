@@ -37,8 +37,8 @@ DATA		:=	data
 INCLUDES	:=	inc
 EXEFS_SRC	:=	exefs_src
 APP_TITLE   :=  JKSV
-APP_AUTHOR  :=  JK
-APP_VERSION :=  01/08/2019
+APP_AUTHOR  :=  JK / r4dius
+APP_VERSION :=  1.0
 ROMFS	    :=	romfs
 
 #---------------------------------------------------------------------------------

@@ -19,444 +19,444 @@ static std::string wd;
 
 static struct
 {
-    bool operator()(fs::dirItem& a, fs::dirItem& b)
-    {
-        for(unsigned i = 0; i < a.getItm().length(); i++)
-        {
-            char charA = tolower(a.getItm()[i]);
-            char charB = tolower(b.getItm()[i]);
-            if(charA != charB)
-                return charA < charB;
-        }
-        return false;
-    }
+	bool operator()(fs::dirItem& a, fs::dirItem& b)
+	{
+		for(unsigned i = 0; i < a.getItm().length(); i++)
+		{
+			char charA = tolower(a.getItm()[i]);
+			char charB = tolower(b.getItm()[i]);
+			if(charA != charB)
+				return charA < charB;
+		}
+		return false;
+	}
 } sortListAlpha;
 
 namespace fs
 {
-    void init()
-    {
-        mkdir("sdmc:/JKSV", 777);
-        chdir("sdmc:/JKSV");
+	void init()
+	{
+		mkdir("sdmc:/JKSV", 777);
+		chdir("sdmc:/JKSV");
 
-        wd = "sdmc:/JKSV/";
-    }
+		wd = "sdmc:/JKSV/";
+	}
 
-    bool mountSave(data::user& usr, data::titledata& open)
-    {
-        FsFileSystem sv;
+	bool mountSave(data::user& usr, data::titledata& open)
+	{
+		FsFileSystem sv;
 
-        if(open.getType() == FsSaveDataType_SaveData)
-        {
-            if(R_FAILED(fsMount_SaveData(&sv, open.getID(), usr.getUID())))
-               return false;
+		if(open.getType() == FsSaveDataType_SaveData)
+		{
+			if(R_FAILED(fsMount_SaveData(&sv, open.getID(), usr.getUID())))
+				return false;
 
-            if(fsdevMountDevice("sv", sv) == -1)
-                return false;
-        }
-        else if(data::sysSave)
-        {
-            if(R_FAILED(fsMount_SystemSaveData(&sv, open.getID())))
-                return false;
+			if(fsdevMountDevice("sv", sv) == -1)
+				return false;
+		}
+		else if(data::sysSave)
+		{
+			if(R_FAILED(fsMount_SystemSaveData(&sv, open.getID())))
+				return false;
 
-            if(fsdevMountDevice("sv", sv) == -1)
-                return false;
-        }
+			if(fsdevMountDevice("sv", sv) == -1)
+				return false;
+		}
 
-        return true;
-    }
+		return true;
+	}
 
-    dirItem::dirItem(const std::string& pathTo, const std::string& sItem)
-    {
-        itm = sItem;
+	dirItem::dirItem(const std::string& pathTo, const std::string& sItem)
+	{
+		itm = sItem;
 
-        std::string fullPath = pathTo + sItem;
-        struct stat s;
-        if(stat(fullPath.c_str(), &s) == 0 && S_ISDIR(s.st_mode))
-            dir = true;
-    }
+		std::string fullPath = pathTo + sItem;
+		struct stat s;
+		if(stat(fullPath.c_str(), &s) == 0 && S_ISDIR(s.st_mode))
+			dir = true;
+	}
 
-    std::string dirItem::getItm()
-    {
-        return itm;
-    }
+	std::string dirItem::getItm()
+	{
+		return itm;
+	}
 
-    bool dirItem::isDir()
-    {
-        return dir;
-    }
+	bool dirItem::isDir()
+	{
+		return dir;
+	}
 
-    dirList::dirList(const std::string& _path)
-    {
-        path = _path;
-        d = opendir(path.c_str());
+	dirList::dirList(const std::string& _path)
+	{
+		path = _path;
+		d = opendir(path.c_str());
 
-        std::vector<dirItem> dirVect, filVect;
+		std::vector<dirItem> dirVect, filVect;
 
-        while((ent = readdir(d)))
-        {
-            dirItem add(path, ent->d_name);
-            if(add.isDir())
-                dirVect.push_back(add);
-            else
-                filVect.push_back(add);
-        }
+		while((ent = readdir(d)))
+		{
+			dirItem add(path, ent->d_name);
+			if(add.isDir())
+				dirVect.push_back(add);
+			else
+				filVect.push_back(add);
+		}
 
-        closedir(d);
+		closedir(d);
 
-        std::sort(dirVect.begin(), dirVect.end(), sortListAlpha);
-        std::sort(filVect.begin(), filVect.end(), sortListAlpha);
+		std::sort(dirVect.begin(), dirVect.end(), sortListAlpha);
+		std::sort(filVect.begin(), filVect.end(), sortListAlpha);
 
-        item.assign(dirVect.begin(), dirVect.end());
-        item.insert(item.end(), filVect.begin(), filVect.end());
-    }
+		item.assign(dirVect.begin(), dirVect.end());
+		item.insert(item.end(), filVect.begin(), filVect.end());
+	}
 
-    void dirList::reassign(const std::string& _path)
-    {
-        path = _path;
+	void dirList::reassign(const std::string& _path)
+	{
+		path = _path;
 
-        d = opendir(path.c_str());
+		d = opendir(path.c_str());
 
-        item.clear();
+		item.clear();
 
-        std::vector<dirItem> dirVect, filVect;
+		std::vector<dirItem> dirVect, filVect;
 
-        while((ent = readdir(d)))
-        {
-            dirItem add(path, ent->d_name);
-            if(add.isDir())
-                dirVect.push_back(add);
-            else
-                filVect.push_back(add);
-        }
+		while((ent = readdir(d)))
+		{
+			dirItem add(path, ent->d_name);
+			if(add.isDir())
+				dirVect.push_back(add);
+			else
+				filVect.push_back(add);
+		}
 
-        closedir(d);
+		closedir(d);
 
-        std::sort(dirVect.begin(), dirVect.end(), sortListAlpha);
-        std::sort(filVect.begin(), filVect.end(), sortListAlpha);
+		std::sort(dirVect.begin(), dirVect.end(), sortListAlpha);
+		std::sort(filVect.begin(), filVect.end(), sortListAlpha);
 
-        item.assign(dirVect.begin(), dirVect.end());
-        item.insert(item.end(), filVect.begin(), filVect.end());
-    }
+		item.assign(dirVect.begin(), dirVect.end());
+		item.insert(item.end(), filVect.begin(), filVect.end());
+	}
 
-    void dirList::rescan()
-    {
-        item.clear();
-        d = opendir(path.c_str());
+	void dirList::rescan()
+	{
+		item.clear();
+		d = opendir(path.c_str());
 
-        std::vector<dirItem> dirVect, filVect;
+		std::vector<dirItem> dirVect, filVect;
 
-        while((ent = readdir(d)))
-        {
-            dirItem add(path, ent->d_name);
-            if(add.isDir())
-                dirVect.push_back(add);
-            else
-                filVect.push_back(add);
-        }
+		while((ent = readdir(d)))
+		{
+			dirItem add(path, ent->d_name);
+			if(add.isDir())
+				dirVect.push_back(add);
+			else
+				filVect.push_back(add);
+		}
 
-        closedir(d);
+		closedir(d);
 
-        std::sort(dirVect.begin(), dirVect.end(), sortListAlpha);
-        std::sort(filVect.begin(), filVect.end(), sortListAlpha);
+		std::sort(dirVect.begin(), dirVect.end(), sortListAlpha);
+		std::sort(filVect.begin(), filVect.end(), sortListAlpha);
 
-        item.assign(dirVect.begin(), dirVect.end());
-        item.insert(item.end(), filVect.begin(), filVect.end());
-    }
+		item.assign(dirVect.begin(), dirVect.end());
+		item.insert(item.end(), filVect.begin(), filVect.end());
+	}
 
-    std::string dirList::getItem(int index)
-    {
-        return item[index].getItm();
-    }
+	std::string dirList::getItem(int index)
+	{
+		return item[index].getItm();
+	}
 
-    bool dirList::isDir(int index)
-    {
-        return item[index].isDir();
-    }
+	bool dirList::isDir(int index)
+	{
+		return item[index].isDir();
+	}
 
-    unsigned dirList::getCount()
-    {
-        return item.size();
-    }
+	unsigned dirList::getCount()
+	{
+		return item.size();
+	}
 
-    void copyFile(const std::string& from, const std::string& to)
-    {
-        std::fstream f(from, std::ios::in | std::ios::binary);
-        std::fstream t(to, std::ios::out | std::ios::binary);
+	void copyFile(const std::string& from, const std::string& to)
+	{
+		std::fstream f(from, std::ios::in | std::ios::binary);
+		std::fstream t(to, std::ios::out | std::ios::binary);
 
-        if(!f.is_open() || !t.is_open())
-        {
-            f.close();
-            t.close();
-            return;
-        }
+		if(!f.is_open() || !t.is_open())
+		{
+			f.close();
+			t.close();
+			return;
+		}
 
-        f.seekg(0, f.end);
-        size_t fileSize = f.tellg();
-        f.seekg(0, f.beg);
+		f.seekg(0, f.end);
+		size_t fileSize = f.tellg();
+		f.seekg(0, f.beg);
 
-        uint8_t *buff = new uint8_t[BUFF_SIZE];
-        ui::progBar prog(fileSize);
+		uint8_t *buff = new uint8_t[BUFF_SIZE];
+		ui::progBar prog(fileSize);
 
-        for(unsigned i = 0; i < fileSize; )
-        {
-            f.read((char *)buff, BUFF_SIZE);
-            t.write((char *)buff, f.gcount());
+		for(unsigned i = 0; i < fileSize; )
+		{
+			f.read((char *)buff, BUFF_SIZE);
+			t.write((char *)buff, f.gcount());
 
-            i += f.gcount();
-            prog.update(i);
+			i += f.gcount();
+			prog.update(i);
 
-            gfxBeginFrame();
+			gfxBeginFrame();
 			texDraw(ui::screen, frameBuffer, 0, 0);
 			ui::drawTextPopupBg(255, 189, 770, 342);
-            prog.draw(from, "Copying File:");
-            gfxEndFrame(ui::shared);
+			prog.draw(from, "Copying File:");
+			gfxEndFrame(ui::shared);
 			//usleep(100000);
-        }
+		}
 
-        delete[] buff;
+		delete[] buff;
 
-        f.close();
-        t.close();
-    }
+		f.close();
+		t.close();
+	}
 
-    void copyFileCommit(const std::string& from, const std::string& to, const std::string& dev)
-    {
-        std::fstream f(from, std::ios::in | std::ios::binary);
-        std::fstream t(to, std::ios::out | std::ios::binary);
+	void copyFileCommit(const std::string& from, const std::string& to, const std::string& dev)
+	{
+		std::fstream f(from, std::ios::in | std::ios::binary);
+		std::fstream t(to, std::ios::out | std::ios::binary);
 
-        if(!f.is_open() || !t.is_open())
-        {
-            f.close();
-            t.close();
-            return;
-        }
+		if(!f.is_open() || !t.is_open())
+		{
+			f.close();
+			t.close();
+			return;
+		}
 
-        f.seekg(0, f.end);
-        size_t fileSize = f.tellg();
-        f.seekg(0, f.beg);
+		f.seekg(0, f.end);
+		size_t fileSize = f.tellg();
+		f.seekg(0, f.beg);
 
-        uint8_t *buff = new uint8_t[BUFF_SIZE];
-        ui::progBar prog(fileSize);
+		uint8_t *buff = new uint8_t[BUFF_SIZE];
+		ui::progBar prog(fileSize);
 
-        for(unsigned i = 0; i < fileSize; )
-        {
-            f.read((char *)buff, BUFF_SIZE);
-            t.write((char *)buff, f.gcount());
+		for(unsigned i = 0; i < fileSize; )
+		{
+			f.read((char *)buff, BUFF_SIZE);
+			t.write((char *)buff, f.gcount());
 
-            i += f.gcount();
-            prog.update(i);
+			i += f.gcount();
+			prog.update(i);
 
-            gfxBeginFrame();
+			gfxBeginFrame();
 			texDraw(ui::screen, frameBuffer, 0, 0);
 			ui::drawTextPopupBg(255, 189, 770, 342);
-            prog.draw(from, "Copying File:");
-            gfxEndFrame(ui::shared);
+			prog.draw(from, "Copying File:");
+			gfxEndFrame(ui::shared);
 			//usleep(100000);
-        }
+		}
 
-        delete[] buff;
+		delete[] buff;
 
-        f.close();
-        t.close();
+		f.close();
+		t.close();
 
-        if(R_FAILED(fsdevCommitDevice(dev.c_str())))
-            ui::showMessage("Error committing file to device!", "*ERROR*");
-    }
+		if(R_FAILED(fsdevCommitDevice(dev.c_str())))
+			ui::showMessage("Error committing file to device!", "*ERROR*");
+	}
 
-    void copyDirToDir(const std::string& from, const std::string& to)
-    {
-        dirList list(from);
+	void copyDirToDir(const std::string& from, const std::string& to)
+	{
+		dirList list(from);
 
-        for(unsigned i = 0; i < list.getCount(); i++)
-        {
-            if(list.isDir(i))
-            {
-                std::string newFrom = from + list.getItem(i) + "/";
-                std::string newTo   = to + list.getItem(i);
-                mkdir(newTo.c_str(), 0777);
-                newTo += "/";
+		for(unsigned i = 0; i < list.getCount(); i++)
+		{
+			if(list.isDir(i))
+			{
+				std::string newFrom = from + list.getItem(i) + "/";
+				std::string newTo = to + list.getItem(i);
+				mkdir(newTo.c_str(), 0777);
+				newTo += "/";
 
-                copyDirToDir(newFrom, newTo);
-            }
-            else
-            {
-                std::string fullFrom = from + list.getItem(i);
-                std::string fullTo   = to   + list.getItem(i);
+				copyDirToDir(newFrom, newTo);
+			}
+			else
+			{
+				std::string fullFrom = from + list.getItem(i);
+				std::string fullTo = to + list.getItem(i);
 
-                copyFile(fullFrom, fullTo);
-            }
-        }
-    }
+				copyFile(fullFrom, fullTo);
+			}
+		}
+	}
 
-    void copyDirToDirCommit(const std::string& from, const std::string& to, const std::string& dev)
-    {
-        dirList list(from);
+	void copyDirToDirCommit(const std::string& from, const std::string& to, const std::string& dev)
+	{
+		dirList list(from);
 
-        for(unsigned i = 0; i < list.getCount(); i++)
-        {
-            if(list.isDir(i))
-            {
-                std::string newFrom = from + list.getItem(i) + "/";
-                std::string newTo   = to + list.getItem(i);
-                mkdir(newTo.c_str(), 0777);
-                newTo += "/";
+		for(unsigned i = 0; i < list.getCount(); i++)
+		{
+			if(list.isDir(i))
+			{
+				std::string newFrom = from + list.getItem(i) + "/";
+				std::string newTo = to + list.getItem(i);
+				mkdir(newTo.c_str(), 0777);
+				newTo += "/";
 
-                copyDirToDirCommit(newFrom, newTo, dev);
-            }
-            else
-            {
-                std::string fullFrom = from + list.getItem(i);
-                std::string fullTo   = to   + list.getItem(i);
+				copyDirToDirCommit(newFrom, newTo, dev);
+			}
+			else
+			{
+				std::string fullFrom = from + list.getItem(i);
+				std::string fullTo = to + list.getItem(i);
 
-                copyFileCommit(fullFrom, fullTo, dev);
-            }
-        }
-    }
+				copyFileCommit(fullFrom, fullTo, dev);
+			}
+		}
+	}
 
-    void delDir(const std::string& path)
-    {
-        dirList list(path);
-        for(unsigned i = 0; i < list.getCount(); i++)
-        {
-            if(list.isDir(i))
-            {
-                std::string newPath = path + list.getItem(i) + "/";
-                delDir(newPath);
+	void delDir(const std::string& path)
+	{
+		dirList list(path);
+		for(unsigned i = 0; i < list.getCount(); i++)
+		{
+			if(list.isDir(i))
+			{
+				std::string newPath = path + list.getItem(i) + "/";
+				delDir(newPath);
 
-                std::string delPath = path + list.getItem(i);
-                rmdir(delPath.c_str());
-            }
-            else
-            {
-                std::string delPath = path + list.getItem(i);
-                std::remove(delPath.c_str());
-            }
-        }
+				std::string delPath = path + list.getItem(i);
+				rmdir(delPath.c_str());
+			}
+			else
+			{
+				std::string delPath = path + list.getItem(i);
+				std::remove(delPath.c_str());
+			}
+		}
 
-        rmdir(path.c_str());
-    }
+		rmdir(path.c_str());
+	}
 
-    void dumpAllUserSaves(data::user& u)
-    {
-        for(unsigned i = 0; i < u.titles.size(); i++)
-        {
-            if(fs::mountSave(u, u.titles[i]))
-            {
-                util::makeTitleDir(u, u.titles[i]);
+	void dumpAllUserSaves(data::user& u)
+	{
+		for(unsigned i = 0; i < u.titles.size(); i++)
+		{
+			if(fs::mountSave(u, u.titles[i]))
+			{
+				util::makeTitleDir(u, u.titles[i]);
 
-                //sdmc:/JKSV/[title]/[user] - [date]/
-                std::string outPath = util::getTitleDir(u, u.titles[i]) + u.getUsernameSafe() + " - " + util::getDateTime(util::DATE_FMT_YMD);
-                mkdir(outPath.c_str(), 777);
-                outPath += "/";
+				//sdmc:/JKSV/[title]/[user] - [date]/
+				std::string outPath = util::getTitleDir(u, u.titles[i]) + u.getUsernameSafe() + " - " + util::getDateTime(util::DATE_FMT_YMD);
+				mkdir(outPath.c_str(), 777);
+				outPath += "/";
 
-                std::string root = "sv:/";
+				std::string root = "sv:/";
 
-                fs::copyDirToDir(root, outPath);
+				fs::copyDirToDir(root, outPath);
 
-                fsdevUnmountDevice("sv");
-            }
-        }
-    }
+				fsdevUnmountDevice("sv");
+			}
+		}
+	}
 	
 	void dumpAllUserSavesBlacklisted(data::user& u)
-    {
-        for(unsigned i = 0; i < u.blktitles.size(); i++)
-        {
-            if(fs::mountSave(u, u.blktitles[i]))
-            {
-                util::makeTitleDir(u, u.blktitles[i]);
+	{
+		for(unsigned i = 0; i < u.blktitles.size(); i++)
+		{
+			if(fs::mountSave(u, u.blktitles[i]))
+			{
+				util::makeTitleDir(u, u.blktitles[i]);
 
-                //sdmc:/JKSV/[title]/[user] - [date]/
-                std::string outPath = util::getTitleDir(u, u.blktitles[i]) + u.getUsernameSafe() + " - " + util::getDateTime(util::DATE_FMT_YMD);
-                mkdir(outPath.c_str(), 777);
-                outPath += "/";
+				//sdmc:/JKSV/[title]/[user] - [date]/
+				std::string outPath = util::getTitleDir(u, u.blktitles[i]) + u.getUsernameSafe() + " - " + util::getDateTime(util::DATE_FMT_YMD);
+				mkdir(outPath.c_str(), 777);
+				outPath += "/";
 
-                std::string root = "sv:/";
+				std::string root = "sv:/";
 
-                fs::copyDirToDir(root, outPath);
+				fs::copyDirToDir(root, outPath);
 
-                fsdevUnmountDevice("sv");
-            }
-        }
-    }
+				fsdevUnmountDevice("sv");
+			}
+		}
+	}
 
-    std::string getFileProps(const std::string& _path)
-    {
-        std::string ret = "";
-        std::fstream get(_path, std::ios::in | std::ios::binary);
-        if(get.is_open())
-        {
-            //Size
-            get.seekg(0, get.end);
-            unsigned fileSize = get.tellg();
-            get.seekg(0, get.beg);
+	std::string getFileProps(const std::string& _path)
+	{
+		std::string ret = "";
+		std::fstream get(_path, std::ios::in | std::ios::binary);
+		if(get.is_open())
+		{
+			//Size
+			get.seekg(0, get.end);
+			unsigned fileSize = get.tellg();
+			get.seekg(0, get.beg);
 
-            get.close();
+			get.close();
 
-            //Probably add more later
+			//Probably add more later
 
-            char tmp[256];
-            std::sprintf(tmp, "Path: \"%s\"\nSize: %u", _path.c_str(), fileSize);
+			char tmp[256];
+			std::sprintf(tmp, "Path: \"%s\"\nSize: %u", _path.c_str(), fileSize);
 
-            ret = tmp;
-        }
-        return ret;
-    }
+			ret = tmp;
+		}
+		return ret;
+	}
 
-    void getDirProps(const std::string& _path, uint32_t& dirCount, uint32_t& fileCount, uint64_t& totalSize)
-    {
-        fs::dirList list(_path);
+	void getDirProps(const std::string& _path, uint32_t& dirCount, uint32_t& fileCount, uint64_t& totalSize)
+	{
+		fs::dirList list(_path);
 
-        for(unsigned i = 0; i < list.getCount(); i++)
-        {
-            if(list.isDir(i))
-            {
-                dirCount++;
-                std::string newPath = _path + list.getItem(i) + "/";
-                uint32_t dirAdd = 0, fileAdd = 0;
-                uint64_t sizeAdd = 0;
+		for(unsigned i = 0; i < list.getCount(); i++)
+		{
+			if(list.isDir(i))
+			{
+				dirCount++;
+				std::string newPath = _path + list.getItem(i) + "/";
+				uint32_t dirAdd = 0, fileAdd = 0;
+				uint64_t sizeAdd = 0;
 
-                getDirProps(newPath, dirAdd, fileAdd, sizeAdd);
-                dirCount += dirAdd;
-                fileCount += fileAdd;
-                totalSize += sizeAdd;
-            }
-            else
-            {
-                fileCount++;
-                std::string filePath = _path + list.getItem(i);
+				getDirProps(newPath, dirAdd, fileAdd, sizeAdd);
+				dirCount += dirAdd;
+				fileCount += fileAdd;
+				totalSize += sizeAdd;
+			}
+			else
+			{
+				fileCount++;
+				std::string filePath = _path + list.getItem(i);
 
-                std::fstream gSize(filePath.c_str(), std::ios::in | std::ios::binary);
-                gSize.seekg(0, gSize.end);
-                size_t fSize = gSize.tellg();
-                gSize.close();
+				std::fstream gSize(filePath.c_str(), std::ios::in | std::ios::binary);
+				gSize.seekg(0, gSize.end);
+				size_t fSize = gSize.tellg();
+				gSize.close();
 
-                totalSize += fSize;
-            }
-        }
-    }
+				totalSize += fSize;
+			}
+		}
+	}
 
-    bool fileExists(const std::string& path)
-    {
-        std::fstream chk(path, std::ios::in);
-        if(chk.is_open())
-        {
-            chk.close();
-            return true;
-        }
+	bool fileExists(const std::string& path)
+	{
+		std::fstream chk(path, std::ios::in);
+		if(chk.is_open())
+		{
+			chk.close();
+			return true;
+		}
 
-        return false;
-    }
+		return false;
+	}
 
-    bool isDir(const std::string& _path)
-    {
-        struct stat s;
-        return stat(_path.c_str(), &s) == 0 && S_ISDIR(s.st_mode);
-    }
+	bool isDir(const std::string& _path)
+	{
+		struct stat s;
+		return stat(_path.c_str(), &s) == 0 && S_ISDIR(s.st_mode);
+	}
 
-    std::string getWorkDir()
-    {
-        return wd;
-    }
+	std::string getWorkDir()
+	{
+		return wd;
+	}
 }

@@ -67,6 +67,7 @@ namespace ui
 					tiX = tX, tiY = y;
 				}
 				data::users[i].drawResize(tX, y, 174, 174);
+				texDrawLimit(iconShadow, frameBuffer, tX - 5, y - 5);
 				ui::button newSelButton("", tX, y, 174, 174);
 				selButtons.push_back(newSelButton);
 			}
@@ -109,7 +110,9 @@ namespace ui
 				clrSh += 5;
 				if(clrSh > 100)
 				{
-					if(clrSh > 254) clrSh = 254;
+					if(clrSh > 254)
+						clrSh = 254;
+
 					clrAdd = false;
 				}
 			}
@@ -118,7 +121,9 @@ namespace ui
 				clrSh -= 10;
 				if(clrSh <= 0)
 				{
-					if(clrSh < 0) clrSh = 0;
+					if(clrSh < 0)
+						clrSh = 0;
+
 					clrAdd = true;
 				}
 			}
@@ -142,7 +147,7 @@ namespace ui
 			switch(track.getEvent()) 
 			{
 				case TRACK_SWIPE_UP:
-					if(start + 18 < (int)list_size)
+					if((maxTitles == 18 && start + 12 < (int)list_size) || start + 18 < (int)list_size)
 					{
 						swiping = true;
 						selected += 6;
@@ -329,10 +334,6 @@ namespace ui
 				else if(down & KEY_A || usrNav[0].getEvent() == BUTTON_RELEASED || retEvent == MENU_DOUBLE_REL)
 				{
 					data::curUser = data::users[selected];
-					//Reset this
-					//start = 0;
-					//selected = 0;
-					//selRectX = 93, selRectY = 187;
 					mstate = TTL_SEL;
 					break;
 				}

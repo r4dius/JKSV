@@ -13,10 +13,10 @@
 
 enum menuState
 {
-    USR_SEL,
-    TTL_SEL,
-    FLD_SEL,
-    BKL_SEL
+	USR_SEL,
+	TTL_SEL,
+	FLD_SEL,
+	BKL_SEL
 };
 
 enum menuTouch
@@ -28,39 +28,39 @@ enum menuTouch
 namespace ui
 {
 
-    //Current menu/ui state
-    extern int mstate, prevState;
+	//Current menu/ui state
+	extern int mstate, prevState;
 
-    //Both UI modes need access to this
-    extern std::string folderMenuInfo;
+	//Both UI modes need access to this
+	extern std::string folderMenuInfo;
 
-    //Colors to use now that I added theme detection
-    extern clr clearClr, mnutxtClr, tipbgClr, tiptxtClr, sideRect, sepClr, boundClr, popupClr, popupbgClr, buttxtClr, butbgovrClr, glowClr, glowbgClr, glowpopbgClr;
+	//Colors to use now that I added theme detection
+	extern clr clearClr, mnutxtClr, tipbgClr, tiptxtClr, sideRect, sepClr, boundClr, popupClr, popupbgClr, buttxtClr, butbgovrClr, glowClr, glowbgClr, glowpopbgClr, thatthingontherightClr;
 
 	extern tex *screen;
-    //Button tex
-	extern tex *iconSelTopLeft, *iconSelTopRight, *iconSelBotLeft, *iconSelBotRight, *iconSelShadowLeft, *iconSelShadowMiddle, *iconSelShadowRight;
-    extern tex *buttonA, *buttonB, *buttonX, *buttonY, *buttonM, *buttonP;
-    //Textbox graphics
-    extern tex *cornerTopHor, *cornerBottomHor, *cornerLeftVer, *cornerRightVer, *cornerTopLeft, *cornerTopRight, *cornerBottomLeft, *cornerBottomRight, *tip, *horEdgeTop, *horEdgeBot, *vertEdgeLeft, *vertEdgeRight;
+	//Button tex
+	extern tex *iconShadow, *iconSelTopLeft, *iconSelTopRight, *iconSelBotLeft, *iconSelBotRight, *iconSelShadowLeft, *iconSelShadowMiddle, *iconSelShadowRight;
+	extern tex *buttonA, *buttonB, *buttonX, *buttonY, *buttonM, *buttonP;
+	//Textbox graphics
+	extern tex *cornerTopHor, *cornerBottomHor, *cornerLeftVer, *cornerRightVer, *cornerTopLeft, *cornerTopRight, *cornerBottomLeft, *cornerBottomRight, *tip, *horEdgeTop, *horEdgeBot, *vertEdgeLeft, *vertEdgeRight;
 	extern tex *popupTopLeft, *popupTopRight, *popupBotLeft, *popupBotRight, *popupShadowLeft, *popupShadowMiddle, *popupShadowRight;
-    extern tex *popupButTopLeft, *popupButTopRight, *popupButBotLeft, *popupButBotRight;
+	extern tex *popupButTopLeft, *popupButTopRight, *popupButBotLeft, *popupButBotRight;
 	extern bool finish;
 
-    //Shared font
-    extern font *shared;
+	//Shared font
+	extern font *shared;
 
-    // extern std::vector<ui::button> selButtons;
+	// extern std::vector<ui::button> selButtons;
 
-    //Loads in the A, B, X, Y button graphics
-    void init();
-    void exit();
+	//Loads in the A, B, X, Y button graphics
+	void init();
+	void exit();
 
-    //Clears and draws general stuff used by multiple screens
-    void drawUI();
+	//Clears and draws general stuff used by multiple screens
+	void drawUI();
 
-    //switch case so we don't have problems with multiple main loops like 3DS
-    void runApp(const uint64_t& down, const uint64_t& held, const touchPosition& p);
+	//switch case so we don't have problems with multiple main loops like 3DS
+	void runApp(const uint64_t& down, const uint64_t& held, const touchPosition& p);
 }
 
 #endif

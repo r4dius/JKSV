@@ -12,60 +12,60 @@ std::vector<std::string> opt;
 
 namespace ui
 {
-    void addOpt(const std::string& add, const unsigned& w, const int& fontSize)
-    {
-        if(textGetWidth(add.c_str(), ui::shared, fontSize) < w - 60 || w == 0)
-            opt.push_back(add);
-        else
-        {
+	void addOpt(const std::string& add, const unsigned& w, const int& fontSize)
+	{
+		if(textGetWidth(add.c_str(), ui::shared, fontSize) < w - 60 || w == 0)
+			opt.push_back(add);
+		else
+		{
 			opt.push_back(util::cutStr(add, w - 60, fontSize));
-        }
-    }
+		}
+	}
 
-    void updateFolderMenu(const uint64_t& down, const uint64_t& held, const touchPosition& p)
-    {
-        static int start = 0, selected = 0, movespeed = 0;
+	void updateFolderMenu(const uint64_t& down, const uint64_t& held, const touchPosition& p)
+	{
+		static int start = 0, selected = 0, movespeed = 0;
 		static bool move = false;
 		unsigned x = 470, y = 131, rW = 720;
-        static unsigned selRectX = x, selRectY = y;
+		static unsigned selRectX = x, selRectY = y;
 		static int fontSize = 19, retEvent = MENU_NOTHING;
 
 		//Color shift for rect
-        static int clrSh = 0;
-        //Whether or not we're adding or subtracting from clrShft
-        static bool clrAdd = true;
+		static int clrSh = 0;
+		//Whether or not we're adding or subtracting from clrShft
+		static bool clrAdd = true;
 
-        static ui::touchTrack track;
+		static ui::touchTrack track;
 		static const char* title;
 
-        optButtons.clear();
+		optButtons.clear();
 
-        for(unsigned i = 0; i < 7; i++)
-        {
-            //Init + push invisible options buttons
-            ui::button newOptButton("", x, y + i * 71, rW, 71);
-            optButtons.push_back(newOptButton);
-        }
+		for(unsigned i = 0; i < 7; i++)
+		{
+			//Init + push invisible options buttons
+			ui::button newOptButton("", x, y + i * 71, rW, 71);
+			optButtons.push_back(newOptButton);
+		}
 
-        opt.clear();
+		opt.clear();
 		fldNav.clear();
 
-        util::makeTitleDir(data::curUser, data::curData);
-        std::string scanPath = util::getTitleDir(data::curUser, data::curData);
+		util::makeTitleDir(data::curUser, data::curData);
+		std::string scanPath = util::getTitleDir(data::curUser, data::curData);
 
-        fs::dirList list(scanPath);
-        addOpt("New", rW, fontSize);
-        for(unsigned i = 0; i < list.getCount(); i++)
-            addOpt(list.getItem(i), rW, fontSize);
+		fs::dirList list(scanPath);
+		addOpt("New", rW, fontSize);
+		for(unsigned i = 0; i < list.getCount(); i++)
+			addOpt(list.getItem(i), rW, fontSize);
 
 		int list_size = opt.size() - 1;
-        if(selected > list_size)
-            selected = opt.size() - 1;
+		if(selected > list_size)
+			selected = opt.size() - 1;
 
-        if(opt.size() < 6)
-            start = 0;
-        else if(opt.size() > 6 && start + 6 > list_size)
-            start = opt.size() - 7;
+		if(opt.size() < 6)
+			start = 0;
+		else if(opt.size() > 6 && start + 6 > list_size)
+			start = opt.size() - 7;
 
 
 		int length = 0;
@@ -134,10 +134,12 @@ namespace ui
 		ui::button fldExt("", endX, 656, butSize + 38, 64);
 		fldNav.push_back(fldExt);
 
+		drawScrollBar(start, 0, list_size, SCROLL_LIST);
+
 		memcpy(screen->data, frameBuffer->data, frameBuffer->size * 4);
 
 		while(true)
-        {
+		{
 			hidScanInput();
 			uint64_t down = hidKeysDown(CONTROLLER_P1_AUTO);
 			uint64_t held = hidKeysHeld(CONTROLLER_P1_AUTO);
@@ -147,16 +149,22 @@ namespace ui
 			if(clrAdd)
 			{
 				clrSh += 5;
-				if(clrSh > 100) {
-					if(clrSh > 254) clrSh = 254;
+				if(clrSh > 100)
+				{
+					if(clrSh > 254)
+						clrSh = 254;
+
 					clrAdd = false;
 				}
 			}
 			else
 			{
 				clrSh -= 10;
-				if(clrSh <= 0) {
-					if(clrSh < 0) clrSh = 0;
+				if(clrSh <= 0)
+				{
+					if(clrSh < 0)
+						clrSh = 0;
+
 					clrAdd = true;
 				}
 			}
@@ -202,7 +210,7 @@ namespace ui
 			for(int i = 0; i < 7; i++)
 			{
 				optButtons[i].update(p);
-				if(selected  == i + start && optButtons[i].getEvent() == BUTTON_RELEASED)
+				if(selected == i + start && optButtons[i].getEvent() == BUTTON_RELEASED)
 				{
 					retEvent = MENU_DOUBLE_REL;
 					break;
@@ -233,7 +241,7 @@ namespace ui
 				if(selected < 0)
 					selected = list_size;
 
-				if((start > selected)  && (start > 0))
+				if((start > selected) && (start > 0))
 					start--;
 				if(list_size < 7)
 					start = 0;
@@ -375,5 +383,5 @@ namespace ui
 				break;
 			}
 		}
-    }
+	}
 }

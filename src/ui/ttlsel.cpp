@@ -42,6 +42,12 @@ namespace ui
 
 		if(maxTitles == 24)
 			y = 3;
+		
+		if(start < 0)
+			start = 0;
+
+		if(selected < 0)
+			selected = 0;
 
 		unsigned endTitle = start + maxTitles;
 		if(start + maxTitles > (int)list_size)
@@ -67,6 +73,7 @@ namespace ui
 					tiX = tX, tiY = y;
 				}
 				data::curUser.titles[i].icon.drawResize(tX, y, 174, 174);
+				texDrawLimit(iconShadow, frameBuffer, tX - 5, y - 5);
 				ui::button newSelButton("", tX, y, 174, 174);
 				selButtons.push_back(newSelButton);
 			}
@@ -118,6 +125,8 @@ namespace ui
 		ui::button ttlExt("", endX, 656, butSize + 38, 64);
 		ttlNav.push_back(ttlExt);
 
+		drawScrollBar(start, maxTitles, list_size, SCROLL_ICON);
+
 		memcpy(screen->data, frameBuffer->data, frameBuffer->size * 4);
 
 		while(true)
@@ -133,7 +142,9 @@ namespace ui
 				clrSh += 5;
 				if(clrSh > 100)
 				{
-					if(clrSh > 254) clrSh = 254;
+					if(clrSh > 254)
+						clrSh = 254;
+
 					clrAdd = false;
 				}
 			}
@@ -142,7 +153,9 @@ namespace ui
 				clrSh -= 10;
 				if(clrSh <= 0)
 				{
-					if(clrSh < 0) clrSh = 0;
+					if(clrSh < 0)
+						clrSh = 0;
+
 					clrAdd = true;
 				}
 			}
@@ -166,7 +179,7 @@ namespace ui
 			switch(track.getEvent()) 
 			{
 				case TRACK_SWIPE_UP:
-					if(start + 12 < (int)list_size)
+					if((maxTitles == 18 && start + 12 < (int)list_size) || start + 18 < (int)list_size)
 					{
 						swiping = true;
 						selected += 6;
@@ -293,6 +306,21 @@ namespace ui
 				std::string message = "No saved game, please have a look in the blacklist";
 				drawText(message.c_str(), frameBuffer, ui::shared, (1280 - textGetWidth(message.c_str(), ui::shared, 22)) / 2, 340, 22, mnutxtClr);
 			}
+
+// char char_arr[200];
+// sprintf(char_arr, "selected %d", selected);
+// drawText(char_arr, frameBuffer, ui::shared, 500, 10, 14, mnutxtClr);
+// sprintf(char_arr, "endTitle %d", endTitle);
+// drawText(char_arr, frameBuffer, ui::shared, 500, 25, 14, mnutxtClr);
+// sprintf(char_arr, "start %d", start);
+// drawText(char_arr, frameBuffer, ui::shared, 500, 40, 14, mnutxtClr);
+// sprintf(char_arr, "list_size %d", list_size);
+// drawText(char_arr, frameBuffer, ui::shared, 750, 10, 14, mnutxtClr);
+// sprintf(char_arr, "maxTitles %d", maxTitles);
+// drawText(char_arr, frameBuffer, ui::shared, 750, 25, 14, mnutxtClr);
+// sprintf(char_arr, "start %d", start);
+// drawText(char_arr, frameBuffer, ui::shared, 750, 40, 14, mnutxtClr);
+
 			gfxEndFrame(ui::shared);
 
 			if(updatemenu == true)
@@ -375,25 +403,22 @@ namespace ui
 				}
 				else if(down & KEY_X || ttlNav[2].getEvent() == BUTTON_RELEASED)
 				{
-					std::string confStr = "Are you sure you want to add \"" + data::curUser.titles[selected].getTitle() + \
-										  "\" to your blacklist? It will apply to all users";
+					std::string confStr = "Are you sure you want to add \"" + data::curUser.titles[selected].getTitle() + "\" to your blacklist? It will apply to all users";
 					if(ui::confirm(confStr, "Blacklist")) {
 						data::blacklistAdd(data::curUser, data::curUser.titles[selected]);
 						// deleting last icon
 						if((unsigned)selected == list_size - 1)
-						{
 							if(selected > 0)
 								selected--;
 
-							if(selected - 6 < (int)start)
-								start -= 6;
+						if(maxTitles == 24 && (int)list_size - 1 <= 12)
+							maxTitles = 18;
 
-							if(start < 0)
-								start = 0;
+						if(maxTitles == 24 && start + 12 < (int)list_size)
+							start -= 6;
 
-							if(selected == 5)
-								maxTitles = 18;
-						}
+						if(start < 0)
+							start = 0;
 					}
 					break;
 				}
@@ -426,14 +451,5 @@ namespace ui
 				break;
 			}
 		}
-/*
-		char char_arr[200];
-		sprintf(char_arr, "selected %d", selected);
-		drawText(char_arr, frameBuffer, ui::shared, 500, 10, 14, mnutxtClr);
-		sprintf(char_arr, "endTitle %d", endTitle);
-		drawText(char_arr, frameBuffer, ui::shared, 500, 25, 14, mnutxtClr);
-		sprintf(char_arr, "start %d", start);
-		drawText(char_arr, frameBuffer, ui::shared, 500, 40, 14, mnutxtClr);
-*/
 	}
 }
