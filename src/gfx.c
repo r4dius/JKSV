@@ -597,6 +597,25 @@ void texDraw(const tex *t, tex *target, int x, int y)
 	}
 }
 
+void texDrawNoAlpha(const tex *t, tex *target, int x, int y)
+{
+	if(t != NULL)
+	{
+		uint32_t *dataPtr = &t->data[0];
+		for(int tY = y; tY < y + t->height; tY++)
+		{
+			uint32_t *rowPtr = &target->data[tY * target->width + x];
+			for(int tX = x; tX < x + t->width; tX++)
+			{
+				if(x >= 0 && y >= 0 && x <= 1280 && y <= 720)
+				{
+					*rowPtr++ = *dataPtr++;
+				}
+			}
+		}
+	}
+}
+
 void texDrawLimit(const tex *t, tex *target, int x, int y)
 {
 	if(t != NULL)
@@ -622,7 +641,7 @@ void texDrawLimit(const tex *t, tex *target, int x, int y)
 	}
 }
 
-void texDrawH(const tex *t, tex *target, int x, int y, int w)
+void texDrawHorizontal(const tex *t, tex *target, int x, int y, int w)
 {
 	if(t != NULL)
 	{
@@ -647,7 +666,7 @@ void texDrawH(const tex *t, tex *target, int x, int y, int w)
 	}
 }
 
-void texDrawV(const tex *t, tex *target, int x, int y, int h)
+void texDrawVertical(const tex *t, tex *target, int x, int y, int h)
 {
 	if(t != NULL)
 	{
@@ -666,70 +685,6 @@ void texDrawV(const tex *t, tex *target, int x, int y, int h)
 
 						*rowPtr = blend(dataClr, fbClr);
 					}
-				}
-			}
-		}
-	}
-}
-
-void texDrawNoAlpha(const tex *t, tex *target, int x, int y)
-{
-	if(t != NULL)
-	{
-		uint32_t *dataPtr = &t->data[0];
-		for(int tY = y; tY < y + t->height; tY++)
-		{
-			uint32_t *rowPtr = &target->data[tY * target->width + x];
-			for(int tX = x; tX < x + t->width; tX++)
-			{
-				if(x >= 0 && y >= 0 && x <= 1280 && y <= 720)
-				{
-					*rowPtr++ = *dataPtr++;
-				}
-			}
-		}
-	}
-}
-
-void texDrawSkip(const tex *t, tex *target, int x, int y)
-{
-	if(t != NULL)
-	{
-		uint32_t *dataPtr = &t->data[0];
-		for(int tY = y; tY < y + (t->height / 2); tY++, dataPtr += t->width)
-		{
-			uint32_t *rowPtr = &target->data[tY * target->width + x];
-			for(int tX = x; tX < x + (t->width / 2); tX++, rowPtr++)
-			{
-				if(x >= 0 && y >= 0 && x <= 1280 && y <= 720)
-				{
-					clr px1 = clrCreateU32(*dataPtr++);
-					clr px2 = clrCreateU32(*dataPtr++);
-					clr fbPx = clrCreateU32(*rowPtr);
-
-					*rowPtr = blend(clrCreateU32(smooth(px1, px2)), fbPx);
-				}
-			}
-		}
-	}
-}
-
-void texDrawSkipNoAlpha(const tex *t, tex *target, int x, int y)
-{
-	if(t != NULL)
-	{
-		uint32_t *dataPtr = &t->data[0];
-		for(int tY = y; tY < y + (t->height / 2); tY++, dataPtr += t->width)
-		{
-			uint32_t *rowPtr = &target->data[tY * target->width + x];
-			for(int tX = x; tX < x + (t->width / 2); tX++, rowPtr++)
-			{
-				if(x >= 0 && y >= 0 && x <= 1280 && y <= 720)
-				{
-					clr px1 = clrCreateU32(*dataPtr++);
-					clr px2 = clrCreateU32(*dataPtr++);
-
-					*rowPtr = smooth(px1, px2);
 				}
 			}
 		}
@@ -809,29 +764,6 @@ void texDrawResize(const tex *source, tex *target, int x, int y, int destWidth, 
 	}
 }
 
-void texDrawInvert(const tex *t, tex *target, int x, int y)
-{
-	if(t != NULL)
-	{
-		uint32_t *dataPtr = &t->data[0];
-		for(int tY = y; tY < y + t->height; tY++)
-		{
-			uint32_t *rowPtr = &target->data[tY * target->width + x];
-			for(int tX = x; tX < x + t->width; tX++, rowPtr++)
-			{
-				if(x >= 0 && y >= 0 && x <= 1280 && y <= 720)
-				{
-					clr dataClr = clrCreateU32(*dataPtr++);
-					clrInvert(&dataClr);
-					clr fbClr = clrCreateU32(*rowPtr);
-
-					*rowPtr = blend(dataClr, fbClr);
-				}
-			}
-		}
-	}
-}
-
 void texSwapColors(tex *t, const clr old, const clr newColor)
 {
 	uint32_t oldClr = clrGetColor(old), newClr = clrGetColor(newColor);
@@ -858,24 +790,6 @@ tex *texCreateFromPart(const tex *src, int x, int y, int w, int h)
 	}
 
 	return ret;
-}
-
-void texScaleToTex(const tex *in, tex *out, int scale)
-{
-	for(int y = 0; y < in->height; y++)
-	{
-		for(int tY = y * scale; tY < (y * scale) + scale; tY++)
-		{
-			uint32_t *inPtr = &in->data[y * in->width];
-			for(int x = 0; x < in->width; x++, inPtr++)
-			{
-				for(int tX = x * scale; tX < (x * scale) + scale; tX++)
-				{
-					out->data[tY * (in->width * scale) + tX] = *inPtr;
-				}
-			}
-		}
-	}
 }
 
 font *fontLoadSharedFonts()

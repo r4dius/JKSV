@@ -351,17 +351,17 @@ namespace ui
 
 		//Top
 		texDraw(ui::cornerTopLeft, frameBuffer, rectX - 5, y - 5);
-		texDrawH(ui::cornerTopHor, frameBuffer, rectX - 5 + 12, y - 5, w - 24 + 10);
+		texDrawHorizontal(ui::cornerTopHor, frameBuffer, rectX - 5 + 12, y - 5, w - 24 + 10);
 		texDraw(ui::cornerTopRight, frameBuffer, rectX + w - 12 + 5, y - 5);
 
 		//Middle
-		texDrawV(ui::cornerLeftVer, frameBuffer, rectX - 5, y - 5 + 12, h - 24 + 10);
+		texDrawVertical(ui::cornerLeftVer, frameBuffer, rectX - 5, y - 5 + 12, h - 24 + 10);
 		drawRectAlpha(frameBuffer, rectX - 5 + 12, y - 5 + 12, w - 24 + 10, h - 24 + 10, tipbgClr);
-		texDrawV(ui::cornerRightVer, frameBuffer, rectX + w - 12 + 5, y - 5 + 12, h - 24 + 10);
+		texDrawVertical(ui::cornerRightVer, frameBuffer, rectX + w - 12 + 5, y - 5 + 12, h - 24 + 10);
 
 		//Bottom
 		texDraw(ui::cornerBottomLeft, frameBuffer, rectX - 5, y + h - 12 + 5);
-		texDrawH(ui::cornerBottomHor, frameBuffer, rectX - 5 + 12, y + h - 12 + 5, w - 24 + 10);
+		texDrawHorizontal(ui::cornerBottomHor, frameBuffer, rectX - 5 + 12, y + h - 12 + 5, w - 24 + 10);
 		texDraw(ui::cornerBottomRight, frameBuffer, rectX + w - 12 + 5, y + h - 12 + 5);
 		
 		//Tip
@@ -373,7 +373,7 @@ namespace ui
 	{
 		//Draw shadow first
 		texDraw(iconSelShadowLeft, frameBuffer, x, y + h - 5);
-		texDrawH(iconSelShadowMiddle, frameBuffer, x + 10, y + h - 5, w - 20);
+		texDrawHorizontal(iconSelShadowMiddle, frameBuffer, x + 10, y + h - 5, w - 20);
 		texDraw(iconSelShadowRight, frameBuffer, x + w - 10, y + h - 5);
 
 		//Top
@@ -422,7 +422,7 @@ namespace ui
 
 				//Draw shadow first
 				texDraw(iconSelShadowLeft, frameBuffer, x - 5 - offset, y + h + 3 + offset);
-				texDrawH(iconSelShadowMiddle, frameBuffer, x - offset, y + h + 3 + offset, w + offset * 2);
+				texDrawHorizontal(iconSelShadowMiddle, frameBuffer, x - offset, y + h + 3 + offset, w + offset * 2);
 				texDraw(iconSelShadowRight, frameBuffer, x + w + offset, y + h + 3 + offset);
 
 				//Top

@@ -65,14 +65,6 @@ inline clr clrCreateRGBA(uint8_t _r, uint8_t _g, uint8_t _b, uint8_t _a)
 	return ret;
 }
 
-//Inverts color
-inline void clrInvert(clr *c)
-{
-	c->r = (0xFF - c->r);
-	c->g = (0xFF - c->g);
-	c->b = (0xFF - c->b);
-}
-
 //Returns uint32_t color
 inline uint32_t clrGetColor(const clr c)
 {
@@ -119,28 +111,17 @@ void texClearColor(tex *in, const clr c);
 //Draws t at x, y
 void texDraw(const tex *t, tex *target, int x, int y);
 void texDrawLimit(const tex *t, tex *target, int x, int y);
-void texDrawH(const tex *t, tex *target, int x, int y, int w);
-void texDrawV(const tex *t, tex *target, int x, int y, int h);
+void texDrawHorizontal(const tex *t, tex *target, int x, int y, int w);
+void texDrawVertical(const tex *t, tex *target, int x, int y, int h);
 
 //Draws without alpha blending, faster
 void texDrawNoAlpha(const tex *t, tex *target, int x, int y);
-void texDrawNoAlphaResize(const tex *t, tex *target, int x, int y);
 
-//Draws skipping every other pixel + row
-void texDrawSkip(const tex *t, tex *target, int x, int y);
+//Real resize, slow
 void texDrawResize(const tex *t, tex *target, int x, int y, int w, int h);
-
-//Same as above, no alpha
-void texDrawSkipNoAlpha(const tex *t, tex *target, int x, int y);
-
-//Draw t inverted at x, y
-void texDrawInvert(const tex *t, tex *target, int x, int y);
 
 //Replaces old with newColor
 void texSwapColors(tex *t, const clr old, const clr newColor);
-
-//Scales tex * scale and writes to out. Can only multiply for now
-void texScaleToTex(const tex *in, tex *out, int scale);
 
 //Creates and copies data from another image returns tex
 tex *texCreateFromPart(const tex *src, int x, int y, int w, int h);
