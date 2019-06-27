@@ -128,7 +128,7 @@ static void drawGlyph(const FT_Bitmap *bmp, tex *target, int _x, int _y)
 	}
 }
 
-static inline void resizeFont(const font *f, int sz)
+static inline void resizeFont(const font *f, float sz)
 {
 	if(f->external)
 		FT_Set_Char_Size(f->face[0], 0, sz * 64, 90, 90);
@@ -159,9 +159,9 @@ static inline FT_GlyphSlot loadGlyph(const uint32_t c, const font *f, FT_Int32 f
 	return NULL;
 }
 
-void drawText(const char *str, tex *target, const font *f, int x, int y, int sz, clr c)
+void drawText(const char *str, tex *target, const font *f, float x, float y, float sz, clr c)
 {
-	int tmpX = x;
+	float tmpX = x;
 	uint32_t tmpChr = 0;
 	ssize_t unitCnt = 0;
 	textClr = c;
@@ -205,7 +205,7 @@ void drawText(const char *str, tex *target, const font *f, int x, int y, int sz,
 		FT_GlyphSlot slot = loadGlyph(tmpChr, f, FT_LOAD_RENDER);
 		if(slot != NULL)
 		{
-			int drawY = y + (sz - slot->bitmap_top);
+			float drawY = y + (sz - slot->bitmap_top);
 			drawGlyph(&slot->bitmap, target, tmpX + slot->bitmap_left, drawY);
 
 			tmpX += slot->advance.x >> 6;
@@ -213,12 +213,12 @@ void drawText(const char *str, tex *target, const font *f, int x, int y, int sz,
 	}
 }
 
-void drawTextWrap(const char *str, tex *target, const font *f, int x, int y, int sz, clr c, int maxWidth)
+void drawTextWrap(const char *str, tex *target, const font *f, float x, float y, float sz, clr c, int maxWidth)
 {
 	char wordBuf[128];
 	size_t nextbreak = 0;
 	size_t strLength = strlen(str);
-	int tmpX = x;
+	float tmpX = x;
 	for(unsigned i = 0; i < strLength; )
 	{
 		nextbreak = strcspn(&str[i], " /");
@@ -285,7 +285,7 @@ void drawTextWrap(const char *str, tex *target, const font *f, int x, int y, int
 	}
 }
 
-size_t textGetWidth(const char *str, const font *f, int sz)
+size_t textGetWidth(const char *str, const font *f, float sz)
 {
 	size_t width = 0;
 	uint32_t untCnt = 0, tmpChr = 0;
@@ -312,12 +312,12 @@ size_t textGetWidth(const char *str, const font *f, int sz)
 	return width;
 }
 
-size_t textGetHeight(const char *str, const font *f, int sz, int maxWidth)
+size_t textGetHeight(const char *str, const font *f, float sz, int maxWidth)
 {
 	char wordBuf[128];
 	size_t nextbreak = 0;
 	size_t strLength = strlen(str);
-	int tmpX = 0, height = sz;
+	float tmpX = 0, height = sz;
 	for(unsigned i = 0; i < strLength; )
 	{
 		nextbreak = strcspn(&str[i], " /");

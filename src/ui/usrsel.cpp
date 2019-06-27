@@ -25,7 +25,7 @@ namespace ui
 
 		std::vector<ui::button> selButtons;
 		static ui::touchTrack track;
-		unsigned x = 93, y = 187;
+		unsigned x = 93, y = 187, j = 0, selY = 0;
 		static unsigned tiX = 0, tiY = 0;
 
 		//Selected rectangle X and Y.
@@ -42,16 +42,23 @@ namespace ui
 
 		if(maxTitles == 24)
 			y = 3;
+		
+		if(start < 0)
+			start = 0;
+
+		if(selected < 0)
+			selected = 0;
 
 		unsigned endUser = start + maxTitles;
 		if(start + maxTitles > (int)list_size)
 			endUser = list_size;
 
-		for(unsigned i = start; i < endUser; y += 184)
+		for(unsigned i = start; i < endUser; y += 184, j++)
 		{
 			unsigned endRow = i + 6;
 			for(unsigned tX = x; i < endRow; i++, tX += 184)
 			{
+				unsigned selH = 174;
 				if(i == endUser)
 					break;
 
@@ -68,30 +75,42 @@ namespace ui
 				}
 				data::users[i].drawResize(tX, y, 174, 174);
 				texDrawLimit(iconShadow, frameBuffer, tX - 5, y - 5);
-				ui::button newSelButton("", tX, y, 174, 174);
+				selY = y;
+				if(maxTitles == 24) {
+					if(j < 1) {
+						selY = y + 85;
+						selH = 89;
+					}
+					if(j > 2)
+						selH = 92;
+				}
+				else
+					if(j > 1)
+						selH = 92;
+				ui::button newSelButton("", tX, selY, 174, selH);
 				selButtons.push_back(newSelButton);
 			}
 		}
 
 		unsigned endX = 1218, butSize = 0;
 		std::string butTxt = "Select";
-		butSize = textGetWidth(butTxt.c_str(), shared, 18);
-		drawText(butTxt.c_str(), frameBuffer, shared, endX -= butSize, 675, 18, mnutxtClr);
-		texDraw(buttonA, frameBuffer, endX -= 38, 672);
+		butSize = textGetWidth(butTxt.c_str(), shared, 17.5);
+		drawText(butTxt.c_str(), frameBuffer, shared, endX -= butSize, 675.5, 17.5, mnutxtClr);
+		texDraw(buttonA, frameBuffer, endX -= 37, 672);
 		ui::button usrSel("", endX, 656, butSize + 38, 64);
 		usrNav.push_back(usrSel);
 		endX -= 41;
 		butTxt = "Backup All";
-		butSize = textGetWidth(butTxt.c_str(), shared, 18);
-		drawText(butTxt.c_str(), frameBuffer, shared, endX -= butSize, 675, 18, mnutxtClr);
-		texDraw(buttonY, frameBuffer, endX -= 38, 672);
+		butSize = textGetWidth(butTxt.c_str(), shared, 17.5);
+		drawText(butTxt.c_str(), frameBuffer, shared, endX -= butSize, 675.5, 17.5, mnutxtClr);
+		texDraw(buttonY, frameBuffer, endX -= 37, 672);
 		ui::button usrDmp("", endX, 656, butSize + 38, 64);
 		usrNav.push_back(usrDmp);
 		endX -= 41;
 		butTxt = "Exit";
-		butSize = textGetWidth(butTxt.c_str(), shared, 18);
-		drawText(butTxt.c_str(), frameBuffer, shared, endX -= butSize, 675, 18, mnutxtClr);
-		texDraw(buttonP, frameBuffer, endX -= 38, 672);
+		butSize = textGetWidth(butTxt.c_str(), shared, 17.5);
+		drawText(butTxt.c_str(), frameBuffer, shared, endX -= butSize, 675.5, 17.5, mnutxtClr);
+		texDraw(buttonP, frameBuffer, endX -= 37, 672);
 		ui::button usrExt("", endX, 656, butSize + 38, 64);
 		usrNav.push_back(usrExt);
 
