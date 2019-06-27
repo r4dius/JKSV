@@ -2,6 +2,10 @@
 
 ~~Multipurpose~~ Save tool for Switch.
 
+![user select](https://github.com/r4dius/JKSV/blob/light/screenshots/2019062712080400-8BF5216850FD21312EC895FF3C94953D.jpg?raw=true)
+![game list](https://github.com/r4dius/JKSV/blob/light/screenshots/2019062712081300-8BF5216850FD21312EC895FF3C94953D.jpg?raw=true)
+![game save](https://github.com/r4dius/JKSV/blob/light/screenshots/2019062712084400-8BF5216850FD21312EC895FF3C94953D.jpg?raw=true)
+
 ## Info
 JKSV on Switch started as a small project/port to test some things and get familiar with libnx. A list of what it currently can do:
 1. Dump and restore save data.
