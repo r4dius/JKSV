@@ -46,7 +46,7 @@ ROMFS	    :=	romfs
 #---------------------------------------------------------------------------------
 ARCH	:=	-march=armv8-a -mtune=cortex-a57 -mtp=soft -fPIE
 
-override CFLAGS	+=	-g -Wall -O2 -ffunction-sections \
+override CFLAGS	+=	-g -Wall -O3 -ffunction-sections -fdata-sections -Wl,--gc-sections -Wl,--print-gc-sections \
 			$(ARCH) $(DEFINES)
 
 override CFLAGS	+=	$(INCLUDE) -D__SWITCH__ `freetype-config --cflags`

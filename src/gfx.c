@@ -801,7 +801,6 @@ font *fontLoadSharedFonts()
 		return NULL;
 	}
 
-
 	for(int i = 0; i < 6; i++)
 	{
 		PlFontData plFont;
