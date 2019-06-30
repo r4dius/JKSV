@@ -29,8 +29,8 @@ namespace ui
 		drawText(head.c_str(), frameBuffer, shared, 325, 297, 19, mnutxtClr);
 		drawTextWrap(text.c_str(), frameBuffer, shared, 325, 333, 19, mnutxtClr, 630);
 
-		drawRect(frameBuffer, 325, 448, 630, 14, clrCreateU32(0xFFCCCCCC));
-		drawRect(frameBuffer, 325, 448, (unsigned)width, 14, mnutxtClr);
+		drawRect(frameBuffer, 325, 451, 630, 10, clrCreateU32(0xFFCCCCCC));
+		drawRect(frameBuffer, 325, 451, (unsigned)width, 10, glowClr);
 
 		char tmp[128];
 		sprintf(tmp, "%lu KB/%lu KB", prog / 1024, max / 1024);
@@ -170,17 +170,23 @@ namespace ui
 
 			if(clrAdd)
 			{
-				clrSh += 8;
-				if(clrSh > 100) {
-					if(clrSh > 254) clrSh = 254;
+				clrSh += 5;
+				if(clrSh > 100)
+				{
+					if(clrSh > 254)
+						clrSh = 254;
+
 					clrAdd = false;
 				}
 			}
 			else
 			{
-				clrSh -= 14;
-				if(clrSh <= 0) {
-					if(clrSh < 0) clrSh = 0;
+				clrSh -= 10;
+				if(clrSh <= 0)
+				{
+					if(clrSh < 0)
+						clrSh = 0;
+
 					clrAdd = true;
 				}
 			}
@@ -277,19 +283,23 @@ namespace ui
 
 			if(clrAdd)
 			{
-				clrSh += 8;
-				if(clrSh > 100) {
+				clrSh += 5;
+				if(clrSh > 100)
+				{
 					if(clrSh > 254)
 						clrSh = 254;
+
 					clrAdd = false;
 				}
 			}
 			else
 			{
-				clrSh -= 14;
-				if(clrSh <= 0) {
+				clrSh -= 10;
+				if(clrSh <= 0)
+				{
 					if(clrSh < 0)
 						clrSh = 0;
+
 					clrAdd = true;
 				}
 			}
