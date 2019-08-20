@@ -5,10 +5,11 @@
 #include "ui.h"
 #include "uiupdate.h"
 #include "util.h"
+#include "snd.h"
 
 extern std::vector<ui::button> fldNav;
 std::vector<ui::button> optButtons;
-std::vector<std::string> opt;
+static std::vector<std::string> opt;
 
 namespace ui
 {
@@ -29,6 +30,8 @@ namespace ui
 		unsigned x = 470, y = 131, rW = 720;
 		static unsigned selRectX = x, selRectY = y;
 		static int fontSize = 19, retEvent = MENU_NOTHING;
+		static bool touching = false;
+		static bool rescan = true;
 
 		//Color shift for rect
 		static int clrSh = 0;
@@ -47,16 +50,26 @@ namespace ui
 			optButtons.push_back(newOptButton);
 		}
 
-		opt.clear();
+		if(start > 0)
+		{
+			ui::button newOptButton("", x, y - 42, rW, 42);
+			optButtons.push_back(newOptButton);
+		}
+
 		fldNav.clear();
+		if(rescan)
+		{
+			rescan = false;
+			opt.clear();
 
-		util::makeTitleDir(data::curUser, data::curData);
-		std::string scanPath = util::getTitleDir(data::curUser, data::curData);
+			util::makeTitleDir(data::curUser, data::curData);
+			std::string scanPath = util::getTitleDir(data::curUser, data::curData);
 
-		fs::dirList list(scanPath);
-		addOpt("New", rW, fontSize);
-		for(unsigned i = 0; i < list.getCount(); i++)
-			addOpt(list.getItem(i), rW, fontSize);
+			fs::dirList list(scanPath);
+			addOpt("New", rW, fontSize);
+			for(unsigned i = 0; i < list.getCount(); i++)
+				addOpt(list.getItem(i), rW, fontSize);
+		}
 
 		int list_size = opt.size() - 1;
 		if(selected > list_size)
@@ -67,12 +80,13 @@ namespace ui
 		else if(opt.size() > 6 && start + 6 > list_size)
 			start = opt.size() - 7;
 
-
 		int length = 0;
 		if(list_size < 7)
 			length = opt.size();
 		else
 			length = start + 7;
+
+		if(start > 0) drawTextBound(opt[start - 1].c_str(), frameBuffer, shared, x + 15, y + 26 - 71, fontSize, mnutxtClr, 88, 647);
 
 		for(int i = start; i < length; i++)
 		{
@@ -184,7 +198,7 @@ namespace ui
 			} else move = false;
 
 			//Update touchtracking
-			track.update(p);
+			track.update(p, 3);
 			switch(track.getEvent())
 			{
 				case TRACK_SWIPE_UP:
@@ -204,10 +218,18 @@ namespace ui
 
 			//Update nav
 			for(unsigned i = 0; i < fldNav.size(); i++)
+			{
 				fldNav[i].update(p);
+				if(fldNav[i].getEvent() == BUTTON_PRESSED)
+				{
+					if(!touching)
+						sndTick();
+					touching = true;
+				}
+			}
 
 			//Update invisible buttons
-			for(int i = 0; i < 7; i++)
+			for(int i = 0; i < (list_size < 7 ? list_size + 1 : 7); i++)
 			{
 				optButtons[i].update(p);
 				if(selected == i + start && optButtons[i].getEvent() == BUTTON_RELEASED)
@@ -217,17 +239,45 @@ namespace ui
 				}
 				else if(optButtons[i].getEvent() == BUTTON_RELEASED && i + start < (int)opt.size())
 				{
+					sndTouchout();
 					selected = i + start;
 					selRectY = y + (i * 71);
-					title = opt[i + start].c_str();
+					title = opt[selected].c_str();
 					retEvent = MENU_NOTHING;
 					return;
+				}
+				else if(optButtons[i].getEvent() == BUTTON_PRESSED)
+				{
+					if(!touching)
+						sndList();
+					touching = true;
 				}
 				else
 				{
 					retEvent = MENU_NOTHING;
 				}
 			}
+
+			if(start > 0)
+			{
+				int i = 7;
+				optButtons[i].update(p);
+				if(optButtons[i].getEvent() == BUTTON_RELEASED)
+				{
+					sndTouchout();
+					start--, selected = start;
+					return;
+				}
+				else if(optButtons[i].getEvent() == BUTTON_PRESSED)
+				{
+					if(!touching)
+						sndList();
+					touching = true;
+				}
+			}
+
+			if(hidTouchCount() <= 0)
+				touching = false;
 
 			gfxBeginFrame();
 			texDraw(screen, frameBuffer, 0, 0);
@@ -237,6 +287,10 @@ namespace ui
 
 			if((down & KEY_UP) || ((held & KEY_UP) && move))
 			{
+				if(list_size == 0)
+					sndBounds();
+				else
+					sndList();
 				selected--;
 				if(selected < 0)
 					selected = list_size;
@@ -251,6 +305,10 @@ namespace ui
 			}
 			else if((down & KEY_DOWN) || ((held & KEY_DOWN) && move))
 			{
+				if(list_size == 0)
+					sndBounds();
+				else
+					sndList();
 				selected++;
 				if(selected > list_size)
 					selected = 0;
@@ -265,7 +323,13 @@ namespace ui
 			{
 				selected += 6;
 				if(selected > list_size)
+				{
 					selected = list_size;
+					sndBounds();
+				}
+				else
+					sndList();
+
 				if((selected - 6) > start)
 					start = selected - 6;
 				break;
@@ -274,7 +338,13 @@ namespace ui
 			{
 				selected -= 6;
 				if(selected < 0)
+				{
 					selected = 0;
+					sndBounds();
+				}
+				else
+					sndList();
+
 				if(selected < start)
 					start = selected;
 				break;
@@ -283,6 +353,8 @@ namespace ui
 			{
 				if(selected == 0)
 				{
+					rescan = true;
+					sndSelect();
 					std::string folder;
 					//Add back 3DS shortcut thing
 					if(held & KEY_R)
@@ -305,22 +377,27 @@ namespace ui
 					}
 					if(!folder.empty())
 					{
+						sndLoading();
 						std::string path = util::getTitleDir(data::curUser, data::curData) + "/" + folder;
 						mkdir(path.c_str(), 777);
 						path += "/";
 
 						std::string root = "sv:/";
 						fs::copyDirToDir(root, path);
+						sndBing();
 					}
 				}
 				else
 				{
+					sndPopup();
 					std::string scanPath = util::getTitleDir(data::curUser, data::curData);
 					fs::dirList list(scanPath);
 
 					std::string folderName = list.getItem(selected - 1);
 					if(confirm("Are you sure you want to overwrite \"" + util::cutStr(folderName, 690, 24) + "\"?", "Overwrite"))
 					{
+						sndLoading();
+						rescan = true;
 						std::string toPath = util::getTitleDir(data::curUser, data::curData) + folderName + "/";
 						//Delete and recreate
 						fs::delDir(toPath);
@@ -329,26 +406,31 @@ namespace ui
 						std::string root = "sv:/";
 
 						fs::copyDirToDir(root, toPath);
+						sndBing();
 					}
 				}
 				break;
 			}
 			else if(down & KEY_B || fldNav[1].getEvent() == BUTTON_RELEASED)
 			{
+				sndBack();
 				start = 0;
 				selected = 0;
+				rescan = true;
 				fsdevUnmountDevice("sv");
 				mstate = prevState;
 				return;
 			}
 			else if(selected > 0 && (down & KEY_X || fldNav[2].getEvent() == BUTTON_RELEASED))
 			{
+				sndPopup();
 				std::string scanPath = util::getTitleDir(data::curUser, data::curData);
 				fs::dirList list(scanPath);
 
 				std::string folderName = list.getItem(selected - 1);
 				if(confirm("Are you sure you want to delete \"" + util::cutStr(folderName, 690, 24) + "\"?", "Delete"))
 				{
+					rescan = true;
 					std::string delPath = scanPath + folderName + "/";
 					fs::delDir(delPath);
 				}
@@ -356,6 +438,7 @@ namespace ui
 			}
 			else if(selected > 0 && (down & KEY_Y || fldNav[3].getEvent() == BUTTON_RELEASED))
 			{
+				sndPopup();
 				if(data::curData.getType() != FsSaveDataType_SystemSaveData)
 				{
 					std::string scanPath = util::getTitleDir(data::curUser, data::curData);
@@ -364,6 +447,7 @@ namespace ui
 					std::string folderName = list.getItem(selected - 1);
 					if(confirm("Are you sure you want to restore \"" + util::cutStr(folderName, 690, 24) + "\"?", "Restore"))
 					{
+						sndLoading();
 						std::string fromPath = util::getTitleDir(data::curUser, data::curData) + folderName + "/";
 						std::string root = "sv:/";
 
@@ -371,6 +455,7 @@ namespace ui
 						fsdevCommitDevice("sv");
 
 						fs::copyDirToDirCommit(fromPath, root, "sv");
+						sndBing();
 					}
 				}
 				else

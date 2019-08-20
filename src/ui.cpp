@@ -263,7 +263,7 @@ namespace ui
 			texDrawNoAlpha(background, frameBuffer, 0, 0);
 
 		texDraw(icn, frameBuffer, 66, 27);
-		drawText("JKSV", frameBuffer, shared, 130, 38, 24, mnutxtClr);
+		drawText("JKSV", frameBuffer, shared, 130, 40, 22, mnutxtClr);
 		//drawText(VER_STRING, frameBuffer, shared, 8, 702, 12, mnutxtClr);
 		drawRect(frameBuffer, 30, 87, 1220, 1, divClr);
 		drawRect(frameBuffer, 30, 647, 1220, 1, divClr);

@@ -38,7 +38,7 @@ INCLUDES	:=	inc
 EXEFS_SRC	:=	exefs_src
 APP_TITLE   :=  JKSV
 APP_AUTHOR  :=  JK / r4dius
-APP_VERSION :=  1.0.1
+APP_VERSION :=  1.1.0
 ROMFS	    :=	romfs
 
 #---------------------------------------------------------------------------------

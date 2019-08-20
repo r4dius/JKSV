@@ -6,6 +6,7 @@
 #include "ui.h"
 #include "uiupdate.h"
 #include "file.h"
+#include "snd.h"
 
 extern std::vector<ui::button> usrNav;
 
@@ -34,7 +35,9 @@ namespace ui
 		static int retEvent = MENU_NOTHING;
 
 		bool updatemenu = false;
+		static bool holding = false;
 		static bool swiping = false;
+		static bool touching = false;
 
 		usrNav.clear();
 
@@ -151,6 +154,7 @@ namespace ui
 				movespeed++;
 			else
 			{
+				holding = false;
 				movespeed = 0;
 				move = false;
 			}
@@ -162,7 +166,7 @@ namespace ui
 			} else move = false;
 
 			//Update touchtracking
-			track.update(p); 
+			track.update(p, 6); 
 			switch(track.getEvent()) 
 			{
 				case TRACK_SWIPE_UP:
@@ -207,7 +211,15 @@ namespace ui
 
 			//Update nav
 			for(unsigned i = 0; i < usrNav.size(); i++)
+			{
 				usrNav[i].update(p);
+				if(usrNav[i].getEvent() == BUTTON_PRESSED)
+				{
+					if(!touching)
+						sndTick();
+					touching = true;
+				}
+			}
 
 			//Update invisible buttons
 			for(int i = 0; (unsigned)i < endUser - start; i++)
@@ -224,6 +236,7 @@ namespace ui
 				}
 				else if(selButtons[i].getEvent() == BUTTON_RELEASED)
 				{
+					sndTouchout();
 					if(!swiping)
 					{
 						if(start + i < (int)list_size)
@@ -262,12 +275,21 @@ namespace ui
 						}
 					}
 				}
+				else if(selButtons[i].getEvent() == BUTTON_PRESSED)
+				{
+					if(!touching)
+						sndTick();
+					touching = true;
+				}
 				else
 				{
 					retEvent = MENU_NOTHING;
 				}
 			}
 
+			if(hidTouchCount() <= 0)
+				touching = false;
+				
 			// reset swiping check
 			if(swiping && hidTouchCount() <= 0)
 				swiping = false;
@@ -294,7 +316,15 @@ namespace ui
 				if(down & KEY_RIGHT || ((held & KEY_RIGHT) && move))
 				{
 					if(selected < (int)list_size - 1)
+					{
 						selected++;
+						sndTick();
+					}
+					else if(!holding)
+					{
+						holding = true;
+						sndBounds();
+					}
 
 					if(selected >= (int)start + 18)
 						start += 6;
@@ -309,7 +339,15 @@ namespace ui
 				else if(down & KEY_LEFT || ((held & KEY_LEFT) && move))
 				{
 					if(selected > 0)
+					{
 						selected--;
+						sndTick();
+					}
+					else if(!holding)
+					{
+						holding = true;
+						sndBounds();
+					}
 
 					if(selected - 6 < (int)start)
 						start -= 6;
@@ -323,6 +361,14 @@ namespace ui
 				}
 				else if(down & KEY_UP || ((held & KEY_UP) && move))
 				{
+					if(selected > 0)
+						sndTick();
+					else if(!holding)
+					{
+						holding = true;
+						sndBounds();
+					}
+
 					selected -= 6;
 					if(selected < 0)
 						selected = 0;
@@ -339,6 +385,14 @@ namespace ui
 				}
 				else if(down & KEY_DOWN || ((held & KEY_DOWN) && move))
 				{
+					if(selected < (int)list_size - 1)
+						sndTick();
+					else if(!holding)
+					{
+						holding = true;
+						sndBounds();
+					}
+
 					selected += 6;
 					if(selected > (int)list_size - 1)
 						selected = list_size - 1;
@@ -354,14 +408,18 @@ namespace ui
 				{
 					data::curUser = data::users[selected];
 					mstate = TTL_SEL;
+					sndSelect();
 					break;
 				}
 				else if(down & KEY_Y || usrNav[1].getEvent() == BUTTON_RELEASED)
 				{
+					sndPopup();
 					if(confirm("Are you sure you want to backup all users saves?", "Backup"))
 					{
+						sndLoading();
 						for(unsigned i = 0; i < list_size; i++)
 							fs::dumpAllUserSaves(data::users[i]);
+						sndBing();
 					}
 					break;
 				}

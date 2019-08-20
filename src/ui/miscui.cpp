@@ -6,6 +6,7 @@
 #include "ui.h"
 #include "miscui.h"
 #include "util.h"
+#include "snd.h"
 
 namespace ui
 {
@@ -63,19 +64,18 @@ namespace ui
 		//If button was first thing pressed
 		if(isOver() && prev.px == 0 && prev.py == 0)
 		{
-			first = true;
+			if(!pressed)
+				sndList();
 			pressed = true;
 			retEvent = BUTTON_PRESSED;
 		}
 		else if(retEvent == BUTTON_PRESSED && hidTouchCount() == 0 && wasOver())
 		{
-			first = false;
 			pressed = false;
 			retEvent = BUTTON_RELEASED;
 		}
 		else if(retEvent != BUTTON_NOTHING && hidTouchCount() == 0)
 		{
-			first = false;
 			pressed = false;
 			retEvent = BUTTON_NOTHING;
 		}
@@ -102,7 +102,7 @@ namespace ui
 			drawText(text.c_str(), frameBuffer, ui::shared, tx, ty, fontsize, buttxtClr);
 	}
 
-	void touchTrack::update(const touchPosition& p)
+	void touchTrack::update(const touchPosition& p, int multiplier)
 	{
 		if(hidTouchCount() > 0)
 		{
@@ -121,13 +121,13 @@ namespace ui
 				avX /= 5;
 				avY /= 5;
 
-				if(avY <= -6)
+				if(avY <= -multiplier)
 					retTrack = TRACK_SWIPE_UP;
-				else if(avY >= 6)
+				else if(avY >= multiplier)
 					retTrack = TRACK_SWIPE_DOWN;
-				else if(retTrack <= -6)
+				else if(retTrack <= -multiplier)
 					retTrack = TRACK_SWIPE_LEFT;
-				else if(retTrack >= 6)
+				else if(retTrack >= multiplier)
 					retTrack = TRACK_SWIPE_RIGHT;
 				else
 					retTrack = TRACK_NOTHING;
@@ -196,7 +196,10 @@ namespace ui
 			else
 			{
 				if(down & KEY_A || down & KEY_B || ok.getEvent() == BUTTON_RELEASED)
+				{
+					sndSelect();
 					break;
+				}
 			}
 
 			gfxBeginFrame();
@@ -261,24 +264,38 @@ namespace ui
 					else
 						ret = true;
 
+					sndSelect();
 					break;
 				}
 				else if(down & KEY_B || no.getEvent() == BUTTON_RELEASED)
 				{
 					ret = false;
 
+					sndSelect();
 					break;
 				}
 				else if(down & KEY_LEFT || no.getEvent() == BUTTON_RELEASED)
 				{
 					if(selected == 1)
+					{
 						selected = 0;
+						sndTick();
+					}
+					else
+						sndBounds();
 				}
 				else if(down & KEY_RIGHT || yes.getEvent() == BUTTON_RELEASED)
 				{
 					if(selected == 0)
+					{
 						selected = 1;
+						sndTick();
+					}
+					else
+						sndBounds();
 				}
+				else if(down & KEY_UP || down & KEY_DOWN)
+					sndBounds();
 			}
 
 			if(clrAdd)

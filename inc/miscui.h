@@ -68,7 +68,7 @@ namespace ui
 			unsigned getTy() { return ty; }
 
 		protected:
-			bool pressed = false, first = false;
+			bool pressed = false;
 			int retEvent = BUTTON_NOTHING;
 			unsigned x, y, w, h, fontsize;
 			unsigned tx, ty;
@@ -79,8 +79,7 @@ namespace ui
 	class touchTrack
 	{
 		public:
-			void update(const touchPosition& p);
-
+			void update(const touchPosition& p, int multiplier);
 			int getEvent() { return retTrack; }
 			int getOriginX() { return originX; }
 			int getOriginY() { return originY; }

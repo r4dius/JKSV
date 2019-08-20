@@ -100,7 +100,7 @@ void gfxEndFrame(const font *f)
 	}
 }
 
-static void drawGlyph(const FT_Bitmap *bmp, tex *target, int _x, int _y)
+static void drawGlyphBound(const FT_Bitmap *bmp, tex *target, int _x, int _y, int top, int bottom)
 {
 	if(bmp->pixel_mode != FT_PIXEL_MODE_GRAY)
 		return;
@@ -114,7 +114,7 @@ static void drawGlyph(const FT_Bitmap *bmp, tex *target, int _x, int _y)
 		uint32_t *rowPtr = &target->data[y * target->width + _x];
 		for(int x = _x; x < _x + bmp->width; x++, bmpPtr++, rowPtr++)
 		{
-			if(x > target->width || x < 0)
+			if(x > target->width || x < 0 || y < top || y > bottom)
 				continue;
 
 			if(*bmpPtr > 0)
@@ -126,6 +126,11 @@ static void drawGlyph(const FT_Bitmap *bmp, tex *target, int _x, int _y)
 			}
 		}
 	}
+}
+
+static void drawGlyph(const FT_Bitmap *bmp, tex *target, int _x, int _y)
+{
+	drawGlyphBound(bmp, target, _x, _y, 0, target->height);
 }
 
 static inline void resizeFont(const font *f, float sz)
@@ -160,6 +165,11 @@ static inline FT_GlyphSlot loadGlyph(const uint32_t c, const font *f, FT_Int32 f
 }
 
 void drawText(const char *str, tex *target, const font *f, float x, float y, float sz, clr c)
+{
+	drawTextBound(str, target, f, x, y, sz, c, 0, target->height);
+}
+
+void drawTextBound(const char *str, tex *target, const font *f, float x, float y, float sz, clr c, int top, int bottom)
 {
 	float tmpX = x;
 	uint32_t tmpChr = 0;
@@ -206,7 +216,7 @@ void drawText(const char *str, tex *target, const font *f, float x, float y, flo
 		if(slot != NULL)
 		{
 			float drawY = y + (sz - slot->bitmap_top);
-			drawGlyph(&slot->bitmap, target, tmpX + slot->bitmap_left, drawY);
+			drawGlyphBound(&slot->bitmap, target, tmpX + slot->bitmap_left, drawY, top, bottom);
 
 			tmpX += slot->advance.x >> 6;
 		}

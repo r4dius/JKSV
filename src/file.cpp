@@ -36,10 +36,21 @@ namespace fs
 {
 	void init()
 	{
-		mkdir("sdmc:/JKSV", 777);
-		chdir("sdmc:/JKSV");
+		if(isDir("sdmc:/JKSV"))
+		{
+			chdir("sdmc:/JKSV");
 
-		wd = "sdmc:/JKSV/";
+			wd = "sdmc:/JKSV/";
+		}
+		else
+		{
+			mkdir("sdmc:/switch", 777);
+			mkdir("sdmc:/switch/JKSV", 777);
+			mkdir("sdmc:/switch/JKSV/saves", 777);
+			chdir("sdmc:/switch/JKSV/saves");
+
+			wd = "sdmc:/switch/JKSV/saves/";
+		}
 	}
 
 	bool mountSave(data::user& usr, data::titledata& open)

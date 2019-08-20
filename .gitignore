@@ -1,4 +1,5 @@
 build/
+temp/
 *.cbp
 *.layout
 *.zip
@@ -7,4 +8,5 @@ JKSV.nacp
 JKSV.nro
 JKSV.nso
 JKSV.pfs0
+nxlink.*
 Stripper.exe

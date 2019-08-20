@@ -8,6 +8,7 @@
 #include "data.h"
 #include "ui.h"
 #include "file.h"
+#include "snd.h"
 
 extern "C"
 {
@@ -39,6 +40,7 @@ int main(int argc, const char *argv[])
 {
 	fs::init();
 	graphicsInit(1280, 720);
+	soundInit();
 	data::loadDataInfo();
 	ui::init();
 	//built with 'make debug CFLAGS:=-D__debug__'
@@ -69,5 +71,6 @@ int main(int argc, const char *argv[])
 #endif
 	ui::exit();
 	data::exit();
+	soundExit();
 	graphicsExit();
 }

@@ -73,6 +73,7 @@ inline uint32_t clrGetColor(const clr c)
 
 //Draws text using f
 void drawText(const char *str, tex *target, const font *f, float x, float y, float sz, clr c);
+void drawTextBound(const char *str, tex *target, const font *f, float x, float y, float sz, clr c, int top, int bottom);
 
 //Draws text wrapping lines
 void drawTextWrap(const char *str, tex *target, const font *f, float x, float y, float sz, clr c, int maxWidth);
