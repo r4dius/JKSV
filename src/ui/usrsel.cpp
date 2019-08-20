@@ -216,7 +216,7 @@ namespace ui
 				if(usrNav[i].getEvent() == BUTTON_PRESSED)
 				{
 					if(!touching)
-						sndTick();
+						sndPlay(SND_TICK);
 					touching = true;
 				}
 			}
@@ -236,7 +236,7 @@ namespace ui
 				}
 				else if(selButtons[i].getEvent() == BUTTON_RELEASED)
 				{
-					sndTouchout();
+					sndPlay(SND_TOUCHOUT);
 					if(!swiping)
 					{
 						if(start + i < (int)list_size)
@@ -278,7 +278,7 @@ namespace ui
 				else if(selButtons[i].getEvent() == BUTTON_PRESSED)
 				{
 					if(!touching)
-						sndTick();
+						sndPlay(SND_TICK);
 					touching = true;
 				}
 				else
@@ -318,12 +318,12 @@ namespace ui
 					if(selected < (int)list_size - 1)
 					{
 						selected++;
-						sndTick();
+						sndPlay(SND_TICK);
 					}
 					else if(!holding)
 					{
 						holding = true;
-						sndBounds();
+						sndPlay(SND_BOUNDS);
 					}
 
 					if(selected >= (int)start + 18)
@@ -341,12 +341,12 @@ namespace ui
 					if(selected > 0)
 					{
 						selected--;
-						sndTick();
+						sndPlay(SND_TICK);
 					}
 					else if(!holding)
 					{
 						holding = true;
-						sndBounds();
+						sndPlay(SND_BOUNDS);
 					}
 
 					if(selected - 6 < (int)start)
@@ -362,11 +362,11 @@ namespace ui
 				else if(down & KEY_UP || ((held & KEY_UP) && move))
 				{
 					if(selected > 0)
-						sndTick();
+						sndPlay(SND_TICK);
 					else if(!holding)
 					{
 						holding = true;
-						sndBounds();
+						sndPlay(SND_BOUNDS);
 					}
 
 					selected -= 6;
@@ -386,11 +386,11 @@ namespace ui
 				else if(down & KEY_DOWN || ((held & KEY_DOWN) && move))
 				{
 					if(selected < (int)list_size - 1)
-						sndTick();
+						sndPlay(SND_TICK);
 					else if(!holding)
 					{
 						holding = true;
-						sndBounds();
+						sndPlay(SND_BOUNDS);
 					}
 
 					selected += 6;
@@ -408,18 +408,18 @@ namespace ui
 				{
 					data::curUser = data::users[selected];
 					mstate = TTL_SEL;
-					sndSelect();
+					sndPlay(SND_SELECT);
 					break;
 				}
 				else if(down & KEY_Y || usrNav[1].getEvent() == BUTTON_RELEASED)
 				{
-					sndPopup();
+					sndPlay(SND_POPUP);
 					if(confirm("Are you sure you want to backup all users saves?", "Backup"))
 					{
-						sndLoading();
+						sndPlay(SND_LOADING);
 						for(unsigned i = 0; i < list_size; i++)
 							fs::dumpAllUserSaves(data::users[i]);
-						sndBing();
+						sndPlay(SND_BING);
 					}
 					break;
 				}

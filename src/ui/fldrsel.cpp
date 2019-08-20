@@ -223,7 +223,7 @@ namespace ui
 				if(fldNav[i].getEvent() == BUTTON_PRESSED)
 				{
 					if(!touching)
-						sndTick();
+						sndPlay(SND_TICK);
 					touching = true;
 				}
 			}
@@ -239,7 +239,7 @@ namespace ui
 				}
 				else if(optButtons[i].getEvent() == BUTTON_RELEASED && i + start < (int)opt.size())
 				{
-					sndTouchout();
+					sndPlay(SND_TOUCHOUT);
 					selected = i + start;
 					selRectY = y + (i * 71);
 					title = opt[selected].c_str();
@@ -249,7 +249,7 @@ namespace ui
 				else if(optButtons[i].getEvent() == BUTTON_PRESSED)
 				{
 					if(!touching)
-						sndList();
+						sndPlay(SND_LIST);
 					touching = true;
 				}
 				else
@@ -264,14 +264,14 @@ namespace ui
 				optButtons[i].update(p);
 				if(optButtons[i].getEvent() == BUTTON_RELEASED)
 				{
-					sndTouchout();
+					sndPlay(SND_TOUCHOUT);
 					start--, selected = start;
 					return;
 				}
 				else if(optButtons[i].getEvent() == BUTTON_PRESSED)
 				{
 					if(!touching)
-						sndList();
+						sndPlay(SND_LIST);
 					touching = true;
 				}
 			}
@@ -288,9 +288,9 @@ namespace ui
 			if((down & KEY_UP) || ((held & KEY_UP) && move))
 			{
 				if(list_size == 0)
-					sndBounds();
+					sndPlay(SND_BOUNDS);
 				else
-					sndList();
+					sndPlay(SND_LIST);
 				selected--;
 				if(selected < 0)
 					selected = list_size;
@@ -306,9 +306,9 @@ namespace ui
 			else if((down & KEY_DOWN) || ((held & KEY_DOWN) && move))
 			{
 				if(list_size == 0)
-					sndBounds();
+					sndPlay(SND_BOUNDS);
 				else
-					sndList();
+					sndPlay(SND_LIST);
 				selected++;
 				if(selected > list_size)
 					selected = 0;
@@ -325,10 +325,10 @@ namespace ui
 				if(selected > list_size)
 				{
 					selected = list_size;
-					sndBounds();
+					sndPlay(SND_BOUNDS);
 				}
 				else
-					sndList();
+					sndPlay(SND_LIST);
 
 				if((selected - 6) > start)
 					start = selected - 6;
@@ -340,10 +340,10 @@ namespace ui
 				if(selected < 0)
 				{
 					selected = 0;
-					sndBounds();
+					sndPlay(SND_BOUNDS);
 				}
 				else
-					sndList();
+					sndPlay(SND_LIST);
 
 				if(selected < start)
 					start = selected;
@@ -354,7 +354,7 @@ namespace ui
 				if(selected == 0)
 				{
 					rescan = true;
-					sndSelect();
+					sndPlay(SND_SELECT);
 					std::string folder;
 					//Add back 3DS shortcut thing
 					if(held & KEY_R)
@@ -377,26 +377,26 @@ namespace ui
 					}
 					if(!folder.empty())
 					{
-						sndLoading();
+						sndPlay(SND_LOADING);
 						std::string path = util::getTitleDir(data::curUser, data::curData) + "/" + folder;
 						mkdir(path.c_str(), 777);
 						path += "/";
 
 						std::string root = "sv:/";
 						fs::copyDirToDir(root, path);
-						sndBing();
+						sndPlay(SND_BING);
 					}
 				}
 				else
 				{
-					sndPopup();
+					sndPlay(SND_POPUP);
 					std::string scanPath = util::getTitleDir(data::curUser, data::curData);
 					fs::dirList list(scanPath);
 
 					std::string folderName = list.getItem(selected - 1);
 					if(confirm("Are you sure you want to overwrite \"" + util::cutStr(folderName, 690, 24) + "\"?", "Overwrite"))
 					{
-						sndLoading();
+						sndPlay(SND_LOADING);
 						rescan = true;
 						std::string toPath = util::getTitleDir(data::curUser, data::curData) + folderName + "/";
 						//Delete and recreate
@@ -406,14 +406,14 @@ namespace ui
 						std::string root = "sv:/";
 
 						fs::copyDirToDir(root, toPath);
-						sndBing();
+						sndPlay(SND_BING);
 					}
 				}
 				break;
 			}
 			else if(down & KEY_B || fldNav[1].getEvent() == BUTTON_RELEASED)
 			{
-				sndBack();
+				sndPlay(SND_BACK);
 				start = 0;
 				selected = 0;
 				rescan = true;
@@ -423,7 +423,7 @@ namespace ui
 			}
 			else if(selected > 0 && (down & KEY_X || fldNav[2].getEvent() == BUTTON_RELEASED))
 			{
-				sndPopup();
+				sndPlay(SND_POPUP);
 				std::string scanPath = util::getTitleDir(data::curUser, data::curData);
 				fs::dirList list(scanPath);
 
@@ -438,7 +438,7 @@ namespace ui
 			}
 			else if(selected > 0 && (down & KEY_Y || fldNav[3].getEvent() == BUTTON_RELEASED))
 			{
-				sndPopup();
+				sndPlay(SND_POPUP);
 				if(data::curData.getType() != FsSaveDataType_SystemSaveData)
 				{
 					std::string scanPath = util::getTitleDir(data::curUser, data::curData);
@@ -447,7 +447,7 @@ namespace ui
 					std::string folderName = list.getItem(selected - 1);
 					if(confirm("Are you sure you want to restore \"" + util::cutStr(folderName, 690, 24) + "\"?", "Restore"))
 					{
-						sndLoading();
+						sndPlay(SND_LOADING);
 						std::string fromPath = util::getTitleDir(data::curUser, data::curData) + folderName + "/";
 						std::string root = "sv:/";
 
@@ -455,7 +455,7 @@ namespace ui
 						fsdevCommitDevice("sv");
 
 						fs::copyDirToDirCommit(fromPath, root, "sv");
-						sndBing();
+						sndPlay(SND_BING);
 					}
 				}
 				else

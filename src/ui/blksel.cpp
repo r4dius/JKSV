@@ -231,7 +231,7 @@ namespace ui
 				if(blkNav[i].getEvent() == BUTTON_PRESSED)
 				{
 					if(!touching)
-						sndTick();
+						sndPlay(SND_TICK);
 					touching = true;
 				}
 			}
@@ -259,7 +259,7 @@ namespace ui
 				}
 				else if(selButtons[i].getEvent() == BUTTON_RELEASED)
 				{
-					sndTouchout();
+					sndPlay(SND_TOUCHOUT);
 					if(!swiping)
 					{
 						if(start + i < (int)list_size)
@@ -302,7 +302,7 @@ namespace ui
 				else if(selButtons[i].getEvent() == BUTTON_PRESSED)
 				{
 					if(!touching)
-						sndTick();
+						sndPlay(SND_TICK);
 					touching = true;
 				}
 				else
@@ -357,12 +357,12 @@ namespace ui
 					if(selected < (int)list_size - 1)
 					{
 						selected++;
-						sndTick();
+						sndPlay(SND_TICK);
 					}
 					else if(!holding)
 					{
 						holding = true;
-						sndBounds();
+						sndPlay(SND_BOUNDS);
 					}
 
 					if(selected >= (int)start + 18)
@@ -380,12 +380,12 @@ namespace ui
 					if(selected > 0)
 					{
 						selected--;
-						sndTick();
+						sndPlay(SND_TICK);
 					}
 					else if(!holding)
 					{
 						holding = true;
-						sndBounds();
+						sndPlay(SND_BOUNDS);
 					}
 
 					if(selected - 6 < (int)start)
@@ -401,11 +401,11 @@ namespace ui
 				else if(down & KEY_UP || ((held & KEY_UP) && move))
 				{
 					if(selected > 0)
-						sndTick();
+						sndPlay(SND_TICK);
 					else if(!holding)
 					{
 						holding = true;
-						sndBounds();
+						sndPlay(SND_BOUNDS);
 					}
 
 					selected -= 6;
@@ -425,11 +425,11 @@ namespace ui
 				else if(down & KEY_DOWN || ((held & KEY_DOWN) && move))
 				{
 					if(selected < (int)list_size - 1)
-						sndTick();
+						sndPlay(SND_TICK);
 					else if(!holding)
 					{
 						holding = true;
-						sndBounds();
+						sndPlay(SND_BOUNDS);
 					}
 
 					selected += 6;
@@ -445,7 +445,7 @@ namespace ui
 				}
 				else if(down & KEY_A || blkNav[0].getEvent() == BUTTON_RELEASED || retEvent == MENU_DOUBLE_REL)
 				{
-					sndSelect();
+					sndPlay(SND_SELECT);
 					data::curData = data::curUser.blktitles[selected];
 					if(fs::mountSave(data::curUser, data::curData))
 					{
@@ -460,7 +460,7 @@ namespace ui
 				}
 				else if(down & KEY_X || blkNav[2].getEvent() == BUTTON_RELEASED)
 				{
-					sndSelect();
+					sndPlay(SND_SELECT);
 					data::blacklistRemove(data::curUser, data::curUser.blktitles[selected]);
 					// deleting last icon
 					if((unsigned)selected == list_size - 1)
@@ -480,19 +480,19 @@ namespace ui
 				}
 				else if(down & KEY_Y || blkNav[3].getEvent() == BUTTON_RELEASED)
 				{
-					sndPopup();
+					sndPlay(SND_POPUP);
 					if(confirm("Are you sure you want to backup all saves from blacklisted games?", "Backup"))
 					{
-						sndLoading();
+						sndPlay(SND_LOADING);
 						fs::dumpAllUserSavesBlacklisted(data::curUser);
-						sndBing();
+						sndPlay(SND_BING);
 					}
 					break;
 				}
 			}
 			if(down & KEY_B || blkNav[1].getEvent() == BUTTON_RELEASED)
 			{
-				sndBack();
+				sndPlay(SND_BACK);
 				start = 0;
 				selected = 0;
 				maxTitles = 18;

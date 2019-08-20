@@ -65,7 +65,7 @@ namespace ui
 		if(isOver() && prev.px == 0 && prev.py == 0)
 		{
 			if(!pressed)
-				sndList();
+				sndPlay(SND_LIST);
 			pressed = true;
 			retEvent = BUTTON_PRESSED;
 		}
@@ -197,7 +197,7 @@ namespace ui
 			{
 				if(down & KEY_A || down & KEY_B || ok.getEvent() == BUTTON_RELEASED)
 				{
-					sndSelect();
+					sndPlay(SND_SELECT);
 					break;
 				}
 			}
@@ -264,14 +264,14 @@ namespace ui
 					else
 						ret = true;
 
-					sndSelect();
+					sndPlay(SND_SELECT);
 					break;
 				}
 				else if(down & KEY_B || no.getEvent() == BUTTON_RELEASED)
 				{
 					ret = false;
 
-					sndSelect();
+					sndPlay(SND_SELECT);
 					break;
 				}
 				else if(down & KEY_LEFT || no.getEvent() == BUTTON_RELEASED)
@@ -279,23 +279,23 @@ namespace ui
 					if(selected == 1)
 					{
 						selected = 0;
-						sndTick();
+						sndPlay(SND_TICK);
 					}
 					else
-						sndBounds();
+						sndPlay(SND_BOUNDS);
 				}
 				else if(down & KEY_RIGHT || yes.getEvent() == BUTTON_RELEASED)
 				{
 					if(selected == 0)
 					{
 						selected = 1;
-						sndTick();
+						sndPlay(SND_TICK);
 					}
 					else
-						sndBounds();
+						sndPlay(SND_BOUNDS);
 				}
 				else if(down & KEY_UP || down & KEY_DOWN)
-					sndBounds();
+					sndPlay(SND_BOUNDS);
 			}
 
 			if(clrAdd)
