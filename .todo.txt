@@ -1,3 +1,4 @@
 - check blacklist not in console
 - add some top right info (time / battery)
 - some cleaning
+- confirm overwrite

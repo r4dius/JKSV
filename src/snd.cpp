@@ -1,19 +1,16 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <malloc.h>
-#include <inttypes.h>
 #include <switch.h>
 
 #include "snd.h"
 #include "snd_back_bin.h"
 #include "snd_bing_bin.h"
+#include "snd_bounds_bin.h"
 #include "snd_list_bin.h"
 #include "snd_loading_bin.h"
 #include "snd_popup_bin.h"
 #include "snd_select_bin.h"
 #include "snd_tick_bin.h"
-#include "snd_bounds_bin.h"
 #include "snd_touchout_bin.h"
 
 Result audrenRes;
@@ -48,8 +45,8 @@ void soundInit()
 		snd_loading_bin,
 		snd_popup_bin,
 		snd_select_bin,
-		snd_bounds_bin,
-		snd_bounds_bin,
+		snd_tick_bin,
+		snd_touchout_bin,
 	};
 	
 	u32 snd_bin_size[9] =
@@ -61,8 +58,8 @@ void soundInit()
 		snd_loading_bin_size,
 		snd_popup_bin_size,
 		snd_select_bin_size,
-		snd_bounds_bin_size,
-		snd_bounds_bin_size,
+		snd_tick_bin_size,
+		snd_touchout_bin_size,
 	};
 
 	for(int i = 0; i < 9; i++) {
@@ -109,11 +106,11 @@ void soundInit()
 	}
 }
 
-void sndPlay(int id)
+void soundPlay(int soundId)
 {
-	audrvMemPoolAttach(&drv, id);
+	audrvMemPoolAttach(&drv, soundId);
 	audrvVoiceStop(&drv, 0);
-	audrvVoiceAddWaveBuf(&drv, 0, &wavebuf[id]);
+	audrvVoiceAddWaveBuf(&drv, 0, &wavebuf[soundId]);
 	audrvVoiceStart(&drv, 0);
 	audrvUpdate(&drv);
 }

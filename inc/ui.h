@@ -1,11 +1,7 @@
 #ifndef UI_H
 #define UI_H
 
-#include <vector>
-#include <string>
-
 #include "data.h"
-#include "gfx.h"
 
 //ui headers - split up to keep a bit more organized
 #include "miscui.h"

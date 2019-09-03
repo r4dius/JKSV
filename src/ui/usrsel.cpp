@@ -1,8 +1,3 @@
-#include <string>
-#include <fstream>
-#include <vector>
-#include <switch.h>
-
 #include "ui.h"
 #include "uiupdate.h"
 #include "file.h"
@@ -14,37 +9,34 @@ namespace ui
 {
 	void updateUserMenu(const uint64_t& down, const uint64_t& held, const touchPosition& p)
 	{
+		static std::vector<ui::button> selButtons;
+
 		//Static so they don't get reset every loop
 		//Where to start in titles, selected user
-		static int start = 0, selected = 0, maxTitles = 18, movespeed = 0;
-		static bool move = false;
+		static int start = 0, selected = 0, listShow = 18, moveSpeed = 0;
 
 		//Color shift for rect
 		static int clrSh = 0;
 		//Whether or not we're adding or subtracting from clrShft
 		static bool clrAdd = true;
 
-		std::vector<ui::button> selButtons;
 		static ui::touchTrack track;
-		unsigned x = 93, y = 187, j = 0, selY = 0;
+		unsigned x = 93, y = 187, tX = 0;
 		static unsigned tiX = 0, tiY = 0;
 
 		//Selected rectangle X and Y.
 		static unsigned selRectX = x, selRectY = y;
-		static std::string title = "";
-		static int retEvent = MENU_NOTHING;
+		std::string title = "";
+		int retEvent = MENU_NOTHING;
 
-		bool updatemenu = false;
 		static bool holding = false;
+		static bool moving = false;
 		static bool swiping = false;
 		static bool touching = false;
+		//Limit redraw of unchanged stuff
+		static bool updateMenu = true;
 
-		usrNav.clear();
-
-		unsigned list_size = data::users.size();
-
-		if(maxTitles == 24)
-			y = 3;
+		unsigned listSize = data::users.size();
 		
 		if(start < 0)
 			start = 0;
@@ -52,17 +44,29 @@ namespace ui
 		if(selected < 0)
 			selected = 0;
 
-		unsigned endUser = start + maxTitles;
-		if(start + maxTitles > (int)list_size)
-			endUser = list_size;
+		unsigned listLast = start + listShow;
+		if(start + listShow > (int)listSize)
+			listLast = listSize;
 
-		for(unsigned i = start; i < endUser; y += 184, j++)
+		if(start > 0)
+		{
+			for(unsigned i = 0; i < 6; i++, tX += 184)
+			{
+				if(updateMenu)
+				{
+					data::users[i].drawResize(tX, y, 174, 89);
+					texDrawLimit(iconShadow, frameBuffer, tX - 5, 84);
+				}
+			}
+		}
+
+		for(unsigned i = start, j = 0; i < listLast; y += 184, j++)
 		{
 			unsigned endRow = i + 6;
 			for(unsigned tX = x; i < endRow; i++, tX += 184)
 			{
 				unsigned selH = 174;
-				if(i == endUser)
+				if(i == listLast)
 					break;
 
 				if((int)i == selected)
@@ -76,358 +80,372 @@ namespace ui
 					title = data::users[selected].getUsername();
 					tiX = tX, tiY = y;
 				}
-				data::users[i].drawResize(tX, y, 174, 174);
-				texDrawLimit(iconShadow, frameBuffer, tX - 5, y - 5);
-				selY = y;
-				if(maxTitles == 24) {
-					if(j < 1) {
-						selY = y + 85;
-						selH = 89;
-					}
-					if(j > 2)
-						selH = 92;
+
+				if(updateMenu)
+				{
+					data::users[i].drawResize(tX, y, 174, 174);
+					texDraw(iconShadow, frameBuffer, tX - 5, y - 5);
 				}
-				else
-					if(j > 1)
-						selH = 92;
-				ui::button newSelButton("", tX, selY, 174, selH);
+
+				ui::button newSelButton("", tX, y, 174, selH);
 				selButtons.push_back(newSelButton);
 			}
 		}
+				// selY = y;
+				// if(listShow == 24) {
+					// if(j < 1) {
+						// selY = y + 85;
+						// selH = 89;
+					// }
+					// if(j > 2)
+						// selH = 92;
+				// }
+				// else
+					// if(j > 1)
+						// selH = 92;
 
-		unsigned endX = 1218, butSize = 0;
-		std::string butTxt = "Select";
-		butSize = textGetWidth(butTxt.c_str(), shared, 17.5);
-		drawText(butTxt.c_str(), frameBuffer, shared, endX -= butSize, 675.5, 17.5, mnutxtClr);
-		texDraw(buttonA, frameBuffer, endX -= 37, 672);
-		ui::button usrSel("", endX, 656, butSize + 38, 64);
-		usrNav.push_back(usrSel);
-		endX -= 41;
-		butTxt = "Backup All";
-		butSize = textGetWidth(butTxt.c_str(), shared, 17.5);
-		drawText(butTxt.c_str(), frameBuffer, shared, endX -= butSize, 675.5, 17.5, mnutxtClr);
-		texDraw(buttonY, frameBuffer, endX -= 37, 672);
-		ui::button usrDmp("", endX, 656, butSize + 38, 64);
-		usrNav.push_back(usrDmp);
-		endX -= 41;
-		butTxt = "Exit";
-		butSize = textGetWidth(butTxt.c_str(), shared, 17.5);
-		drawText(butTxt.c_str(), frameBuffer, shared, endX -= butSize, 675.5, 17.5, mnutxtClr);
-		texDraw(buttonP, frameBuffer, endX -= 37, 672);
-		ui::button usrExt("", endX, 656, butSize + 38, 64);
-		usrNav.push_back(usrExt);
-
-		memcpy(screen->data, frameBuffer->data, frameBuffer->size * 4);
-
-		while(true)
+		if(updateMenu)
 		{
-			hidScanInput();
-			uint64_t down = hidKeysDown(CONTROLLER_P1_AUTO);
-			uint64_t held = hidKeysHeld(CONTROLLER_P1_AUTO);
-			touchPosition p;
-			hidTouchRead(&p, 0);
+			updateMenu = false;
+			usrNav.clear();
 
-			if(clrAdd)
+			unsigned endX = 1218, butSize = 0;
+			std::string butTxt = "Select";
+			butSize = textGetWidth(butTxt.c_str(), shared, 17.5);
+			drawText(butTxt.c_str(), frameBuffer, shared, endX -= butSize, 675.5, 17.5, mnutxtClr);
+			texDraw(buttonA, frameBuffer, endX -= 37, 672);
+			ui::button usrSel("", endX, 656, butSize + 38, 64);
+			usrNav.push_back(usrSel);
+			endX -= 41;
+			butTxt = "Backup All";
+			butSize = textGetWidth(butTxt.c_str(), shared, 17.5);
+			drawText(butTxt.c_str(), frameBuffer, shared, endX -= butSize, 675.5, 17.5, mnutxtClr);
+			texDraw(buttonY, frameBuffer, endX -= 37, 672);
+			ui::button usrDmp("", endX, 656, butSize + 38, 64);
+			usrNav.push_back(usrDmp);
+			endX -= 41;
+			butTxt = "Exit";
+			butSize = textGetWidth(butTxt.c_str(), shared, 17.5);
+			drawText(butTxt.c_str(), frameBuffer, shared, endX -= butSize, 675.5, 17.5, mnutxtClr);
+			texDraw(buttonP, frameBuffer, endX -= 37, 672);
+			ui::button usrExt("", endX, 656, butSize + 38, 64);
+			usrNav.push_back(usrExt);
+
+			// capture screen before adding "selected" stuff
+			memcpy(screen->data, frameBuffer->data, frameBuffer->size * 4);
+		}
+
+		if(clrAdd)
+		{
+			clrSh += 5;
+			if(clrSh > 100)
 			{
-				clrSh += 5;
-				if(clrSh > 100)
-				{
-					if(clrSh > 254)
-						clrSh = 254;
+				if(clrSh > 254)
+					clrSh = 254;
 
-					clrAdd = false;
-				}
+				clrAdd = false;
 			}
-			else
+		}
+		else
+		{
+			clrSh -= 10;
+			if(clrSh <= 0)
 			{
-				clrSh -= 10;
-				if(clrSh <= 0)
-				{
-					if(clrSh < 0)
-						clrSh = 0;
+				if(clrSh < 0)
+					clrSh = 0;
 
-					clrAdd = true;
-				}
+				clrAdd = true;
 			}
+		}
 
-			if((held & KEY_RIGHT) || (held & KEY_LEFT) || (held & KEY_UP) || (held & KEY_DOWN))
-				movespeed++;
-			else
-			{
-				holding = false;
-				movespeed = 0;
-				move = false;
-			}
+		if((held & KEY_RIGHT) || (held & KEY_LEFT) || (held & KEY_UP) || (held & KEY_DOWN))
+			moveSpeed++;
+		else
+		{
+			holding = false;
+			moveSpeed = 0;
+			moving = false;
+		}
 
-			if(movespeed >= 10)
-			{
-				move = true;
-				movespeed = 12;
-			} else move = false;
+		if(moveSpeed >= 10)
+		{
+			moving = true;
+			if(moveSpeed > 11)
+				moveSpeed = 10;
+		}
+		else
+			moving = false;
 
-			//Update touchtracking
-			track.update(p, 6); 
-			switch(track.getEvent()) 
-			{
-				case TRACK_SWIPE_UP:
-					if((maxTitles == 18 && start + 12 < (int)list_size) || start + 18 < (int)list_size)
-					{
-						swiping = true;
-						selected += 6;
-						if(selected > (int)list_size - 1)
-							selected = list_size - 1;
-
-						if(maxTitles == 24)
-							start += 6;
-
-						if((int)list_size > 12)
-							maxTitles = 24;
-
-						updatemenu = true;
-						return;
-					}
-					break;
-
-				case TRACK_SWIPE_DOWN:
-					if(maxTitles != 18)
-					{
-						swiping = true;
-						selected -= 6;
-						if(selected < 0)
-							selected = 0;
-
-						start -= 6;
-						if(start < 0)
-						{
-							start = 0;
-							maxTitles = 18;
-						}
-
-						updatemenu = true;
-						return;
-					}
-					break;
-			}
-
-			//Update nav
-			for(unsigned i = 0; i < usrNav.size(); i++)
-			{
-				usrNav[i].update(p);
-				if(usrNav[i].getEvent() == BUTTON_PRESSED)
+		//Update touchtracking
+		track.update(p, 6); 
+		switch(track.getEvent()) 
+		{
+			case TRACK_SWIPE_UP:
+				if((listShow == 18 && start + 12 < (int)listSize) || start + 18 < (int)listSize)
 				{
-					if(!touching)
-						sndPlay(SND_TICK);
-					touching = true;
-				}
-			}
+					swiping = true;
+					selected += 6;
+					if(selected > (int)listSize - 1)
+						selected = listSize - 1;
 
-			//Update invisible buttons
-			for(int i = 0; (unsigned)i < endUser - start; i++)
-			{
-				selButtons[i].update(p);
-				if(i == selected - start && selButtons[i].getEvent() == BUTTON_RELEASED)
-				{
-					if(!swiping) {
-						data::curUser = data::users[selected];
-
-						retEvent = MENU_DOUBLE_REL;
-						break;
-					}
-				}
-				else if(selButtons[i].getEvent() == BUTTON_RELEASED)
-				{
-					sndPlay(SND_TOUCHOUT);
-					if(!swiping)
-					{
-						if(start + i < (int)list_size)
-							selected = start + i;
-
-						retEvent = MENU_NOTHING;
-						updatemenu = true;
-						
-						if(maxTitles == 24)
-						{
-							if(selected < start + 6)
-							{
-								start -= 6;
-								if(start < 0) {
-									start = 0;
-									maxTitles = 18;
-								}
-
-								updatemenu = true;
-								return;
-							}
-							else if(selected >= start + 18)
-							{
-								start += 6;
-
-								updatemenu = true;
-								return;
-							}
-						}
-						else if(selected >= start + 12)
-						{
-							maxTitles = 24;
-
-							updatemenu = true;
-							return;
-						}
-					}
-				}
-				else if(selButtons[i].getEvent() == BUTTON_PRESSED)
-				{
-					if(!touching)
-						sndPlay(SND_TICK);
-					touching = true;
-				}
-				else
-				{
-					retEvent = MENU_NOTHING;
-				}
-			}
-
-			if(hidTouchCount() <= 0)
-				touching = false;
-				
-			// reset swiping check
-			if(swiping && hidTouchCount() <= 0)
-				swiping = false;
-
-			gfxBeginFrame();
-			texDraw(screen, frameBuffer, 0, 0);
-			if(list_size > 0)
-			{
-				drawGlowButton(selRectX, selRectY, 174, 174, clrSh, BUTTON_ICON, 2);
-				drawTitlebox(title, tiX, tiY - 63, 48);
-			}
-			else
-			{
-				std::string message = "No user with saved game, try playing something and get back";
-				drawText(message.c_str(), frameBuffer, ui::shared, (1280 - textGetWidth(message.c_str(), ui::shared, 22)) / 2, 340, 22, mnutxtClr);
-			}
-			gfxEndFrame(ui::shared);
-
-			if(updatemenu == true)
-				break;
-
-			if(list_size > 0)
-			{
-				if(down & KEY_RIGHT || ((held & KEY_RIGHT) && move))
-				{
-					if(selected < (int)list_size - 1)
-					{
-						selected++;
-						sndPlay(SND_TICK);
-					}
-					else if(!holding)
-					{
-						holding = true;
-						sndPlay(SND_BOUNDS);
-					}
-
-					if(selected >= (int)start + 18)
+					if(listShow == 24)
 						start += 6;
 
-					if(start < 0)
-						start = 0;
+					if((int)listSize > 12)
+						listShow = 24;
 
-					if(selected == 12)
-						maxTitles = 24;
-					break;
+					updateMenu = true;
+					return;
 				}
-				else if(down & KEY_LEFT || ((held & KEY_LEFT) && move))
+				break;
+
+			case TRACK_SWIPE_DOWN:
+				if(listShow != 18)
 				{
-					if(selected > 0)
-					{
-						selected--;
-						sndPlay(SND_TICK);
-					}
-					else if(!holding)
-					{
-						holding = true;
-						sndPlay(SND_BOUNDS);
-					}
-
-					if(selected - 6 < (int)start)
-						start -= 6;
-
-					if(start < 0)
-						start = 0;
-
-					if(selected == 5)
-						maxTitles = 18;
-					break;
-				}
-				else if(down & KEY_UP || ((held & KEY_UP) && move))
-				{
-					if(selected > 0)
-						sndPlay(SND_TICK);
-					else if(!holding)
-					{
-						holding = true;
-						sndPlay(SND_BOUNDS);
-					}
-
+					swiping = true;
 					selected -= 6;
 					if(selected < 0)
 						selected = 0;
 
-					if(selected - 6 < start)
-						start -= 6;
-
+					start -= 6;
 					if(start < 0)
+					{
 						start = 0;
-
-					if(selected >= 0 && selected < 6)
-						maxTitles = 18;
-					break;
-				}
-				else if(down & KEY_DOWN || ((held & KEY_DOWN) && move))
-				{
-					if(selected < (int)list_size - 1)
-						sndPlay(SND_TICK);
-					else if(!holding)
-					{
-						holding = true;
-						sndPlay(SND_BOUNDS);
+						listShow = 18;
 					}
 
-					selected += 6;
-					if(selected > (int)list_size - 1)
-						selected = list_size - 1;
-
-					if(selected - start >= 18)
-						start += 6;
-
-					if(selected > 11 && selected < 18)
-						maxTitles = 24;
-					break;
+					updateMenu = true;
+					return;
 				}
-				else if(down & KEY_A || usrNav[0].getEvent() == BUTTON_RELEASED || retEvent == MENU_DOUBLE_REL)
-				{
-					data::curUser = data::users[selected];
-					mstate = TTL_SEL;
-					sndPlay(SND_SELECT);
-					break;
-				}
-				else if(down & KEY_Y || usrNav[1].getEvent() == BUTTON_RELEASED)
-				{
-					sndPlay(SND_POPUP);
-					if(confirm("Are you sure you want to backup all users saves?", "Backup"))
-					{
-						sndPlay(SND_LOADING);
-						for(unsigned i = 0; i < list_size; i++)
-							fs::dumpAllUserSaves(data::users[i]);
-						sndPlay(SND_BING);
-					}
+				break;
+		}
+
+		//Update nav
+		for(unsigned i = 0; i < usrNav.size(); i++)
+		{
+			usrNav[i].update(p);
+			if(usrNav[i].getEvent() == BUTTON_PRESSED)
+			{
+				if(!touching)
+					soundPlay(SND_TICK);
+				touching = true;
+			}
+		}
+
+		// draw captured screen so we can overlay "dynamic" stuff
+		texDraw(screen, frameBuffer, 0, 0);
+
+		//Update invisible buttons
+		for(int i = 0; (unsigned)i < listLast - start; i++)
+		{
+			selButtons[i].update(p);
+			if(i == selected - start && selButtons[i].getEvent() == BUTTON_RELEASED)
+			{
+				if(!swiping) {
+					retEvent = MENU_DOUBLE_REL;
 					break;
 				}
 			}
-			if(down & KEY_PLUS || usrNav[2].getEvent() == BUTTON_RELEASED)
+			else if(selButtons[i].getEvent() == BUTTON_RELEASED)
 			{
-				ui::finish = true;
-				break;
+				soundPlay(SND_TOUCHOUT);
+				if(!swiping)
+				{
+					if(start + i < (int)listSize)
+						selected = start + i;
+
+					retEvent = MENU_NOTHING;
+					
+					if(listShow == 24)
+					{
+						if(selected < start + 6)
+						{
+							start -= 6;
+							if(start < 0)
+							{
+								start = 0;
+								listShow = 18;
+							}
+
+							updateMenu = true;
+							return;
+						}
+						else if(selected >= start + 18)
+						{
+							start += 6;
+
+							updateMenu = true;
+							return;
+						}
+					}
+					else if(selected >= start + 12)
+					{
+						listShow = 24;
+
+						updateMenu = true;
+						return;
+					}
+				}
+			}
+			else if(selButtons[i].getEvent() == BUTTON_PRESSED)
+			{
+				selButtons[i].draw();
+			}
+			else
+			{
+				retEvent = MENU_NOTHING;
+			}
+		}
+
+		if(hidTouchCount() <= 0)
+			touching = false;
+
+		// reset swiping check
+		if(swiping && hidTouchCount() <= 0)
+			swiping = false;
+
+		if(listSize > 0)
+		{
+			drawGlowButton(selRectX, selRectY, 174, 174, clrSh, BUTTON_ICON, 2);
+			drawTitlebox(title, tiX, tiY - 63, 48);
+		}
+		else
+		{
+			std::string message = "No user with saved game, try playing something and get back";
+			drawText(message.c_str(), frameBuffer, ui::shared, (1280 - textGetWidth(message.c_str(), ui::shared, 22)) / 2, 340, 22, mnutxtClr);
+		}
+
+		if(listSize > 0)
+		{
+			if(down & KEY_RIGHT || ((held & KEY_RIGHT) && moving && moveSpeed >= 11))
+			{
+				if(selected < (int)listSize - 1)
+				{
+					selected++;
+					soundPlay(SND_TICK);
+				}
+				else if(!holding)
+				{
+					holding = true;
+					soundPlay(SND_BOUNDS);
+				}
+
+				if(selected >= (int)start + 18)
+				{
+					updateMenu = true;
+					start += 6;
+				}
+
+				if(start < 0)
+					start = 0;
+
+				if(selected == 12)
+				{
+					updateMenu = true;
+					listShow = 24;
+				}
+			}
+			else if(down & KEY_LEFT || ((held & KEY_LEFT) && moving && moveSpeed >= 11))
+			{
+				if(selected > 0)
+				{
+					selected--;
+					soundPlay(SND_TICK);
+				}
+				else if(!holding)
+				{
+					holding = true;
+					soundPlay(SND_BOUNDS);
+				}
+
+				if(selected - 6 < (int)start && start != 0)
+				{
+					updateMenu = true;
+					start -= 6;
+				}
+
+				if(start < 0)
+					start = 0;
+
+				if(selected == 5 && listShow != 18)
+				{
+					updateMenu = true;
+					listShow = 18;
+				}
+			}
+			else if(down & KEY_UP || ((held & KEY_UP) && moving && moveSpeed >= 11))
+			{
+				if(selected > 0)
+					soundPlay(SND_TICK);
+				else if(!holding)
+				{
+					holding = true;
+					soundPlay(SND_BOUNDS);
+				}
+
+				selected -= 6;
+				if(selected < 0)
+					selected = 0;
+
+				if(selected - 6 < start && start != 0)
+				{
+					updateMenu = true;
+					start -= 6;
+				}
+
+				if(start < 0)
+					start = 0;
+
+				if(selected >= 0 && selected < 6 && listShow != 18)
+				{
+					updateMenu = true;
+					listShow = 18;
+				}
+			}
+			else if(down & KEY_DOWN || ((held & KEY_DOWN) && moving && moveSpeed >= 11))
+			{
+				if(selected < (int)listSize - 1)
+					soundPlay(SND_TICK);
+				else if(!holding)
+				{
+					holding = true;
+					soundPlay(SND_BOUNDS);
+				}
+
+				selected += 6;
+				if(selected > (int)listSize - 1)
+					selected = listSize - 1;
+
+				if(selected - start >= 18)
+				{
+					updateMenu = true;
+					start += 6;
+				}
+
+				if(selected > 11 && selected < 18 && listShow != 24)
+				{
+					updateMenu = true;
+					listShow = 24;
+				}
+			}
+			else if(down & KEY_A || usrNav[0].getEvent() == BUTTON_RELEASED || retEvent == MENU_DOUBLE_REL)
+			{
+				updateMenu = true;
+				data::curUser = data::users[selected];
+				mstate = TTL_SEL;
+				soundPlay(SND_SELECT);
+			}
+			else if(down & KEY_Y || usrNav[1].getEvent() == BUTTON_RELEASED)
+			{
+				updateMenu = true;
+				soundPlay(SND_POPUP);
+				if(confirm("Are you sure you want to backup all users saves?", "Backup"))
+				{
+					soundPlay(SND_LOADING);
+					for(unsigned i = 0; i < listSize; i++)
+						fs::dumpAllUserSaves(data::users[i]);
+					soundPlay(SND_BING);
+				}
 			}
 		}
 	}

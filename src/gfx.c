@@ -1,17 +1,18 @@
 #include <switch.h>
-#include <stdio.h>
-#include <string.h>
-#include <malloc.h>
 #include <png.h>
 #include <jpeglib.h>
+#ifdef __debug__
 #include <time.h>
+#endif
 
 #include "gfx.h"
 
 tex *frameBuffer;
 clr textClr;
 
+#ifdef __debug__
 #define BILLION 1000000000L
+#endif
 
 static NWindow *window;
 static Framebuffer fb;
@@ -86,13 +87,13 @@ void gfxBeginFrame()
 
 void gfxEndFrame(const font *f)
 {
-/*
+#ifdef __debug__
 	uint64_t diff;
 	clock_gettime(CLOCK_MONOTONIC, &end);
 	diff = (BILLION * (end.tv_sec - start.tv_sec) + end.tv_nsec - start.tv_nsec) / 1000000;
 	sprintf(char_arr, "%llu ms\n", (long long unsigned int) diff);
 	drawText(char_arr, frameBuffer, f, 1200, 10, 14, clrCreateU32(0xFF464646));
-*/
+#endif
 	if(framestarted)
 	{
 		framebufferEnd(&fb);

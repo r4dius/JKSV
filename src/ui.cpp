@@ -1,15 +1,4 @@
-#include <string>
-#include <vector>
-#include <fstream>
-#include <cstdio>
-#include <cstring>
-#include <sys/stat.h>
-#include <switch.h>
-
-#include "ui.h"
-#include "gfx.h"
 #include "util.h"
-#include "file.h"
 
 #define VER_STRING "v. 01/08/2019"
 
@@ -78,7 +67,8 @@ namespace ui
 				divClr = clrCreateU32(0xFF2D2D2D);
 				sepClr = clrCreateU32(0xFFCDCDCD);
 				buttxtClr = clrCreateU32(0xFFF15230);
-				butbgovrClr = clrCreateU32(0x28FFFA00);
+				// butbgovrClr = clrCreateU32(0x28FFFA00);
+				butbgovrClr = clrCreateU32(0x26FFFF40);
 
 				tip = texLoadPNGFile("romfs:/img/mnu/tboxTipLght.png");
 				icn = texLoadPNGFile("romfs:/img/icn/icnDrk.png");

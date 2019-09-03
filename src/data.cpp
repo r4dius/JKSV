@@ -1,13 +1,7 @@
-#include <vector>
-#include <string>
 #include <cstring>
 #include <fstream>
 #include <algorithm>
-#include <cstdio>
-#include <switch.h>
 
-#include "data.h"
-#include "file.h"
 #include "util.h"
 
 //Sorts titles sort-of alphabetically

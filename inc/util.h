@@ -1,7 +1,6 @@
 #ifndef UTIL_H
 #define UTIL_H
 
-#include "data.h"
 #include "ui.h"
 #include "file.h"
 
@@ -36,4 +35,5 @@ namespace util
 	
 	std::string cutStr(const std::string& str, const unsigned& w, const int& fontSize);
 }
+
 #endif // UTIL_H

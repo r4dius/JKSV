@@ -1,11 +1,3 @@
-#include <string>
-#include <cstring>
-#include <vector>
-#include <fstream>
-#include <switch.h>
-
-#include "gfx.h"
-#include "data.h"
 #include "ui.h"
 #include "file.h"
 #include "snd.h"
@@ -58,7 +50,7 @@ int main(int argc, const char *argv[])
 		touchPosition p;
 		hidTouchRead(&p, 0);
 
-		if(ui::finish || down & KEY_PLUS)
+		if(down & KEY_PLUS || ui::finish)
 			break;
 		gfxBeginFrame();
 

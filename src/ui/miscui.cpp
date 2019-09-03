@@ -1,12 +1,10 @@
 #include <cstring>
 #include <math.h>
-#include <switch.h>
 
-#include "gfx.h"
 #include "ui.h"
 #include "miscui.h"
-#include "util.h"
 #include "snd.h"
+#include "util.h"
 
 namespace ui
 {
@@ -65,7 +63,7 @@ namespace ui
 		if(isOver() && prev.px == 0 && prev.py == 0)
 		{
 			if(!pressed)
-				sndPlay(SND_LIST);
+				soundPlay(SND_LIST);
 			pressed = true;
 			retEvent = BUTTON_PRESSED;
 		}
@@ -93,10 +91,9 @@ namespace ui
 
 	void button::draw()
 	{
-		if(pressed)
+		if(pressed && isOver())
 		{
 			drawRectAlpha(frameBuffer, x, y, w, h, butbgovrClr);
-			drawText(text.c_str(), frameBuffer, ui::shared, tx, ty, fontsize, buttxtClr);
 		}
 		else
 			drawText(text.c_str(), frameBuffer, ui::shared, tx, ty, fontsize, buttxtClr);
@@ -197,7 +194,7 @@ namespace ui
 			{
 				if(down & KEY_A || down & KEY_B || ok.getEvent() == BUTTON_RELEASED)
 				{
-					sndPlay(SND_SELECT);
+					soundPlay(SND_SELECT);
 					break;
 				}
 			}
@@ -264,14 +261,14 @@ namespace ui
 					else
 						ret = true;
 
-					sndPlay(SND_SELECT);
+					soundPlay(SND_SELECT);
 					break;
 				}
 				else if(down & KEY_B || no.getEvent() == BUTTON_RELEASED)
 				{
 					ret = false;
 
-					sndPlay(SND_SELECT);
+					soundPlay(SND_SELECT);
 					break;
 				}
 				else if(down & KEY_LEFT || no.getEvent() == BUTTON_RELEASED)
@@ -279,23 +276,23 @@ namespace ui
 					if(selected == 1)
 					{
 						selected = 0;
-						sndPlay(SND_TICK);
+						soundPlay(SND_TICK);
 					}
 					else
-						sndPlay(SND_BOUNDS);
+						soundPlay(SND_BOUNDS);
 				}
 				else if(down & KEY_RIGHT || yes.getEvent() == BUTTON_RELEASED)
 				{
 					if(selected == 0)
 					{
 						selected = 1;
-						sndPlay(SND_TICK);
+						soundPlay(SND_TICK);
 					}
 					else
-						sndPlay(SND_BOUNDS);
+						soundPlay(SND_BOUNDS);
 				}
 				else if(down & KEY_UP || down & KEY_DOWN)
-					sndPlay(SND_BOUNDS);
+					soundPlay(SND_BOUNDS);
 			}
 
 			if(clrAdd)
@@ -544,7 +541,7 @@ namespace ui
 		if (type == SCROLL_LIST)
 			y = 91 + step_h * start;
 		else
-			y = 91 + step_h * (start == 0 ? (maxTitles == 24 ? 1 : 0) : start / line_count + 1);
+			y = 91 + step_h * (start / line_count);
 
 		if(h + y > 553 + 91)
 			y = 553 + 91 - h;

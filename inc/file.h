@@ -1,12 +1,7 @@
 #ifndef FILE_H
 #define FILE_H
 
-#include <string>
-#include <vector>
-#include <switch.h>
 #include <dirent.h>
-
-#include "data.h"
 
 namespace fs
 {

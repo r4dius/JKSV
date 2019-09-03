@@ -1,11 +1,7 @@
-#include <string>
-#include <vector>
-#include <sys/stat.h>
-
 #include "ui.h"
 #include "uiupdate.h"
-#include "util.h"
 #include "snd.h"
+#include "util.h"
 
 extern std::vector<ui::button> fldNav;
 std::vector<ui::button> optButtons;
@@ -25,13 +21,12 @@ namespace ui
 
 	void updateFolderMenu(const uint64_t& down, const uint64_t& held, const touchPosition& p)
 	{
-		static int start = 0, selected = 0, movespeed = 0;
-		static bool move = false;
-		unsigned x = 470, y = 131, rW = 720;
-		static unsigned selRectX = x, selRectY = y;
-		static int fontSize = 19, retEvent = MENU_NOTHING;
-		static bool touching = false;
-		static bool rescan = true;
+		static bool updatemenu = true;
+
+		//Static so they don't get reset every loop
+		//Where to start in titles, selected user
+		static int start = 0, selected = 0, fontSize = 19, moveSpeed = 0;
+		static bool moving = false;
 
 		//Color shift for rect
 		static int clrSh = 0;
@@ -39,28 +34,32 @@ namespace ui
 		static bool clrAdd = true;
 
 		static ui::touchTrack track;
+		unsigned x = 470, y = 131, rW = 720;
+
+		//Selected rectangle X and Y.
+		static unsigned selRectX = x, selRectY = y;
 		static const char* title;
+		static int retEvent = MENU_NOTHING;
 
-		optButtons.clear();
+		static bool touching = false;
 
-		for(unsigned i = 0; i < 7; i++)
+		if(updatemenu)
 		{
-			//Init + push invisible options buttons
-			ui::button newOptButton("", x, y + i * 71, rW, 71);
-			optButtons.push_back(newOptButton);
-		}
-
-		if(start > 0)
-		{
-			ui::button newOptButton("", x, y - 42, rW, 42);
-			optButtons.push_back(newOptButton);
-		}
-
-		fldNav.clear();
-		if(rescan)
-		{
-			rescan = false;
+			optButtons.clear();
 			opt.clear();
+
+			for(unsigned i = 0; i < 7; i++)
+			{
+				//Init + push invisible options buttons
+				ui::button newOptButton("", x, y + i * 71, rW, 71);
+				optButtons.push_back(newOptButton);
+			}
+
+			if(start > 0)
+			{
+				ui::button newOptButton("", x, y - 42, rW, 42);
+				optButtons.push_back(newOptButton);
+			}
 
 			util::makeTitleDir(data::curUser, data::curData);
 			std::string scanPath = util::getTitleDir(data::curUser, data::curData);
@@ -88,115 +87,119 @@ namespace ui
 
 		if(start > 0) drawTextBound(opt[start - 1].c_str(), frameBuffer, shared, x + 15, y + 26 - 71, fontSize, mnutxtClr, 88, 647);
 
-		for(int i = start; i < length; i++)
+		if(updatemenu)
 		{
-			drawRect(frameBuffer, x, y - 1 + ((i - start) * 71), rW, 1, ui::sepClr);
-			
-			if((int)i == selected)
-			{
-				selRectX = x;
-				selRectY = y + ((i - start) * 71);
+			updatemenu = false;
 
-				title = opt[i].c_str();
+			for(int i = start; i < length; i++)
+			{
+				drawRect(frameBuffer, x, y - 1 + ((i - start) * 71), rW, 1, ui::sepClr);
+				
+				if((int)i == selected)
+				{
+					selRectX = x;
+					selRectY = y + ((i - start) * 71);
+
+					title = opt[i].c_str();
+				}
+
+				drawText(opt[i].c_str(), frameBuffer, shared, x + 15, (y + 26) + ((i - start) * 71), fontSize, mnutxtClr);
+
+				if(i != selected)
+					drawRect(frameBuffer, x, y - 1 + ((i - start +1) * 71), rW, 1, ui::sepClr);
 			}
 
-			drawText(opt[i].c_str(), frameBuffer, shared, x + 15, (y + 26) + ((i - start) * 71), fontSize, mnutxtClr);
+			data::curData.icon.drawResize(115, 130, 200, 200);
+			drawTextWrap(folderMenuInfo.c_str(), frameBuffer, ui::shared, 76, 359, 19, ui::mnutxtClr, 280);
 
-			if(i != selected)
-				drawRect(frameBuffer, x, y - 1 + ((i - start +1) * 71), rW, 1, ui::sepClr);
-		}
+			fldNav.clear();
 
-		data::curData.icon.drawResize(115, 130, 200, 200);
-		drawTextWrap(folderMenuInfo.c_str(), frameBuffer, ui::shared, 76, 359, 19, ui::mnutxtClr, 280);
-
-		unsigned endX = 1218, butSize = 0;
-		std::string butTxt = "Backup";
-		butSize = textGetWidth(butTxt.c_str(), shared, 17.5);
-		drawText(butTxt.c_str(), frameBuffer, shared, endX -= textGetWidth(butTxt.c_str(), shared, 17.5), 675.5, 17.5, mnutxtClr);
-		texDraw(buttonA, frameBuffer, endX -= 37, 672);
-		ui::button fldSel("", endX, 656, butSize + 38, 64);
-		fldNav.push_back(fldSel);
-		endX -= 41;
-		butTxt = "Back";
-		butSize = textGetWidth(butTxt.c_str(), shared, 17.5);
-		drawText(butTxt.c_str(), frameBuffer, shared, endX -= textGetWidth(butTxt.c_str(), shared, 17.5), 675.5, 17.5, mnutxtClr);
-		texDraw(buttonB, frameBuffer, endX -= 37, 672);
-		ui::button fldBck("", endX, 656, butSize + 38, 64);
-		fldNav.push_back(fldBck);
-		endX -= 41;
-		if(selected > 0)
-		{
-			butTxt = "Delete";
+			unsigned endX = 1218, butSize = 0;
+			std::string butTxt = "Backup";
 			butSize = textGetWidth(butTxt.c_str(), shared, 17.5);
 			drawText(butTxt.c_str(), frameBuffer, shared, endX -= textGetWidth(butTxt.c_str(), shared, 17.5), 675.5, 17.5, mnutxtClr);
-			texDraw(buttonX, frameBuffer, endX -= 37, 672);
-			ui::button fldDel("", endX, 656, butSize + 38, 64);
-			fldNav.push_back(fldDel);
+			texDraw(buttonA, frameBuffer, endX -= 37, 672);
+			ui::button fldSel("", endX - 20, 653, butSize + 78, 62);
+			fldNav.push_back(fldSel);
 			endX -= 41;
-			butTxt = "Restore";
+			butTxt = "Back";
 			butSize = textGetWidth(butTxt.c_str(), shared, 17.5);
 			drawText(butTxt.c_str(), frameBuffer, shared, endX -= textGetWidth(butTxt.c_str(), shared, 17.5), 675.5, 17.5, mnutxtClr);
-			texDraw(buttonY, frameBuffer, endX -= 37, 672);
-			ui::button fldRes("", endX, 656, butSize + 38, 64);
-			fldNav.push_back(fldRes);
+			texDraw(buttonB, frameBuffer, endX -= 37, 672);
+			ui::button fldBck("", endX - 20, 653, butSize + 78, 62);
+			fldNav.push_back(fldBck);
 			endX -= 41;
+			if(selected > 0)
+			{
+				butTxt = "Delete";
+				butSize = textGetWidth(butTxt.c_str(), shared, 17.5);
+				drawText(butTxt.c_str(), frameBuffer, shared, endX -= textGetWidth(butTxt.c_str(), shared, 17.5), 675.5, 17.5, mnutxtClr);
+				texDraw(buttonX, frameBuffer, endX -= 37, 672);
+				ui::button fldDel("", endX - 20, 653, butSize + 78, 62);
+				fldNav.push_back(fldDel);
+				endX -= 41;
+				butTxt = "Restore";
+				butSize = textGetWidth(butTxt.c_str(), shared, 17.5);
+				drawText(butTxt.c_str(), frameBuffer, shared, endX -= textGetWidth(butTxt.c_str(), shared, 17.5), 675.5, 17.5, mnutxtClr);
+				texDraw(buttonY, frameBuffer, endX -= 37, 672);
+				ui::button fldRes("", endX - 20, 653, butSize + 78, 62);
+				fldNav.push_back(fldRes);
+				endX -= 41;
+			}
+			butTxt = "Exit";
+			butSize = textGetWidth(butTxt.c_str(), shared, 17.5);
+			drawText(butTxt.c_str(), frameBuffer, shared, endX -= textGetWidth(butTxt.c_str(), shared, 17.5), 675.5, 17.5, mnutxtClr);
+			texDraw(buttonP, frameBuffer, endX -= 37, 672);
+			ui::button fldExt("", endX - 20, 653, butSize + 78, 62);
+			fldNav.push_back(fldExt);
+
+			drawScrollBar(start, 0, list_size, SCROLL_LIST);
+
+			// capture screen before adding "selected" stuff
+			memcpy(screen->data, frameBuffer->data, frameBuffer->size * 4);
 		}
-		butTxt = "Exit";
-		butSize = textGetWidth(butTxt.c_str(), shared, 17.5);
-		drawText(butTxt.c_str(), frameBuffer, shared, endX -= textGetWidth(butTxt.c_str(), shared, 17.5), 675.5, 17.5, mnutxtClr);
-		texDraw(buttonP, frameBuffer, endX -= 37, 672);
-		ui::button fldExt("", endX, 656, butSize + 38, 64);
-		fldNav.push_back(fldExt);
 
-		drawScrollBar(start, 0, list_size, SCROLL_LIST);
-
-		memcpy(screen->data, frameBuffer->data, frameBuffer->size * 4);
-
-		while(true)
+		if(clrAdd)
 		{
-			hidScanInput();
-			uint64_t down = hidKeysDown(CONTROLLER_P1_AUTO);
-			uint64_t held = hidKeysHeld(CONTROLLER_P1_AUTO);
-			touchPosition p;
-			hidTouchRead(&p, 0);
-
-			if(clrAdd)
+			clrSh += 5;
+			if(clrSh > 100)
 			{
-				clrSh += 5;
-				if(clrSh > 100)
-				{
-					if(clrSh > 254)
-						clrSh = 254;
+				if(clrSh > 254)
+					clrSh = 254;
 
-					clrAdd = false;
-				}
+				clrAdd = false;
 			}
-			else
+		}
+		else
+		{
+			clrSh -= 10;
+			if(clrSh <= 0)
 			{
-				clrSh -= 10;
-				if(clrSh <= 0)
-				{
-					if(clrSh < 0)
-						clrSh = 0;
+				if(clrSh < 0)
+					clrSh = 0;
 
-					clrAdd = true;
-				}
+				clrAdd = true;
 			}
+		}
 
-			if((held & KEY_RIGHT) || (held & KEY_LEFT) || (held & KEY_UP) || (held & KEY_DOWN))
-				movespeed++;
-			else
-			{
-				movespeed = 0;
-				move = false;
-			}
+		if((held & KEY_RIGHT) || (held & KEY_LEFT) || (held & KEY_UP) || (held & KEY_DOWN))
+			moveSpeed++;
+		else
+		{
+			moveSpeed = 0;
+			moving = false;
+		}
 
-			if(movespeed >= 10 && (((held & KEY_UP) && selected != 0) || ((held & KEY_DOWN) && selected != list_size)))
-			{
-				move = true;
-				movespeed = 12;
-			} else move = false;
+		if(moveSpeed >= 10 && (((held & KEY_UP) && selected != 0) || ((held & KEY_DOWN) && selected != list_size)))
+		{
+			moving = true;
+			moveSpeed = 12;
+		}
+		else
+			moving = false;
 
+		if(hidTouchCount() > 0)
+		{
 			//Update touchtracking
 			track.update(p, 3);
 			switch(track.getEvent())
@@ -206,14 +209,16 @@ namespace ui
 						start++, selected++;
 						return;
 					}
-					break;
+
+					updatemenu = true;
 
 				case TRACK_SWIPE_DOWN:
 					if(start - 1 >= 0) {
 						start--, selected--;
 						return;
 					}
-					break;
+
+					updatemenu = true;
 			}
 
 			//Update nav
@@ -223,7 +228,7 @@ namespace ui
 				if(fldNav[i].getEvent() == BUTTON_PRESSED)
 				{
 					if(!touching)
-						sndPlay(SND_TICK);
+						soundPlay(SND_TICK);
 					touching = true;
 				}
 			}
@@ -234,12 +239,14 @@ namespace ui
 				optButtons[i].update(p);
 				if(selected == i + start && optButtons[i].getEvent() == BUTTON_RELEASED)
 				{
+					updatemenu = true;
+
 					retEvent = MENU_DOUBLE_REL;
-					break;
+					return;
 				}
 				else if(optButtons[i].getEvent() == BUTTON_RELEASED && i + start < (int)opt.size())
 				{
-					sndPlay(SND_TOUCHOUT);
+					soundPlay(SND_TOUCHOUT);
 					selected = i + start;
 					selRectY = y + (i * 71);
 					title = opt[selected].c_str();
@@ -248,225 +255,231 @@ namespace ui
 				}
 				else if(optButtons[i].getEvent() == BUTTON_PRESSED)
 				{
-					if(!touching)
-						sndPlay(SND_LIST);
-					touching = true;
+					optButtons[i].draw();
 				}
 				else
 				{
 					retEvent = MENU_NOTHING;
 				}
 			}
+		}
 
-			if(start > 0)
+		if(start > 0)
+		{
+			int i = 7;
+			optButtons[i].update(p);
+			if(optButtons[i].getEvent() == BUTTON_RELEASED)
 			{
-				int i = 7;
-				optButtons[i].update(p);
-				if(optButtons[i].getEvent() == BUTTON_RELEASED)
-				{
-					sndPlay(SND_TOUCHOUT);
-					start--, selected = start;
-					return;
-				}
-				else if(optButtons[i].getEvent() == BUTTON_PRESSED)
-				{
-					if(!touching)
-						sndPlay(SND_LIST);
-					touching = true;
-				}
-			}
-
-			if(hidTouchCount() <= 0)
-				touching = false;
-
-			gfxBeginFrame();
-			texDraw(screen, frameBuffer, 0, 0);
-			drawGlowButton(selRectX, selRectY, rW, 70, clrSh, BUTTON_LIST, 0);
-			drawText(title, frameBuffer, shared, selRectX + 15, selRectY + 26, fontSize, mnutxtClr);
-			gfxEndFrame(ui::shared);
-
-			if((down & KEY_UP) || ((held & KEY_UP) && move))
-			{
-				if(list_size == 0)
-					sndPlay(SND_BOUNDS);
-				else
-					sndPlay(SND_LIST);
-				selected--;
-				if(selected < 0)
-					selected = list_size;
-
-				if((start > selected) && (start > 0))
-					start--;
-				if(list_size < 7)
-					start = 0;
-				if((selected - 6) > start)
-					start = selected - 6;
-				break;
-			}
-			else if((down & KEY_DOWN) || ((held & KEY_DOWN) && move))
-			{
-				if(list_size == 0)
-					sndPlay(SND_BOUNDS);
-				else
-					sndPlay(SND_LIST);
-				selected++;
-				if(selected > list_size)
-					selected = 0;
-
-				if((selected > (start + 6)) && ((start + 6) < list_size))
-					start++;
-				if(selected == 0)
-					start = 0;
-				break;
-			}
-			else if(down & KEY_RIGHT || ((held & KEY_RIGHT) && move))
-			{
-				selected += 6;
-				if(selected > list_size)
-				{
-					selected = list_size;
-					sndPlay(SND_BOUNDS);
-				}
-				else
-					sndPlay(SND_LIST);
-
-				if((selected - 6) > start)
-					start = selected - 6;
-				break;
-			}
-			else if(down & KEY_LEFT || ((held & KEY_LEFT) && move))
-			{
-				selected -= 6;
-				if(selected < 0)
-				{
-					selected = 0;
-					sndPlay(SND_BOUNDS);
-				}
-				else
-					sndPlay(SND_LIST);
-
-				if(selected < start)
-					start = selected;
-				break;
-			}
-			else if(down & KEY_A || fldNav[0].getEvent() == BUTTON_RELEASED || retEvent == MENU_DOUBLE_REL)
-			{
-				if(selected == 0)
-				{
-					rescan = true;
-					sndPlay(SND_SELECT);
-					std::string folder;
-					//Add back 3DS shortcut thing
-					if(held & KEY_R)
-						folder = data::curUser.getUsernameSafe() + " - " + util::getDateTime(util::DATE_FMT_YMD);
-					else if(held & KEY_L)
-						folder = data::curUser.getUsernameSafe() + " - " + util::getDateTime(util::DATE_FMT_YDM);
-					else if(held & KEY_ZL)
-						folder = data::curUser.getUsernameSafe() + " - " + util::getDateTime(util::DATE_FMT_HOYSTE);
-					else
-					{
-						const std::string dict[] =
-						{
-							util::getDateTime(util::DATE_FMT_YMD).c_str(),
-							util::getDateTime(util::DATE_FMT_YDM).c_str(),
-							util::getDateTime(util::DATE_FMT_HOYSTE).c_str(),
-							data::curUser.getUsernameSafe().c_str(),
-							data::curData.getTitle().length() < 24 ? data::curData.getTitleSafe() : util::generateAbbrev(data::curData)
-						};
-						folder = util::getStringInput(data::curUser.getUsernameSafe() + " - " + util::getDateTime(util::DATE_FMT_YDM), "Enter a folder name", 64, 5, dict);
-					}
-					if(!folder.empty())
-					{
-						sndPlay(SND_LOADING);
-						std::string path = util::getTitleDir(data::curUser, data::curData) + "/" + folder;
-						mkdir(path.c_str(), 777);
-						path += "/";
-
-						std::string root = "sv:/";
-						fs::copyDirToDir(root, path);
-						sndPlay(SND_BING);
-					}
-				}
-				else
-				{
-					sndPlay(SND_POPUP);
-					std::string scanPath = util::getTitleDir(data::curUser, data::curData);
-					fs::dirList list(scanPath);
-
-					std::string folderName = list.getItem(selected - 1);
-					if(confirm("Are you sure you want to overwrite \"" + util::cutStr(folderName, 690, 24) + "\"?", "Overwrite"))
-					{
-						sndPlay(SND_LOADING);
-						rescan = true;
-						std::string toPath = util::getTitleDir(data::curUser, data::curData) + folderName + "/";
-						//Delete and recreate
-						fs::delDir(toPath);
-						mkdir(toPath.c_str(), 777);
-
-						std::string root = "sv:/";
-
-						fs::copyDirToDir(root, toPath);
-						sndPlay(SND_BING);
-					}
-				}
-				break;
-			}
-			else if(down & KEY_B || fldNav[1].getEvent() == BUTTON_RELEASED)
-			{
-				sndPlay(SND_BACK);
-				start = 0;
-				selected = 0;
-				rescan = true;
-				fsdevUnmountDevice("sv");
-				mstate = prevState;
+				soundPlay(SND_TOUCHOUT);
+				start--, selected = start;
+				
+				updatemenu = true;
 				return;
 			}
-			else if(selected > 0 && (down & KEY_X || fldNav[2].getEvent() == BUTTON_RELEASED))
+			else if(optButtons[i].getEvent() == BUTTON_PRESSED)
 			{
-				sndPlay(SND_POPUP);
+				touching = true;
+			}
+		}
+
+		if(hidTouchCount() <= 0)
+			touching = false;
+
+		// draw captured screen so we can overlay "dynamic" stuff
+		texDraw(screen, frameBuffer, 0, 0);
+		drawGlowButton(selRectX, selRectY, rW, 70, clrSh, BUTTON_LIST, 0);
+		drawText(title, frameBuffer, shared, selRectX + 15, selRectY + 26, fontSize, mnutxtClr);
+
+		// if(updatemenu == true)
+			// return;
+
+		if((down & KEY_UP) || ((held & KEY_UP) && moving))
+		{
+			updatemenu = true;
+
+			if(list_size == 0)
+				soundPlay(SND_BOUNDS);
+			else
+				soundPlay(SND_LIST);
+			selected--;
+			if(selected < 0)
+				selected = list_size;
+
+			if((start > selected) && (start > 0))
+				start--;
+			if(list_size < 7)
+				start = 0;
+			if((selected - 6) > start)
+				start = selected - 6;
+		}
+		else if((down & KEY_DOWN) || ((held & KEY_DOWN) && moving))
+		{
+			updatemenu = true;
+
+			if(list_size == 0)
+				soundPlay(SND_BOUNDS);
+			else
+				soundPlay(SND_LIST);
+			selected++;
+			if(selected > list_size)
+				selected = 0;
+
+			if((selected > (start + 6)) && ((start + 6) < list_size))
+				start++;
+			if(selected == 0)
+				start = 0;
+		}
+		else if(down & KEY_RIGHT || ((held & KEY_RIGHT) && moving))
+		{
+			updatemenu = true;
+
+			selected += 6;
+			if(selected > list_size)
+			{
+				selected = list_size;
+				soundPlay(SND_BOUNDS);
+			}
+			else
+				soundPlay(SND_LIST);
+
+			if((selected - 6) > start)
+				start = selected - 6;
+		}
+		else if(down & KEY_LEFT || ((held & KEY_LEFT) && moving))
+		{
+			updatemenu = true;
+
+			selected -= 6;
+			if(selected < 0)
+			{
+				selected = 0;
+				soundPlay(SND_BOUNDS);
+			}
+			else
+				soundPlay(SND_LIST);
+
+			if(selected < start)
+				start = selected;
+		}
+		else if(down & KEY_A || fldNav[0].getEvent() == BUTTON_RELEASED || retEvent == MENU_DOUBLE_REL)
+		{
+			updatemenu = true;
+
+			if(selected == 0)
+			{
+				soundPlay(SND_SELECT);
+				std::string folder;
+				//Add back 3DS shortcut thing
+				if(held & KEY_R)
+					folder = data::curUser.getUsernameSafe() + " - " + util::getDateTime(util::DATE_FMT_YMD);
+				else if(held & KEY_L)
+					folder = data::curUser.getUsernameSafe() + " - " + util::getDateTime(util::DATE_FMT_YDM);
+				else if(held & KEY_ZL)
+					folder = data::curUser.getUsernameSafe() + " - " + util::getDateTime(util::DATE_FMT_HOYSTE);
+				else
+				{
+					const std::string dict[] =
+					{
+						util::getDateTime(util::DATE_FMT_YMD).c_str(),
+						util::getDateTime(util::DATE_FMT_YDM).c_str(),
+						util::getDateTime(util::DATE_FMT_HOYSTE).c_str(),
+						data::curUser.getUsernameSafe().c_str(),
+						data::curData.getTitle().length() < 24 ? data::curData.getTitleSafe() : util::generateAbbrev(data::curData)
+					};
+					folder = util::getStringInput(data::curUser.getUsernameSafe() + " - " + util::getDateTime(util::DATE_FMT_YDM), "Enter a folder name", 64, 5, dict);
+				}
+				if(!folder.empty())
+				{
+					soundPlay(SND_LOADING);
+					std::string path = util::getTitleDir(data::curUser, data::curData) + "/" + folder;
+					mkdir(path.c_str(), 777);
+					path += "/";
+
+					std::string root = "sv:/";
+					fs::copyDirToDir(root, path);
+					soundPlay(SND_BING);
+				}
+			}
+			else
+			{
+				updatemenu = true;
+
+				soundPlay(SND_POPUP);
 				std::string scanPath = util::getTitleDir(data::curUser, data::curData);
 				fs::dirList list(scanPath);
 
 				std::string folderName = list.getItem(selected - 1);
-				if(confirm("Are you sure you want to delete \"" + util::cutStr(folderName, 690, 24) + "\"?", "Delete"))
+				if(confirm("Are you sure you want to overwrite \"" + util::cutStr(folderName, 690, 24) + "\"?", "Overwrite"))
 				{
-					rescan = true;
-					std::string delPath = scanPath + folderName + "/";
-					fs::delDir(delPath);
+					soundPlay(SND_LOADING);
+					std::string toPath = util::getTitleDir(data::curUser, data::curData) + folderName + "/";
+					//Delete and recreate
+					fs::delDir(toPath);
+					mkdir(toPath.c_str(), 777);
+
+					std::string root = "sv:/";
+
+					fs::copyDirToDir(root, toPath);
+					soundPlay(SND_BING);
 				}
-				break;
 			}
-			else if(selected > 0 && (down & KEY_Y || fldNav[3].getEvent() == BUTTON_RELEASED))
+		}
+		else if(down & KEY_B || fldNav[1].getEvent() == BUTTON_RELEASED)
+		{
+			updatemenu = true;
+
+			soundPlay(SND_BACK);
+			start = 0;
+			selected = 0;
+			fsdevUnmountDevice("sv");
+			mstate = prevState;
+		}
+		else if(selected > 0 && (down & KEY_X || fldNav[2].getEvent() == BUTTON_RELEASED))
+		{
+			updatemenu = true;
+
+			soundPlay(SND_POPUP);
+			std::string scanPath = util::getTitleDir(data::curUser, data::curData);
+			fs::dirList list(scanPath);
+
+			std::string folderName = list.getItem(selected - 1);
+			if(confirm("Are you sure you want to delete \"" + util::cutStr(folderName, 690, 24) + "\"?", "Delete"))
 			{
-				sndPlay(SND_POPUP);
-				if(data::curData.getType() != FsSaveDataType_SystemSaveData)
+				std::string delPath = scanPath + folderName + "/";
+				fs::delDir(delPath);
+			}
+		}
+		else if(selected > 0 && (down & KEY_Y || fldNav[3].getEvent() == BUTTON_RELEASED))
+		{
+			updatemenu = true;
+
+			soundPlay(SND_POPUP);
+			if(data::curData.getType() != FsSaveDataType_SystemSaveData)
+			{
+				std::string scanPath = util::getTitleDir(data::curUser, data::curData);
+				fs::dirList list(scanPath);
+
+				std::string folderName = list.getItem(selected - 1);
+				if(confirm("Are you sure you want to restore \"" + util::cutStr(folderName, 690, 24) + "\"?", "Restore"))
 				{
-					std::string scanPath = util::getTitleDir(data::curUser, data::curData);
-					fs::dirList list(scanPath);
+					soundPlay(SND_LOADING);
+					std::string fromPath = util::getTitleDir(data::curUser, data::curData) + folderName + "/";
+					std::string root = "sv:/";
 
-					std::string folderName = list.getItem(selected - 1);
-					if(confirm("Are you sure you want to restore \"" + util::cutStr(folderName, 690, 24) + "\"?", "Restore"))
-					{
-						sndPlay(SND_LOADING);
-						std::string fromPath = util::getTitleDir(data::curUser, data::curData) + folderName + "/";
-						std::string root = "sv:/";
+					fs::delDir(root);
+					fsdevCommitDevice("sv");
 
-						fs::delDir(root);
-						fsdevCommitDevice("sv");
-
-						fs::copyDirToDirCommit(fromPath, root, "sv");
-						sndPlay(SND_BING);
-					}
+					fs::copyDirToDirCommit(fromPath, root, "sv");
+					soundPlay(SND_BING);
 				}
-				else
-					ui::showMessage("Writing data to system save data is not allowed currently. It can brick your system.", "Sorry, bro:");
-				break;
 			}
-			else if(down & KEY_PLUS || fldNav[fldNav.size() - 1].getEvent() == BUTTON_RELEASED)
-			{
-				ui::finish = true;
-				break;
-			}
+			else
+				ui::showMessage("Writing data to system save data is not allowed currently. It can brick your system.", "Sorry, bro:");
+		}
+		else if(down & KEY_PLUS || fldNav[fldNav.size() - 1].getEvent() == BUTTON_RELEASED)
+		{
+			updatemenu = true;
+			ui::finish = true;
 		}
 	}
 }

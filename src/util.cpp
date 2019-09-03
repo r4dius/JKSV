@@ -1,13 +1,4 @@
-#include <string>
-#include <cstdio>
-#include <ctime>
-#include <sys/stat.h>
-
-#include "data.h"
-#include "gfx.h"
 #include "util.h"
-#include "file.h"
-#include "ui.h"
 
 static const char verboten[] = { ',', '/', '\\', '<', '>', ':', '"', '|', '?', '*'};
 
@@ -224,4 +215,3 @@ namespace util
 		return tmp;
 	}
 }
-

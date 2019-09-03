@@ -1,10 +1,9 @@
 #ifndef DATA_H
 #define DATA_H
 
-#include <switch.h>
-
 #include <vector>
 #include <string>
+#include <switch.h>
 
 #include "gfx.h"
 

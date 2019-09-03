@@ -1,17 +1,7 @@
 #include <fstream>
-#include <cstdio>
 #include <algorithm>
-#include <cstring>
-#include <switch.h>
-#include <dirent.h>
-#include <unistd.h>
-#include <sys/stat.h>
 
-#include "file.h"
 #include "util.h"
-#include "ui.h"
-#include "gfx.h"
-#include "data.h"
 
 #define BUFF_SIZE 512 * 1024
 

@@ -1,10 +1,5 @@
-#ifndef SOUND_H
-#define SOUND_H
-
-#ifdef __cplusplus
-extern "C"
-{
-#endif
+#ifndef SND_H
+#define SND_H
 
 enum sndName
 {
@@ -22,10 +17,6 @@ enum sndName
 void soundInit();
 void soundExit();
 
-void sndPlay(int id);
+void soundPlay(int soundId);
 
-#ifdef __cplusplus
-}
-#endif
-
-#endif // SOUND_H
+#endif // SND_H

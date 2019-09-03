@@ -1,12 +1,7 @@
-#include <string>
-#include <fstream>
-#include <vector>
-
 #include "ui.h"
 #include "uiupdate.h"
-#include "file.h"
-#include "util.h"
 #include "snd.h"
+#include "util.h"
 
 extern std::vector<ui::button> blkNav;
 
@@ -14,55 +9,63 @@ namespace ui
 {
 	void updateBlacklistMenu(const uint64_t& down, const uint64_t& held, const touchPosition& p)
 	{
+		static std::vector<ui::button> selButtons;
+
 		//Static so they don't get reset every loop
 		//Where to start in titles, selected title
-		static int start = 0, selected = 0, maxTitles = 18, movespeed = 0;
-		static bool move = false;
+		static int start = 0, selected = 0, listShow = 12, moveSpeed = 0;
 
 		//Color shift for rect
 		static int clrSh = 0;
 		//Whether or not we're adding or subtracting from clrShft
 		static bool clrAdd = true;
 
-		std::vector<ui::button> selButtons;
 		static ui::touchTrack track;
-		unsigned x = 93, y = 187, j = 0, selY = 0;
+		unsigned x = 93, y = 187, j = 0, tX = x;
 		static unsigned tiX = 0, tiY = 0;
 
 		//Selected rectangle X and Y.
 		static unsigned selRectX = x, selRectY = y;
-		static std::string title = "";
-		static int retEvent = MENU_NOTHING;
+		std::string title = "";
+		int retEvent = MENU_NOTHING;
 
-		bool updatemenu = false;
 		static bool holding = false;
+		static bool moving = false;
 		static bool swiping = false;
-		static bool touching = false;
+		//Limit redraw of unchanged stuff
+		static bool updateMenu = true;
 
-		blkNav.clear();
+		unsigned listSize = data::curUser.blktitles.size();
 
-		unsigned list_size = data::curUser.blktitles.size();
-
-		if(maxTitles == 24)
-			y = 3;
-		
 		if(start < 0)
 			start = 0;
 
 		if(selected < 0)
 			selected = 0;
 
-		unsigned endTitle = start + maxTitles;
-		if(start + maxTitles > (int)list_size)
-			endTitle = list_size;
+		unsigned listLast = start + listShow;
+		if(listLast > listSize)
+			listLast = listSize;
 
-		for(unsigned i = start; i < endTitle; y += 184, j++)
+		if(start > 0)
+		{
+			for(int i = start - 6, tX = x; i < start; i++, tX += 184)
+			{
+				if(updateMenu)
+				{
+					data::curUser.blktitles[i].icon.drawResize(tX, 3, 174, 174);
+					texDrawLimit(iconShadow, frameBuffer, tX - 5, -2);
+				}
+			}
+		}
+
+		for(unsigned i = start; i < listLast; y += 184, j++)
 		{
 			unsigned endRow = i + 6;
-			for(unsigned tX = x; i < endRow; i++, tX += 184)
+			for(tX = x; i < endRow; i++, tX += 184)
 			{
 				unsigned selH = 174;
-				if(i == endTitle)
+				if(i == listLast)
 					break;
 
 				if((int)i == selected)
@@ -76,435 +79,376 @@ namespace ui
 					title = data::curUser.blktitles[selected].getTitle();
 					tiX = tX, tiY = y;
 				}
-				data::curUser.blktitles[i].icon.drawResize(tX, y, 174, 174);
-				texDrawLimit(iconShadow, frameBuffer, tX - 5, y - 5);
-				selY = y;
-				if(maxTitles == 24) {
-					if(j < 1) {
-						selY = y + 85;
-						selH = 89;
-					}
-					if(j > 2)
-						selH = 92;
+
+				if(updateMenu)
+				{
+					data::curUser.blktitles[i].icon.drawResize(tX, y, 174, 174);
+					texDrawLimit(iconShadow, frameBuffer, tX - 5, y - 5);
+
+					ui::button newSelButton("", tX, y, 174, selH);
+					selButtons.push_back(newSelButton);
 				}
-				else
-					if(j > 1)
-						selH = 92;
-				ui::button newSelButton("", tX, selY, 174, selH);
-				selButtons.push_back(newSelButton);
 			}
 		}
 
-		unsigned endX = 1218, butSize = 0;
-		std::string butTxt = "Select";
-		butSize = textGetWidth(butTxt.c_str(), shared, 17.5);
-		drawText(butTxt.c_str(), frameBuffer, shared, endX -= butSize, 675.5, 17.5, mnutxtClr);
-		texDraw(buttonA, frameBuffer, endX -= 37, 672);
-		ui::button blkSel("", endX, 656, butSize + 38, 64);
-		blkNav.push_back(blkSel);
-		endX -= 41;
-		butTxt = "Back";
-		butSize = textGetWidth(butTxt.c_str(), shared, 17.5);
-		drawText(butTxt.c_str(), frameBuffer, shared, endX -= butSize, 675.5, 17.5, mnutxtClr);
-		texDraw(buttonB, frameBuffer, endX -= 37, 672);
-		ui::button blkBck("", endX, 656, butSize + 38, 64);
-		blkNav.push_back(blkBck);
-		endX -= 41;
-		if(list_size > 0)
+		if(start + 12 < (int)listSize)
 		{
-			butTxt = "Unblacklist";
-			butSize = textGetWidth(butTxt.c_str(), shared, 17.5);
-			drawText(butTxt.c_str(), frameBuffer, shared, endX -= butSize, 675.5, 17.5, mnutxtClr);
-			texDraw(buttonX, frameBuffer, endX -= 37, 672);
-			ui::button blkUnb("", endX, 656, butSize + 38, 64);
-			blkNav.push_back(blkUnb);
-			endX -= 41;
-			butTxt = "Backup All";
-			butSize = textGetWidth(butTxt.c_str(), shared, 17.5);
-			drawText(butTxt.c_str(), frameBuffer, shared, endX -= butSize, 675.5, 17.5, mnutxtClr);
-			texDraw(buttonY, frameBuffer, endX -= 37, 672);
-			ui::button blkDmp("", endX, 656, butSize + 38, 64);
-			blkNav.push_back(blkDmp);
-			endX -= 41;
+			unsigned listBottomLast = start + 18;
+			if(listBottomLast > listSize)
+				listBottomLast = listSize;
+
+			for(unsigned i = start + 12, tX = x; i < listBottomLast; i++, tX += 184)
+			{
+				if(updateMenu)
+				{
+					data::curUser.blktitles[i].icon.drawResize(tX, 555, 174, 174);
+					texDrawLimit(iconShadow, frameBuffer, tX - 5, 550);
+				}
+			}
 		}
-		butTxt = "Exit";
-		butSize = textGetWidth(butTxt.c_str(), shared, 17.5);
-		drawText(butTxt.c_str(), frameBuffer, shared, endX -= butSize, 675.5, 17.5, mnutxtClr);
-		texDraw(buttonP, frameBuffer, endX -= 37, 672);
-		ui::button blkExt("", endX, 656, butSize + 38, 64);
-		blkNav.push_back(blkExt);
 
-		drawScrollBar(start, maxTitles, list_size, SCROLL_ICON);
-
-		memcpy(screen->data, frameBuffer->data, frameBuffer->size * 4);
-
-		while(true)
+		if(updateMenu)
 		{
-			hidScanInput();
-			uint64_t down = hidKeysDown(CONTROLLER_P1_AUTO);
-			uint64_t held = hidKeysHeld(CONTROLLER_P1_AUTO);
-			touchPosition p;
-			hidTouchRead(&p, 0);
+			updateMenu = false;
+			blkNav.clear();
 
-			if(clrAdd)
+			std::string butTxt = "";
+			unsigned endX = 1218, butSize = 0;
+			if(listSize > 0)
 			{
-				clrSh += 5;
-				if(clrSh > 100)
-				{
-					if(clrSh > 254) clrSh = 254;
-					clrAdd = false;
-				}
+				butTxt = "Select";
+				butSize = textGetWidth(butTxt.c_str(), shared, 17.5);
+				drawText(butTxt.c_str(), frameBuffer, shared, endX -= butSize, 675.5, 17.5, mnutxtClr);
+				texDraw(buttonA, frameBuffer, endX -= 37, 672);
+				ui::button blkSel("", endX - 20, 653, butSize + 78, 62);
+				blkNav.push_back(blkSel);
+				endX -= 41;
 			}
 			else
 			{
-				clrSh -= 10;
-				if(clrSh <= 0)
+				// empty button to pad B button to [1]
+				ui::button blkSel("", 0, 0, 0, 0);
+				blkNav.push_back(blkSel);
+			}
+			butTxt = "Back";
+			butSize = textGetWidth(butTxt.c_str(), shared, 17.5);
+			drawText(butTxt.c_str(), frameBuffer, shared, endX -= butSize, 675.5, 17.5, mnutxtClr);
+			texDraw(buttonB, frameBuffer, endX -= 37, 672);
+			ui::button blkBck("", endX - 20, 653, butSize + 78, 62);
+			blkNav.push_back(blkBck);
+			endX -= 41;
+			if(listSize > 0)
+			{
+				butTxt = "Unblacklist";
+				butSize = textGetWidth(butTxt.c_str(), shared, 17.5);
+				drawText(butTxt.c_str(), frameBuffer, shared, endX -= butSize, 675.5, 17.5, mnutxtClr);
+				texDraw(buttonX, frameBuffer, endX -= 37, 672);
+				ui::button blkUnb("", endX - 20, 653, butSize + 78, 62);
+				blkNav.push_back(blkUnb);
+				endX -= 41;
+				butTxt = "Backup All";
+				butSize = textGetWidth(butTxt.c_str(), shared, 17.5);
+				drawText(butTxt.c_str(), frameBuffer, shared, endX -= butSize, 675.5, 17.5, mnutxtClr);
+				texDraw(buttonY, frameBuffer, endX -= 37, 672);
+				ui::button blkDmp("", endX - 20, 653, butSize + 78, 62);
+				blkNav.push_back(blkDmp);
+				endX -= 41;
+			}
+			butTxt = "Exit";
+			butSize = textGetWidth(butTxt.c_str(), shared, 17.5);
+			drawText(butTxt.c_str(), frameBuffer, shared, endX -= butSize, 675.5, 17.5, mnutxtClr);
+			texDraw(buttonP, frameBuffer, endX -= 37, 672);
+			ui::button blkExt("", endX - 20, 653, butSize + 78, 62);
+			blkNav.push_back(blkExt);
+
+			drawScrollBar(start, listShow, listSize, SCROLL_ICON);
+
+			// capture screen before adding "selected" stuff
+			memcpy(screen->data, frameBuffer->data, frameBuffer->size * 4);
+		}
+
+		if(clrAdd)
+		{
+			clrSh += 5;
+			if(clrSh > 100)
+			{
+				if(clrSh > 254)
+					clrSh = 254;
+
+				clrAdd = false;
+			}
+		}
+		else
+		{
+			clrSh -= 10;
+			if(clrSh <= 0)
+			{
+				if(clrSh < 0)
+					clrSh = 0;
+
+				clrAdd = true;
+			}
+		}
+
+		if((held & KEY_RIGHT) || (held & KEY_LEFT) || (held & KEY_UP) || (held & KEY_DOWN))
+			moveSpeed++;
+		else
+		{
+			holding = false;
+			moveSpeed = 0;
+			moving = false;
+		}
+
+		if(moveSpeed >= 10)
+		{
+			moving = true;
+			if(moveSpeed > 11)
+				moveSpeed = 10;
+		}
+		else
+			moving = false;
+
+		//Update touchtracking
+		track.update(p, 6); 
+		switch(track.getEvent()) 
+		{
+			case TRACK_SWIPE_UP:
+				if(start + 12 < (int)listSize)
 				{
-					if(clrSh < 0) clrSh = 0;
-					clrAdd = true;
+					swiping = true;
+					selected += 6;
+					if(selected > (int)listSize - 1)
+						selected = listSize - 1;
+
+					start += 6;
+					updateMenu = true;
 				}
-			}
-
-			if((held & KEY_RIGHT) || (held & KEY_LEFT) || (held & KEY_UP) || (held & KEY_DOWN))
-				movespeed++;
-			else
-			{
-				holding = false;
-				movespeed = 0;
-				move = false;
-			}
-
-			if(movespeed >= 10)
-			{
-				move = true;
-				movespeed = 12;
-			} else move = false;
-
-			//Update touchtracking
-			track.update(p, 6); 
-			switch(track.getEvent()) 
-			{
-				case TRACK_SWIPE_UP:
-					if((maxTitles == 18 && start + 12 < (int)list_size) || start + 18 < (int)list_size)
-					{
-						swiping = true;
-						selected += 6;
-						if(selected > (int)list_size - 1)
-							selected = list_size - 1;
-
-						if(maxTitles == 24)
-							start += 6;
-
-						if((int)list_size > 12)
-							maxTitles = 24;
-
-						updatemenu = true;
-						return;
-					}
-					break;
-
-				case TRACK_SWIPE_DOWN:
-					if(maxTitles != 18)
-					{
-						swiping = true;
-						selected -= 6;
-						if(selected < 0)
-							selected = 0;
-
-						start -= 6;
-						if(start < 0)
-						{
-							start = 0;
-							maxTitles = 18;
-						}
-
-						updatemenu = true;
-						return;
-					}
-					break;
-			}
-
-			//Update nav
-			for(unsigned i = 0; i < blkNav.size(); i++)
-			{
-				blkNav[i].update(p);
-				if(blkNav[i].getEvent() == BUTTON_PRESSED)
-				{
-					if(!touching)
-						sndPlay(SND_TICK);
-					touching = true;
-				}
-			}
-
-			//Update invisible buttons
-			for(int i = 0; (unsigned)i < endTitle - start; i++)
-			{
-				selButtons[i].update(p);
-				if(i == selected - start && selButtons[i].getEvent() == BUTTON_RELEASED)
-				{
-					if(!swiping) {
-						data::curData = data::curUser.blktitles[selected];
-						if(fs::mountSave(data::curUser, data::curData))
-						{
-							util::makeTitleDir(data::curUser, data::curData);
-							folderMenuInfo = util::getInfoString(data::curUser, data::curData);
-
-							mstate = FLD_SEL;
-							prevState = BKL_SEL;
-						}
-
-						retEvent = MENU_DOUBLE_REL;
-						break;
-					}
-				}
-				else if(selButtons[i].getEvent() == BUTTON_RELEASED)
-				{
-					sndPlay(SND_TOUCHOUT);
-					if(!swiping)
-					{
-						if(start + i < (int)list_size)
-							selected = start + i;
-
-						retEvent = MENU_NOTHING;
-						updatemenu = true;
-						
-						if(maxTitles == 24)
-						{
-							if(selected < start + 6)
-							{
-								start -= 6;
-								if(start < 0)
-								{
-									start = 0;
-									maxTitles = 18;
-								}
-
-								updatemenu = true;
-								return;
-							}
-							else if(selected >= start + 18)
-							{
-								start += 6;
-
-								updatemenu = true;
-								return;
-							}
-						}
-						else if(selected >= start + 12)
-						{
-							maxTitles = 24;
-
-							updatemenu = true;
-							return;
-						}
-					}
-				}
-				else if(selButtons[i].getEvent() == BUTTON_PRESSED)
-				{
-					if(!touching)
-						sndPlay(SND_TICK);
-					touching = true;
-				}
-				else
-				{
-					retEvent = MENU_NOTHING;
-				}
-			}
-
-			if(hidTouchCount() <= 0)
-				touching = false;
-
-			// reset swiping check
-			if(swiping && hidTouchCount() <= 0)
-				swiping = false;
-
-			gfxBeginFrame();
-			texDraw(screen, frameBuffer, 0, 0);
-			if(list_size > 0)
-			{
-				drawGlowButton(selRectX, selRectY, 174, 174, clrSh, BUTTON_ICON, 2);
-				drawTitlebox(title, tiX, tiY - 63, 48);
-			}
-			else
-			{
-				std::string message = "No blacklisted game, see ya";
-				drawText(message.c_str(), frameBuffer, ui::shared, (1280 - textGetWidth(message.c_str(), ui::shared, 22)) / 2, 340, 22, mnutxtClr);
-			}
-
-// char char_arr[200];
-// sprintf(char_arr, "selected %d", selected);
-// drawText(char_arr, frameBuffer, ui::shared, 500, 10, 14, mnutxtClr);
-// sprintf(char_arr, "endTitle %d", endTitle);
-// drawText(char_arr, frameBuffer, ui::shared, 500, 25, 14, mnutxtClr);
-// sprintf(char_arr, "start %d", start);
-// drawText(char_arr, frameBuffer, ui::shared, 500, 40, 14, mnutxtClr);
-// sprintf(char_arr, "list_size %d", list_size);
-// drawText(char_arr, frameBuffer, ui::shared, 750, 10, 14, mnutxtClr);
-// sprintf(char_arr, "maxTitles %d", maxTitles);
-// drawText(char_arr, frameBuffer, ui::shared, 750, 25, 14, mnutxtClr);
-// sprintf(char_arr, "start %d", start);
-// drawText(char_arr, frameBuffer, ui::shared, 750, 40, 14, mnutxtClr);
-
-			gfxEndFrame(ui::shared);
-
-			if(updatemenu == true)
 				break;
 
-			if(list_size > 0)
-			{
-				if(down & KEY_RIGHT || ((held & KEY_RIGHT) && move))
+			case TRACK_SWIPE_DOWN:
+				if(start > 0 && (int)listSize > 12)
 				{
-					if(selected < (int)list_size - 1)
-					{
-						selected++;
-						sndPlay(SND_TICK);
-					}
-					else if(!holding)
-					{
-						holding = true;
-						sndPlay(SND_BOUNDS);
-					}
-
-					if(selected >= (int)start + 18)
-						start += 6;
-
-					if(start < 0)
-						start = 0;
-
-					if(selected == 12)
-						maxTitles = 24;
-					break;
-				}
-				else if(down & KEY_LEFT || ((held & KEY_LEFT) && move))
-				{
-					if(selected > 0)
-					{
-						selected--;
-						sndPlay(SND_TICK);
-					}
-					else if(!holding)
-					{
-						holding = true;
-						sndPlay(SND_BOUNDS);
-					}
-
-					if(selected - 6 < (int)start)
-						start -= 6;
-
-					if(start < 0)
-						start = 0;
-
-					if(selected == 5)
-						maxTitles = 18;
-					break;
-				}
-				else if(down & KEY_UP || ((held & KEY_UP) && move))
-				{
-					if(selected > 0)
-						sndPlay(SND_TICK);
-					else if(!holding)
-					{
-						holding = true;
-						sndPlay(SND_BOUNDS);
-					}
-
+					swiping = true;
 					selected -= 6;
 					if(selected < 0)
 						selected = 0;
 
-					if(selected - 6 < start)
-						start -= 6;
+					start -= 6;
 
-					if(start < 0)
-						start = 0;
-
-					if(selected >= 0 && selected < 6)
-						maxTitles = 18;
-					break;
+					updateMenu = true;
 				}
-				else if(down & KEY_DOWN || ((held & KEY_DOWN) && move))
-				{
-					if(selected < (int)list_size - 1)
-						sndPlay(SND_TICK);
-					else if(!holding)
-					{
-						holding = true;
-						sndPlay(SND_BOUNDS);
-					}
-
-					selected += 6;
-					if(selected > (int)list_size - 1)
-						selected = list_size - 1;
-
-					if(selected - start >= 18)
-						start += 6;
-
-					if(selected > 11 && selected < 18)
-						maxTitles = 24;
-					break;
-				}
-				else if(down & KEY_A || blkNav[0].getEvent() == BUTTON_RELEASED || retEvent == MENU_DOUBLE_REL)
-				{
-					sndPlay(SND_SELECT);
-					data::curData = data::curUser.blktitles[selected];
-					if(fs::mountSave(data::curUser, data::curData))
-					{
-						util::makeTitleDir(data::curUser, data::curData);
-															
-						folderMenuInfo = util::getInfoString(data::curUser, data::curData);
-
-						mstate = FLD_SEL;
-						prevState = BKL_SEL;
-					}
-					break;
-				}
-				else if(down & KEY_X || blkNav[2].getEvent() == BUTTON_RELEASED)
-				{
-					sndPlay(SND_SELECT);
-					data::blacklistRemove(data::curUser, data::curUser.blktitles[selected]);
-					// deleting last icon
-					if((unsigned)selected == list_size - 1)
-						if(selected > 0)
-							selected--;
-
-					if(maxTitles == 24 && (int)list_size - 1 <= 12)
-						maxTitles = 18;
-
-					if(maxTitles == 24 && start + 12 < (int)list_size)
-						start -= 6;
-
-					if(start < 0)
-						start = 0;
-
-					break;
-				}
-				else if(down & KEY_Y || blkNav[3].getEvent() == BUTTON_RELEASED)
-				{
-					sndPlay(SND_POPUP);
-					if(confirm("Are you sure you want to backup all saves from blacklisted games?", "Backup"))
-					{
-						sndPlay(SND_LOADING);
-						fs::dumpAllUserSavesBlacklisted(data::curUser);
-						sndPlay(SND_BING);
-					}
-					break;
-				}
-			}
-			if(down & KEY_B || blkNav[1].getEvent() == BUTTON_RELEASED)
-			{
-				sndPlay(SND_BACK);
-				start = 0;
-				selected = 0;
-				maxTitles = 18;
-				selRectX = 93, selRectY = 187;
-				mstate = TTL_SEL;
-				return;
-			}
-			else if(down & KEY_PLUS || blkNav[blkNav.size() - 1].getEvent() == BUTTON_RELEASED)
-			{
-				ui::finish = true;
 				break;
+		}
+
+		// draw captured screen so we can overlay "dynamic" stuff
+		texDraw(screen, frameBuffer, 0, 0);
+
+		//Update nav
+		for(unsigned i = 0; i < blkNav.size(); i++)
+		{
+			blkNav[i].update(p);
+			if(blkNav[i].getEvent() == BUTTON_PRESSED)
+			{
+				if(!swiping)
+					blkNav[i].draw();
 			}
+		}
+
+		//Update invisible buttons
+		for(int i = 0; (unsigned)i < listLast - start; i++)
+		{
+			selButtons[i].update(p);
+			if(i == selected - start && selButtons[i].getEvent() == BUTTON_RELEASED)
+			{
+				if(!swiping)
+				{
+					retEvent = MENU_DOUBLE_REL;
+					break;
+				}
+			}
+			else if(selButtons[i].getEvent() == BUTTON_RELEASED)
+			{
+				soundPlay(SND_TOUCHOUT);
+				if(!swiping)
+				{
+					if(start + i < (int)listSize)
+						selected = start + i;
+
+					retEvent = MENU_NOTHING;
+				}
+			}
+			else if(selButtons[i].getEvent() == BUTTON_PRESSED)
+			{
+				if(!swiping)
+					selButtons[i].draw();
+			}
+			else
+			{
+				retEvent = MENU_NOTHING;
+			}
+		}
+
+		// reset swiping check
+		if(swiping && hidTouchCount() <= 0)
+			swiping = false;
+
+		if(listSize > 0)
+		{
+			drawGlowButton(selRectX, selRectY, 174, 174, clrSh, BUTTON_ICON, 2);
+			drawTitlebox(title, tiX, tiY - 63, 48);
+		}
+		else
+		{
+			std::string message = "No blacklisted game, see ya";
+			drawText(message.c_str(), frameBuffer, ui::shared, (1280 - textGetWidth(message.c_str(), ui::shared, 22)) / 2, 340, 22, mnutxtClr);
+		}
+
+		if(listSize > 0)
+		{
+			if(down & KEY_RIGHT || ((held & KEY_RIGHT) && moving && moveSpeed >= 11))
+			{
+				if(selected < (int)listSize - 1)
+				{
+					selected++;
+					soundPlay(SND_TICK);
+				}
+				else if(!holding)
+				{
+					holding = true;
+					soundPlay(SND_BOUNDS);
+				}
+
+				if(selected >= (int)start + 12)
+				{
+					updateMenu = true;
+					start += 6;
+				}
+
+				if(start < 0)
+					start = 0;
+			}
+			else if(down & KEY_LEFT || ((held & KEY_LEFT) && moving && moveSpeed >= 11))
+			{
+				if(selected > 0)
+				{
+					selected--;
+					soundPlay(SND_TICK);
+				}
+				else if(!holding)
+				{
+					holding = true;
+					soundPlay(SND_BOUNDS);
+				}
+
+				if(selected < (int)start && start != 0)
+				{
+					updateMenu = true;
+					start -= 6;
+				}
+
+				if(start < 0)
+					start = 0;
+			}
+			else if(down & KEY_UP || ((held & KEY_UP) && moving && moveSpeed >= 11))
+			{
+				if(selected > 0)
+					soundPlay(SND_TICK);
+				else if(!holding)
+				{
+					holding = true;
+					soundPlay(SND_BOUNDS);
+				}
+
+				selected -= 6;
+				if(selected < 0)
+					selected = 0;
+
+				if(selected < start && start != 0)
+				{
+					updateMenu = true;
+					start -= 6;
+				}
+
+				if(start < 0)
+					start = 0;
+			}
+			else if(down & KEY_DOWN || ((held & KEY_DOWN) && moving && moveSpeed >= 11))
+			{
+				if(selected < (int)listSize - 1)
+					soundPlay(SND_TICK);
+				else if(!holding)
+				{
+					holding = true;
+					soundPlay(SND_BOUNDS);
+				}
+
+				selected += 6;
+				if(selected > (int)listSize - 1)
+					selected = listSize - 1;
+
+				if(selected - start >= 12)
+				{
+					updateMenu = true;
+					start += 6;
+				}
+			}
+			else if(down & KEY_A || blkNav[0].getEvent() == BUTTON_RELEASED || retEvent == MENU_DOUBLE_REL)
+			{
+				updateMenu = true;
+				soundPlay(SND_SELECT);
+				data::curData = data::curUser.blktitles[selected];
+				if(fs::mountSave(data::curUser, data::curData))
+				{
+					util::makeTitleDir(data::curUser, data::curData);
+					folderMenuInfo = util::getInfoString(data::curUser, data::curData);
+
+					mstate = FLD_SEL;
+					prevState = BKL_SEL;
+				}
+			}
+			else if(down & KEY_X || blkNav[2].getEvent() == BUTTON_RELEASED)
+			{
+				updateMenu = true;
+				soundPlay(SND_SELECT);
+				data::blacklistRemove(data::curUser, data::curUser.blktitles[selected]);
+				// deleting last icon
+				if((unsigned)selected == listSize - 1)
+					if(selected > 0)
+						selected--;
+
+				if((int)listSize - (int)start <= 7)
+				{
+					updateMenu = true;
+					start -= 6;
+				}
+
+				if(start < 0)
+					start = 0;
+			}
+			else if(down & KEY_Y || blkNav[3].getEvent() == BUTTON_RELEASED)
+			{
+				updateMenu = true;
+				soundPlay(SND_POPUP);
+				if(confirm("Are you sure you want to backup all saves from blacklisted games?", "Backup"))
+				{
+					soundPlay(SND_LOADING);
+					fs::dumpAllUserSavesBlacklisted(data::curUser);
+					soundPlay(SND_BING);
+				}
+			}
+		}
+		if(down & KEY_B || blkNav[1].getEvent() == BUTTON_RELEASED)
+		{
+			updateMenu = true;
+			soundPlay(SND_BACK);
+			start = 0;
+			selected = 0;
+			selRectX = 93, selRectY = 187;
+			mstate = TTL_SEL;
+		}
+		else if(blkNav[blkNav.size() - 1].getEvent() == BUTTON_RELEASED)
+		{
+			ui::finish = true;
 		}
 	}
 }
